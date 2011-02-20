@@ -13,17 +13,18 @@ entity leros is
 	port  (
 		clk : in std_logic;
 		reset : in std_logic;
-		alu_in : in std_logic_vector(15 downto 0);
 		alu_out : out std_logic_vector(15 downto 0)
 	);
 end leros;
 
 architecture rtl of leros is
 
-	signal ain : ex_in_type;
-	signal aout : ex_out_type;
+	signal fdin : fedec_in_type;
+	signal fdout : fedec_out_type;
 	
-	signal inreg1, inreg2, inreg3a, inreg3b : std_logic_vector(15 downto 0);
+	signal exin : ex_in_type;
+	signal exout : ex_out_type;
+
 	signal outreg1, outreg2, outreg3 : std_logic_vector(15 downto 0);
 
 begin
@@ -34,27 +35,26 @@ begin
 
 	-- plain register assignments generate something strange 
 	if rising_edge(clk) then
-		inreg1 <= alu_in;
-		inreg2 <= not inreg1;
-		inreg3a <= inreg2;
-		inreg3b <= inreg2;
 		alu_out <= outreg3;
 		outreg3 <= not outreg2;
 		outreg2 <= outreg1;
 	end if;
 end process;
 
-	ain.imm <= inreg3a(7 downto 0);
-	ain.op <= op_add when inreg3a(8)='0' else op_sub;
-	ain.sel_imm <= inreg3a(9);
-	ain.wren <= inreg3a(10);
-	ain.dm_rdaddr <= inreg3b(7 downto 0);
-	ain.dm_wraddr <= inreg3b(15 downto 8);
+	exin.imm <= fdout.imm;
+	exin.op <= fdout.op;
+	exin.sel_imm <= fdout.data(9);
+	exin.wren <= fdout.data(10);
+	exin.dm_rdaddr <= fdout.data(7 downto 0);
+	exin.dm_wraddr <= fdout.data(15 downto 8);
 	
-	outreg1 <= aout.result;
+	outreg1 <= exout.result;
 	
-	c1: entity work.leros_ex port map(
-		clk, reset, ain, aout
+	fd: entity work.leros_fedec port map (
+		clk, reset, fdin, fdout
+	);
+	ex: entity work.leros_ex port map(
+		clk, reset, exin, exout
 	);
 	
 end rtl;

@@ -50,8 +50,30 @@ package leros_types is
 
 	-- should this later go to a lerso_config package?
 	constant DM_BITS : integer := 8;
+	constant IM_BITS : integer := 8;
 
 	type alu_op_type is (op_add, op_sub);
+
+	type im_in_type is record
+		rdaddr : std_logic_vector(DM_BITS-1 downto 0);
+		wraddr : std_logic_vector(DM_BITS-1 downto 0);
+		wrdata : std_logic_vector(15 downto 0);
+		wren : std_logic;
+	end record;
+
+	type im_out_type is record
+		data : std_logic_vector(15 downto 0);
+	end record;
+
+	type fedec_in_type is record
+		abc : std_logic;
+	end record;
+
+	type fedec_out_type is record
+		op : alu_op_type;
+		imm : std_logic_vector(7 downto 0);
+		data : std_logic_vector(15 downto 0);
+	end record;
 
 	type ex_in_type is record
 		op : alu_op_type;

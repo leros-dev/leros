@@ -116,7 +116,6 @@ architecture rtl of leros_top is
 	signal ram_noe			: std_logic;
 	signal ram_nwe			: std_logic;
 	
-	signal alu_in 			: std_logic_vector(15 downto 0);
 	signal alu_out 			: std_logic_vector(15 downto 0);
 	
 begin
@@ -152,14 +151,14 @@ end process;
 
 	cpu: entity work.leros
 		port map(clk_int, int_res,
-			alu_in, alu_out);
+			alu_out);
 			
 process(clk_int)
 begin
 
 	if rising_edge(clk_int) then
-		alu_in <= ram_din(15 downto 0);
 		ram_addr(15 downto 0) <= alu_out;
+		wd_out <= alu_out(0);
 	end if;
 end process;
 

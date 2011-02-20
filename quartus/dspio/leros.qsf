@@ -239,6 +239,8 @@ set_global_assignment -name RESERVE_ASDO_AFTER_CONFIGURATION "USE AS REGULAR IO"
 set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVCMOS"
 set_global_assignment -name RESERVE_ALL_UNUSED_PINS_NO_OUTPUT_GND "AS INPUT TRI-STATED"
 set_global_assignment -name VHDL_FILE ../../vhdl/core/leros_types.vhd
+set_global_assignment -name VHDL_FILE ../../vhdl/core/leros_im.vhd
+set_global_assignment -name VHDL_FILE ../../vhdl/core/leros_fedec.vhd
 set_global_assignment -name VHDL_FILE ../../vhdl/core/leros_ex.vhd
 set_global_assignment -name VHDL_FILE ../../vhdl/core/leros.vhd
 set_global_assignment -name VHDL_FILE ../../vhdl/simpcon/sc_pack.vhd
