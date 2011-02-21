@@ -42,13 +42,14 @@ begin
 end process;
 
 	exin.imm <= fdout.imm;
-	exin.op <= fdout.op;
-	exin.sel_imm <= fdout.data(9);
+	exin.dec <= fdout.dec;
 	exin.wren <= fdout.data(10);
-	exin.dm_rdaddr <= fdout.data(7 downto 0);
+	exin.dm_rdaddr <= fdout.data(7 downto 0); -- this is the smae as imm at the moment
 	exin.dm_wraddr <= fdout.data(15 downto 8);
 	
-	outreg1 <= exout.result;
+	fdin.accu <= exout.accu;
+	
+	outreg1 <= exout.accu;
 	
 	fd: entity work.leros_fedec port map (
 		clk, reset, fdin, fdout

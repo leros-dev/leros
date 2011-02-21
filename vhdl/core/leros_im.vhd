@@ -33,17 +33,37 @@ process(clk) begin
 end process;
 
 	dout.data <= data;
+	
+-- 		when "0000" =>
+-- 			decode.op <= op_add;
+-- 		when "0001" =>
+-- 			decode.op <= op_sub;
+-- 		when "0010" =>
+-- 			decode.op <= op_load;
+-- 		when "0011" =>
+-- 		when "0100" =>
+-- 			decode.op <= op_add;
+-- 			decode.sel_imm <= '1';
+-- 		when "0101" =>
+-- 			decode.op <= op_sub;
+-- 			decode.sel_imm <= '1';
+-- 		when "0110" =>
+-- 			decode.op <= op_load;
+-- 			decode.sel_imm <= '1';
+-- 		when others =>
+-- 			decode.acc_en <= '0';
+
 
 process(areg) begin
 
 	case areg is
 
-		when X"00" => data <= X"0011";
-		when X"01" => data <= X"1234";
-		when X"02" => data <= X"abcd";
-		when X"03" => data <= X"22aa";
-		when X"04" => data <= X"3412";
-		when X"05" => data <= X"907f";
+		when X"00" => data <= X"ffff"; -- nop
+		when X"01" => data <= X"6011"; -- load imm
+		when X"02" => data <= X"4022"; -- add imm
+		when X"03" => data <= X"5003"; -- sub imm
+		when X"04" => data <= X"0000";
+		when X"05" => data <= X"0000";
 		when others => data <= X"0000";
 	end case;
 end process;

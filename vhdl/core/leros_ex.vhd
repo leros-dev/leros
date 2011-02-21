@@ -50,11 +50,11 @@ architecture rtl of leros_ex is
 
 begin
 
-	dout.result <= std_logic_vector(accu);
+	dout.accu <= std_logic_vector(accu);
 	
 process(din, rddata)
 begin
-	if din.sel_imm='1' then
+	if din.dec.sel_imm='1' then
 		opd(7 downto 0) <= unsigned(din.imm);
 		opd(15 downto 8) <= (others => '0');
 	else
@@ -70,7 +70,9 @@ end process;
 	
 process(din, accu, opd)
 begin
-	case din.op is
+	case din.dec.op is
+		when op_load =>
+			res <= opd;
 		when op_add =>
 			res <= accu + opd;
 		when op_sub =>
@@ -85,7 +87,9 @@ begin
 	if reset='1' then
 		accu <= (others => '0');
 	elsif rising_edge(clk) then
-		accu <= res;
+		if din.dec.acc_en = '1' then
+			accu <= res;
+		end if;
 	end if;
 end process;
 

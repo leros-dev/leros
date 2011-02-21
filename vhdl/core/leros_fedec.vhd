@@ -17,34 +17,63 @@ end leros_fedec;
 
 architecture rtl of leros_fedec is
 
-	signal im_din : im_in_type;
-	signal im_dout : im_out_type;
+	signal imin : im_in_type;
+	signal imout : im_out_type;
 	
-	signal pc : unsigned(IM_BITS-1 downto 0);
+	signal pc, feaddr : unsigned(IM_BITS-1 downto 0);
 	signal ir : std_logic_vector(15 downto 0);
+	signal decode : decode_type;
 
 begin
 
-	im_din.rdaddr <= std_logic_vector(pc);
+	imin.rdaddr <= std_logic_vector(pc);
 	
 	im: entity work.leros_im port map(
-		clk, reset, im_din, im_dout
+		clk, reset, imin, imout
 	);
 
-	dout.data <= im_dout.data;
+	dout.data <= imout.data;
 	
+-- decode process
+process(imout.data)
+begin
+	-- some defaults
+	decode.acc_en <= '1';
+	decode.op <= op_add;
+	decode.sel_imm <= '0';
+	
+	case imout.data(15 downto 12) is
+		when "0000" =>
+			decode.op <= op_add;
+		when "0001" =>
+			decode.op <= op_sub;
+		when "0010" =>
+			decode.op <= op_load;
+		when "0011" =>
+		when "0100" =>
+			decode.op <= op_add;
+			decode.sel_imm <= '1';
+		when "0101" =>
+			decode.op <= op_sub;
+			decode.sel_imm <= '1';
+		when "0110" =>
+			decode.op <= op_load;
+			decode.sel_imm <= '1';
+		when others =>
+			decode.acc_en <= '0';
+	end case;
+end process;
+	
+
 process(clk, reset)
 begin
 	if reset='1' then
 		pc <= (others => '0');
 	elsif rising_edge(clk) then
 		pc <= pc+1;
-		ir <= im_dout.data;
-		if im_dout.data(8)='0' then
-			dout.op <= op_add;
-		else
-			dout.op <= op_sub;
-		end if;
+		ir <= imout.data;
+		dout.dec <= decode;
+		dout.imm <= imout.data(7 downto 0);
 		
 	end if;
 end process;

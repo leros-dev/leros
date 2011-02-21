@@ -52,11 +52,17 @@ package leros_types is
 	constant DM_BITS : integer := 8;
 	constant IM_BITS : integer := 8;
 
-	type alu_op_type is (op_add, op_sub);
+	type alu_op_type is (op_load, op_add, op_sub);
+	
+	type decode_type is record
+		op : alu_op_type;
+		acc_en : std_logic;
+		sel_imm : std_logic;
+	end record;
 
 	type im_in_type is record
-		rdaddr : std_logic_vector(DM_BITS-1 downto 0);
-		wraddr : std_logic_vector(DM_BITS-1 downto 0);
+		rdaddr : std_logic_vector(IM_BITS-1 downto 0);
+		wraddr : std_logic_vector(IM_BITS-1 downto 0);
 		wrdata : std_logic_vector(15 downto 0);
 		wren : std_logic;
 	end record;
@@ -66,26 +72,25 @@ package leros_types is
 	end record;
 
 	type fedec_in_type is record
-		abc : std_logic;
+		accu : std_logic_vector(15 downto 0);
 	end record;
 
 	type fedec_out_type is record
-		op : alu_op_type;
+		dec : decode_type;
 		imm : std_logic_vector(7 downto 0);
 		data : std_logic_vector(15 downto 0);
 	end record;
 
 	type ex_in_type is record
-		op : alu_op_type;
+		dec : decode_type;
 		imm : std_logic_vector(7 downto 0);
-		sel_imm : std_logic;
 		dm_rdaddr : std_logic_vector(DM_BITS-1 downto 0);
 		dm_wraddr : std_logic_vector(DM_BITS-1 downto 0);
 		wren : std_logic;
 	end record;
 
 	type ex_out_type is record
-		result		: std_logic_vector(15 downto 0);
+		accu : std_logic_vector(15 downto 0);
 	end record;
 
 end package;
