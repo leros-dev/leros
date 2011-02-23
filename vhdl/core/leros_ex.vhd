@@ -34,7 +34,8 @@ end leros_ex;
 architecture rtl of leros_ex is
 
 	-- the accu
-	signal res, accu, opd  : unsigned(15 downto 0);
+	signal accu, opd  : unsigned(15 downto 0);
+	signal log, arith, a_mux : unsigned (15 downto 0);
 	
 	-- the data ram
 	constant nwords : integer := 2 ** DM_BITS;
@@ -63,32 +64,52 @@ begin
 	end if;
 end process;
 
+-- that's the ALU	
+process(din, accu, opd, log, arith)
+begin
+	if din.dec.add_sub='0' then
+		arith <= accu + opd;
+	else
+		arith <= accu - opd;
+	end if;
+
+	case din.dec.op is
+		when op_ld =>
+			log <= opd;
+		when op_and =>
+			log <= accu and opd;
+		when op_or =>
+			log <= accu or opd;
+		when op_xor =>
+			log <= accu xor opd;
+		when others =>
+			null;
+	end case;
+	
+	if din.dec.log_add='0' then
+		a_mux <= log;
+	else
+		a_mux <= arith;
+	end if;
+		
+end process;
+
 	-- a MUX for PC? will be added
 	wrdata <= std_logic_vector(accu);
 	wraddr <= din.dm_wraddr;
 	rdaddr <= din.dm_rdaddr;
 	
-process(din, accu, opd)
-begin
-	case din.dec.op is
-		when op_load =>
-			res <= opd;
-		when op_add =>
-			res <= accu + opd;
-		when op_sub =>
-			res <= accu - opd;
-		when others =>
-			null;
-	end case;
-end process;
 
 process(clk, reset)
 begin
 	if reset='1' then
 		accu <= (others => '0');
 	elsif rising_edge(clk) then
-		if din.dec.acc_en = '1' then
-			accu <= res;
+		if din.dec.al_ena = '1' then
+			accu(7 downto 0) <= a_mux(7 downto 0);
+		end if;
+		if din.dec.ah_ena = '1' then
+			accu(15 downto 8) <= a_mux(15 downto 8);
 		end if;
 	end if;
 end process;

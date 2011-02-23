@@ -58,12 +58,11 @@ process(areg) begin
 
 	case areg is
 
-		when X"00" => data <= X"ffff"; -- nop
-		when X"01" => data <= X"6011"; -- load imm
-		when X"02" => data <= X"4022"; -- add imm
-		when X"03" => data <= X"5003"; -- sub imm
+		when X"00" => data <= X"0811"; -- load imm
+		when X"01" => data <= X"0c22"; -- add imm
+		when X"02" => data <= X"0e03"; -- sub imm
+		when X"03" => data <= X"0000";
 		when X"04" => data <= X"0000";
-		when X"05" => data <= X"0000";
 		when others => data <= X"0000";
 	end case;
 end process;

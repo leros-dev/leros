@@ -20,6 +20,8 @@ architecture rtl of leros_fedec is
 	signal imin : im_in_type;
 	signal imout : im_out_type;
 	
+	signal alu_op, br_op : std_logic;
+	
 	signal pc, feaddr : unsigned(IM_BITS-1 downto 0);
 	signal ir : std_logic_vector(15 downto 0);
 	signal decode : decode_type;
@@ -38,30 +40,51 @@ begin
 process(imout.data)
 begin
 	-- some defaults
-	decode.acc_en <= '1';
-	decode.op <= op_add;
+	decode.op <= op_and;
+	decode.al_ena <= '1';
+	decode.ah_ena <= '1';
+	decode.log_add <= '0';
+	decode.add_sub <= '0';
 	decode.sel_imm <= '0';
 	
+	decode.al_ena <= '1';
+	decode.ah_ena <= '1';
+	
+	-- more defaults
+	alu_op <= '0';
+	br_op <= '0';
+	
+	-- first level decode
 	case imout.data(15 downto 12) is
 		when "0000" =>
-			decode.op <= op_add;
+			alu_op <= '1';
 		when "0001" =>
-			decode.op <= op_sub;
-		when "0010" =>
-			decode.op <= op_load;
-		when "0011" =>
-		when "0100" =>
-			decode.op <= op_add;
-			decode.sel_imm <= '1';
-		when "0101" =>
-			decode.op <= op_sub;
-			decode.sel_imm <= '1';
-		when "0110" =>
-			decode.op <= op_load;
-			decode.sel_imm <= '1';
+			br_op <= '1';
 		when others =>
-			decode.acc_en <= '0';
+			null;
 	end case;
+
+	decode.sel_imm <= imout.data(11);
+	decode.log_add <= imout.data(10);
+
+	-- second level decode	
+	-- logic
+	case imout.data(9 downto 8) is
+		when "00" =>
+			decode.op <= op_ld;
+		when "01" =>
+			decode.op <= op_and;
+		when "10" =>
+			decode.op <= op_or;
+		when "11" =>
+			decode.op <= op_xor;
+		when others =>
+			null;
+	end case;
+	
+	-- arithmetics - one bit (8) left for shift...
+	decode.add_sub <= imout.data(9);
+	
 end process;
 	
 

@@ -52,11 +52,14 @@ package leros_types is
 	constant DM_BITS : integer := 8;
 	constant IM_BITS : integer := 8;
 
-	type alu_op_type is (op_load, op_add, op_sub);
+	type alu_log_type is (op_and, op_or, op_xor, op_ld);
 	
 	type decode_type is record
-		op : alu_op_type;
-		acc_en : std_logic;
+		op : alu_log_type;
+		al_ena : std_logic;
+		ah_ena : std_logic;
+		log_add : std_logic;
+		add_sub : std_logic;
 		sel_imm : std_logic;
 	end record;
 
