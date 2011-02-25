@@ -24,7 +24,7 @@ architecture rtl of tb_leros is
 
 	signal clk : std_logic := '1';
 	signal reset : std_logic := '1';
-	signal alu_out : std_logic_vector(15 downto 0);
+	signal outp : std_logic_vector(15 downto 0);
 	
 begin
 
@@ -44,7 +44,7 @@ end process;
 
 	cpu: entity work.leros
 		port map(clk, reset,
-			alu_out);
+			outp);
 			
 
 end rtl;

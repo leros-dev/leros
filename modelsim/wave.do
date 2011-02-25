@@ -2,17 +2,26 @@ onerror {resume}
 quietly WaveActivateNextPane {} 0
 add wave -noupdate -radix hexadecimal /tb_leros/cpu/fd/clk
 add wave -noupdate -radix hexadecimal /tb_leros/cpu/fd/reset
-add wave -noupdate -radix hexadecimal -expand -subitemconfig {/tb_leros/cpu/fd/din.accu {-height 15 -radix hexadecimal}} /tb_leros/cpu/fd/din
-add wave -noupdate -radix hexadecimal -expand -subitemconfig {/tb_leros/cpu/fd/dout.dec {-height 15 -radix hexadecimal -expand} /tb_leros/cpu/fd/dout.dec.op {-radix hexadecimal} /tb_leros/cpu/fd/dout.dec.acc_en {-radix hexadecimal} /tb_leros/cpu/fd/dout.dec.sel_imm {-radix hexadecimal} /tb_leros/cpu/fd/dout.imm {-height 15 -radix hexadecimal} /tb_leros/cpu/fd/dout.imm(7) {-radix hexadecimal} /tb_leros/cpu/fd/dout.imm(6) {-radix hexadecimal} /tb_leros/cpu/fd/dout.imm(5) {-radix hexadecimal} /tb_leros/cpu/fd/dout.imm(4) {-radix hexadecimal} /tb_leros/cpu/fd/dout.imm(3) {-radix hexadecimal} /tb_leros/cpu/fd/dout.imm(2) {-radix hexadecimal} /tb_leros/cpu/fd/dout.imm(1) {-radix hexadecimal} /tb_leros/cpu/fd/dout.imm(0) {-radix hexadecimal} /tb_leros/cpu/fd/dout.data {-height 15 -radix hexadecimal}} /tb_leros/cpu/fd/dout
-add wave -noupdate -radix hexadecimal -expand -subitemconfig {/tb_leros/cpu/fd/imin.rdaddr {-height 15 -radix hexadecimal} /tb_leros/cpu/fd/imin.wraddr {-height 15 -radix hexadecimal} /tb_leros/cpu/fd/imin.wrdata {-height 15 -radix hexadecimal} /tb_leros/cpu/fd/imin.wren {-height 15 -radix hexadecimal}} /tb_leros/cpu/fd/imin
-add wave -noupdate -radix hexadecimal -expand -subitemconfig {/tb_leros/cpu/fd/imout.data {-height 15 -radix hexadecimal}} /tb_leros/cpu/fd/imout
+add wave -noupdate -radix hexadecimal /tb_leros/cpu/fd/din
+add wave -noupdate -radix hexadecimal /tb_leros/cpu/fd/dout
+add wave -noupdate -radix hexadecimal -expand -subitemconfig {/tb_leros/cpu/fd/imin.rdaddr {-radix hexadecimal} /tb_leros/cpu/fd/imin.wraddr {-radix hexadecimal} /tb_leros/cpu/fd/imin.wrdata {-radix hexadecimal} /tb_leros/cpu/fd/imin.wren {-radix hexadecimal}} /tb_leros/cpu/fd/imin
+add wave -noupdate -radix hexadecimal /tb_leros/cpu/fd/imout
+add wave -noupdate -radix hexadecimal /tb_leros/cpu/fd/alu_op
+add wave -noupdate -radix hexadecimal /tb_leros/cpu/fd/br_op
+add wave -noupdate -radix hexadecimal /tb_leros/cpu/fd/pc
+add wave -noupdate -radix hexadecimal /tb_leros/cpu/fd/pc_next
+add wave -noupdate -radix hexadecimal /tb_leros/cpu/fd/ir
+add wave -noupdate -radix hexadecimal /tb_leros/cpu/fd/immr
+add wave -noupdate -radix hexadecimal /tb_leros/cpu/fd/decode
 add wave -noupdate -radix hexadecimal /tb_leros/cpu/ex/clk
 add wave -noupdate -radix hexadecimal /tb_leros/cpu/ex/reset
-add wave -noupdate -radix hexadecimal -expand -subitemconfig {/tb_leros/cpu/ex/din.dec {-height 15 -radix hexadecimal} /tb_leros/cpu/ex/din.imm {-height 15 -radix hexadecimal} /tb_leros/cpu/ex/din.sel_imm {-height 15 -radix hexadecimal} /tb_leros/cpu/ex/din.dm_rdaddr {-height 15 -radix hexadecimal} /tb_leros/cpu/ex/din.dm_wraddr {-height 15 -radix hexadecimal} /tb_leros/cpu/ex/din.wren {-height 15 -radix hexadecimal}} /tb_leros/cpu/ex/din
-add wave -noupdate -radix hexadecimal -expand -subitemconfig {/tb_leros/cpu/ex/dout.accu {-height 15 -radix hexadecimal}} /tb_leros/cpu/ex/dout
-add wave -noupdate -radix hexadecimal /tb_leros/cpu/ex/res
+add wave -noupdate -radix hexadecimal /tb_leros/cpu/ex/din
+add wave -noupdate -radix hexadecimal /tb_leros/cpu/ex/dout
 add wave -noupdate -radix hexadecimal /tb_leros/cpu/ex/accu
 add wave -noupdate -radix hexadecimal /tb_leros/cpu/ex/opd
+add wave -noupdate -radix hexadecimal /tb_leros/cpu/ex/log
+add wave -noupdate -radix hexadecimal /tb_leros/cpu/ex/arith
+add wave -noupdate -radix hexadecimal /tb_leros/cpu/ex/a_mux
 add wave -noupdate -radix hexadecimal /tb_leros/cpu/ex/dm
 add wave -noupdate -radix hexadecimal /tb_leros/cpu/ex/wrdata
 add wave -noupdate -radix hexadecimal /tb_leros/cpu/ex/rddata
@@ -34,4 +43,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {24266 ps} {103986 ps}
+WaveRestoreZoom {0 ps} {107622 ps}

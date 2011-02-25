@@ -116,13 +116,16 @@ architecture rtl of leros_top is
 	signal ram_noe			: std_logic;
 	signal ram_nwe			: std_logic;
 	
-	signal alu_out 			: std_logic_vector(15 downto 0);
+	signal outp 			: std_logic_vector(15 downto 0);
+	
+	signal divider : unsigned(6 downto 0);
+	signal div_clk : std_logic;
 	
 begin
 
 	-- let's go for 200 MHz ;-)
 	pll_inst : entity work.pll generic map(
-		multiply_by => 10,
+		multiply_by => 1,
 		divide_by => 1
 	)
 	port map (
@@ -146,19 +149,28 @@ begin
 	end if;
 end process;
 
+process(clk_int)
+begin
+	if rising_edge(clk_int) then
+		divider <= divider+1;
+	end if;
+end process;
+
+div_clk <= divider(6);	
+
 
 	wd <= wd_out;
 
 	cpu: entity work.leros
-		port map(clk_int, int_res,
-			alu_out);
+		port map(div_clk, int_res,
+			outp);
 			
 process(clk_int)
 begin
 
 	if rising_edge(clk_int) then
-		ram_addr(15 downto 0) <= alu_out;
-		wd_out <= alu_out(0);
+		ram_addr(15 downto 0) <= outp;
+		wd_out <= outp(0);
 	end if;
 end process;
 

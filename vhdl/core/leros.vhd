@@ -13,7 +13,7 @@ entity leros is
 	port  (
 		clk : in std_logic;
 		reset : in std_logic;
-		alu_out : out std_logic_vector(15 downto 0)
+		out_port : out std_logic_vector(15 downto 0)
 	);
 end leros;
 
@@ -35,7 +35,7 @@ begin
 
 	-- plain register assignments generate something strange 
 	if rising_edge(clk) then
-		alu_out <= outreg3;
+		out_port <= outreg3;
 		outreg3 <= not outreg2;
 		outreg2 <= outreg1;
 	end if;
@@ -48,8 +48,9 @@ end process;
 	exin.dm_wraddr <= fdout.data(15 downto 8);
 	
 	fdin.accu <= exout.accu;
+	fdin.zf <= exout.zf;
 	
-	outreg1 <= exout.accu;
+	outreg1 <= exout.outp;
 	
 	fd: entity work.leros_fedec port map (
 		clk, reset, fdin, fdout

@@ -20,24 +20,26 @@ architecture rtl of leros_fedec is
 	signal imin : im_in_type;
 	signal imout : im_out_type;
 	
-	signal alu_op, br_op : std_logic;
+	signal alu_op, br_op, nop : std_logic;
 	
-	signal pc, feaddr : unsigned(IM_BITS-1 downto 0);
-	signal ir : std_logic_vector(15 downto 0);
+	signal pc, pc_next : unsigned(IM_BITS-1 downto 0);
+	signal ir, immr : std_logic_vector(15 downto 0);
 	signal decode : decode_type;
 
 begin
 
-	imin.rdaddr <= std_logic_vector(pc);
+	imin.rdaddr <= std_logic_vector(pc_next);
 	
 	im: entity work.leros_im port map(
 		clk, reset, imin, imout
 	);
 
+	-- what is that used for?
 	dout.data <= imout.data;
+	dout.imm <= immr;
 	
 -- decode process
-process(imout.data)
+process(br_op, din, immr, imout, pc)
 begin
 	-- some defaults
 	decode.op <= op_and;
@@ -46,6 +48,7 @@ begin
 	decode.log_add <= '0';
 	decode.add_sub <= '0';
 	decode.sel_imm <= '0';
+	decode.outp <= '0';
 	
 	decode.al_ena <= '1';
 	decode.ah_ena <= '1';
@@ -60,6 +63,16 @@ begin
 			alu_op <= '1';
 		when "0001" =>
 			br_op <= '1';
+			decode.al_ena <= '0';
+			decode.ah_ena <= '0';
+		when "0010" =>   -- just a temporal out instruction
+			decode.al_ena <= '0';
+			decode.ah_ena <= '0';
+			decode.outp <= '1';
+		when "1111" =>   -- just a temporal nop
+			nop <= '1';
+			decode.al_ena <= '0';
+			decode.ah_ena <= '0';
 		when others =>
 			null;
 	end case;
@@ -85,6 +98,15 @@ begin
 	-- arithmetics - one bit (8) left for shift...
 	decode.add_sub <= imout.data(9);
 	
+	-- branch
+	pc_next <= pc+1;
+	-- perhaps move the zf decetion into this stage to avoid
+	-- a critical path in ex
+	if br_op='1' and din.zf='0' then
+		-- now just do a bnz
+		pc_next <= pc + unsigned(resize(signed(imout.data(7 downto 0)), IM_BITS));
+	end if;
+	
 end process;
 	
 
@@ -93,11 +115,15 @@ begin
 	if reset='1' then
 		pc <= (others => '0');
 	elsif rising_edge(clk) then
-		pc <= pc+1;
+		pc <= pc_next;
 		ir <= imout.data;
 		dout.dec <= decode;
-		dout.imm <= imout.data(7 downto 0);
-		
+--		if decode.add_sub='1' then
+			immr <= std_logic_vector(resize(signed(imout.data(7 downto 0)), 16));
+--		else
+--			immr(7 downto 0) <= imout.data(7 downto 0);
+--			immr(15 downto 0) <= (others => '0');
+--		end if;
 	end if;
 end process;
 

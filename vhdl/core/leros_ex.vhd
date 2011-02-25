@@ -56,8 +56,7 @@ begin
 process(din, rddata)
 begin
 	if din.dec.sel_imm='1' then
-		opd(7 downto 0) <= unsigned(din.imm);
-		opd(15 downto 8) <= (others => '0');
+		opd <= unsigned(din.imm);
 	else
 		-- a MUX for IO will be added
 		opd <= unsigned(rddata);
@@ -104,12 +103,24 @@ process(clk, reset)
 begin
 	if reset='1' then
 		accu <= (others => '0');
+		dout.outp <= (others => '0');
 	elsif rising_edge(clk) then
 		if din.dec.al_ena = '1' then
 			accu(7 downto 0) <= a_mux(7 downto 0);
 		end if;
 		if din.dec.ah_ena = '1' then
 			accu(15 downto 8) <= a_mux(15 downto 8);
+		end if;
+		-- shall we set this on each operation?
+		-- I think yes
+		if unsigned(a_mux)=0 then
+			dout.zf <= '1';
+		else
+			dout.zf <= '0';
+		end if;
+		-- a simple output port for the hello world example
+		if din.dec.outp='1' then
+			dout.outp <= std_logic_vector(accu);
 		end if;
 	end if;
 end process;
