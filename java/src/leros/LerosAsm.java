@@ -1,32 +1,54 @@
 package leros;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Serializable;
+import java.io.PrintStream;
 import java.io.StreamTokenizer;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class LerosAsm {
 
-	public static class Line implements Serializable {
-		private static final long serialVersionUID = 1L;
+	static final int ADDRBITS = 8;
+	static final int DATABITS = 16;
+	static final int ROM_LEN = 1<<ADDRBITS;
 
-		int jinstr;
+	String fname;
+	String dstDir = "./";
+	String srcDir = "./";
+	private Map<String, Integer> symMap = new HashMap<String, Integer>();
+	boolean error;
+	private int memcnt = 0;
+	private List<String> varList = new LinkedList<String>();
+
+
+	public LerosAsm(String[] args) {
+		srcDir = System.getProperty("user.dir");
+		dstDir = System.getProperty("user.dir");
+		processOptions(args);
+		if (!srcDir.endsWith(File.separator))
+			srcDir += File.separator;
+		if (!dstDir.endsWith(File.separator))
+			dstDir += File.separator;
+	}
+	
+	static public class Line {
 		String label;
-		// Instruction instr;
-		String instr; // just a hack
+		Instruction instr;
 		int special;
 		int intVal;
 		String symVal;
-		boolean nxt;
-		boolean opd;
 	}
 
 	private Line getLine(StreamTokenizer in) {
 
 		Line l = new Line();
-		l.jinstr = -1;
 
 		try {
 			for (int cnt = 0; in.nextToken() != StreamTokenizer.TT_EOL; ++cnt) {
@@ -38,18 +60,11 @@ public class LerosAsm {
 						String s = in.sval.substring(0, pos);
 						l.label = s;
 					} else {
-						if (in.sval.equals("nxt")) {
-							l.nxt = true;
-						} else if (in.sval.equals("opd")) {
-							l.opd = true;
-						} else {
-//							Instruction i = Instruction.get(in.sval);
-							String i = in.sval; // just a quick hack
-							if (i == null) {
-								l.symVal = in.sval;
-							} else if (l.instr == null) {
-								l.instr = i;
-							}
+						Instruction i = Instruction.get(in.sval);
+						if (i == null) {
+							l.symVal = in.sval;
+						} else if (l.instr == null) {
+							l.instr = i;
 						}
 					}
 
@@ -73,19 +88,11 @@ public class LerosAsm {
 		return l;
 	}
 
-	String fname;
-	private Map<String, Integer> symMap = new HashMap<String, Integer>();
-	boolean error;
-	private int memcnt = 0;
-
-	public LerosAsm(String[] args) {
-		fname = args[0];
-	}
 
 	private StreamTokenizer getSt() {
 
 		try {
-			FileReader fileIn = new FileReader(fname);
+			FileReader fileIn = new FileReader(srcDir + fname);
 			StreamTokenizer in = new StreamTokenizer(fileIn);
 
 			in.wordChars('_', '_');
@@ -101,6 +108,15 @@ public class LerosAsm {
 			return null;
 		}
 	}
+	
+	String bin(int val, int bits) {
+
+		String s = "";
+		for (int i=0; i<bits; ++i) {
+			s += (val & (1<<(bits-i-1))) != 0 ? "1" : "0";
+		}
+		return s;
+	}
 
 	void error(StreamTokenizer in, String s) {
 		System.out.println((in.lineno() - 1) + " error: " + s);
@@ -109,9 +125,8 @@ public class LerosAsm {
 
 	/**
 	 * Parse the assembler file and build symbol table (first pass). During this
-	 * pass, the assembler code, the symboltable and vartable are build.
-	 * 
-	 * @return the map from program locations (pc) to microcode lines
+	 * pass, the assembler code, the symbol table and variable (register) table
+	 * are build.
 	 */
 	public void pass1() {
 		StreamTokenizer in = getSt();
@@ -121,53 +136,212 @@ public class LerosAsm {
 			while (in.nextToken() != StreamTokenizer.TT_EOF) {
 				in.pushBack();
 				Line l = getLine(in);
-				System.out.println("Hello");
-				// System.out.println("L"+in.lineno()+" "+l.jinstr+" "+l.label+" "+l.instr+" '"+(char)
-				// l.special+"' "+l.intVal+" "+l.symVal);
+				System.out.println("L"+in.lineno()+" "+l.label+" "+l.instr+" '"+(char)
+				l.special+"' "+l.intVal+" "+l.symVal);
 
-				if (l.jinstr == -1) {
-					if (l.label != null) {
-						if (symMap.containsKey(l.label)) {
-							error(in, "symbol " + l.label + " already defined");
-						} else {
-							symMap.put(l.label, new Integer(pc));
-						}
+				if (l.label != null) {
+					if (symMap.containsKey(l.label)) {
+						error(in, "symbol " + l.label + " already defined");
+					} else {
+						symMap.put(l.label, new Integer(pc));
 					}
+				}
 
-					if (l.special == '=') {
-						if (l.symVal == null) {
-							error(in, "missing symbol for '='");
-						} else {
-							if (symMap.containsKey(l.symVal)) {
-								error(in, "symbol " + l.symVal
-										+ " allready defined");
-							} else {
-								symMap.put(l.symVal, new Integer(l.intVal));
-							}
-						}
-					} else if (l.special == '?') {
+				if (l.special == '=') {
+					if (l.symVal == null) {
+						error(in, "missing symbol for '='");
+					} else {
 						if (symMap.containsKey(l.symVal)) {
 							error(in, "symbol " + l.symVal
 									+ " allready defined");
 						} else {
-							symMap.put(l.symVal, new Integer(memcnt++));
-							// varList.add(l.symVal);
+							symMap.put(l.symVal, new Integer(l.intVal));
 						}
 					}
-
-				} else {
-					// jinstrMap.put(l.jinstr,pc);
+				} else if (l.special == '?') {
+					if (symMap.containsKey(l.symVal)) {
+						error(in, "symbol " + l.symVal + " allready defined");
+					} else {
+						symMap.put(l.symVal, new Integer(memcnt++));
+						varList.add(l.symVal);
+					}
 				}
+
 				if (l.instr != null) {
 					++pc;
 					// instructions.add(l);
+					// what is that list good for?
 				}
 			}
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 			System.exit(-1);
 		}
-		// System.out.println(symMap);
+		System.out.println(symMap);
+	}
+
+	String getRomHeader() {
+		
+		String line = "--\n";
+		line += "--\trom.vhd\n";
+		line += "--\n";
+		line += "--\tgeneric VHDL version of ROM\n";
+		line += "--\n";
+		line += "--\t\tDONT edit this file!\n";
+		line += "--\t\tgenerated by "+this.getClass().getName()+"\n";
+		line += "--\n";
+		line += "\n";
+		line += "library ieee;\n";
+		line += "use ieee.std_logic_1164.all;\n";
+		line += "use ieee.std_logic_arith.all;\n";
+		line += "use ieee.std_logic_unsigned.all;\n";
+		line += "\n";
+		line += "entity rom is\n";
+//		line += "generic (width : integer; addr_width : integer);\t-- for compatibility\n";
+		line += "port (\n";
+		line += "\tclk\t\t\t: in std_logic;\n";
+		line += "\taddress\t\t: in std_logic_vector("+(ADDRBITS-1)+" downto 0);\n";
+		line += "\tq\t\t\t: out std_logic_vector("+(DATABITS-1)+" downto 0)\n";
+		line += ");\n";
+		line += "end rom;\n";
+		line += "\n";
+		line += "architecture rtl of rom is\n";
+		line += "\n";
+		line += "\tsignal areg\t\t: std_logic_vector("+(ADDRBITS-1)+" downto 0);\n";
+		line += "\tsignal data\t\t: std_logic_vector("+(DATABITS-1)+" downto 0);\n";
+		line += "\n";
+		line += "begin\n";
+		line += "\n";
+		line += "process(clk) begin\n";
+		line += "\n";
+//		line += "\tif falling_edge(clk) then\n";
+//		line += "\t\tareg <= address;\n";
+//		line += "\tend if;\n";
+		line += "\tif rising_edge(clk) then\n";
+//		line += "\t\tq <= data;\n";
+		line += "\t\tareg <= address;\n";
+		line += "\tend if;\n";
+		line += "\n";
+		line += "end process;\n";
+		line += "\n";
+		line += "\tq <= data;\n";
+		line += "\n";
+		line += "process(areg) begin\n";
+		line += "\n";
+		line += "\tcase areg is\n";
+		line += "\n";
+		
+		return line;
+	}
+	
+	String getRomFeet() {
+		
+		String line = "\n";
+		line += "\t\twhen others => data <= \""+bin(0, DATABITS)+"\";\n";
+		line += "\tend case;\n";
+		line += "end process;\n";
+		line += "\n";
+		line += "end rtl;\n";
+		
+		return line;
+	}
+	public void pass2() {
+
+		StreamTokenizer in = getSt();
+		int pc = 0;
+
+
+		try {
+			BufferedReader inraw = new BufferedReader(new FileReader(srcDir + fname));
+			
+			FileWriter romvhd = new FileWriter(dstDir + "rom.vhd");
+			System.out.println(dstDir + "rom.vhd");
+			romvhd.write(getRomHeader());
+
+
+			while (in.nextToken() != StreamTokenizer.TT_EOF) {
+				in.pushBack();
+
+				Line l = getLine(in);
+
+				if (l.instr==null) {
+					romvhd.write("        ");
+				} else {
+					int opcode = l.instr.opcode;
+
+					if (l.instr.opdSize!=0) {
+						int opVal = 0;
+						if (l.symVal!=null) {
+							Integer i = symMap.get(l.symVal);
+							if (i==null) {
+								error(in, "Symbol "+l.symVal+" not defined");
+							} else {
+								opVal = i.intValue();
+							}
+						} else {
+							opVal = l.intVal;
+						}
+
+						
+						int mask = (1<<l.instr.opdSize)-1;
+
+//						// for branches and jumps opVal points to the target address
+//						if (l.instr.jType==JmpType.JMP || l.instr.jType==JmpType.BR) {
+//							// relative address
+//							opVal = opVal-pc-1;
+//							// check maximum relative offset
+//							if (opVal>(mask>>1) || opVal<(-((mask>>1)+1))) {
+//								error(in, "jmp/br address too far: "+opVal);								
+//							}
+//							opVal &= mask;
+//						}
+
+						// general check
+						if (opVal>mask || opVal<0) {
+							error(in, "operand wrong: "+opVal);
+						}
+						opcode |= opVal & mask;		// use operand
+					}
+
+//					romData[romLen] = opcode;
+//					++romLen;
+					romvhd.write("\t\twhen \""+bin(pc, ADDRBITS) +
+							"\" => data <= \""+bin(opcode, DATABITS)+"\";");
+					++pc;
+				}
+				romvhd.write("\t-- "+inraw.readLine()+"\n");
+
+			}
+
+			romvhd.write(getRomFeet());
+			romvhd.close();
+
+//			PrintStream rom_mem = new PrintStream(new FileOutputStream(dstDir + "mem_rom.dat"));
+//			for (int i=0; i<ROM_LEN; ++i) {
+//				rom_mem.println(romData[i]+" ");
+//			}
+//			rom_mem.close();
+
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+			System.exit(-1);
+		}
+	}
+
+	private boolean processOptions(String clist[]) {
+		boolean success = true;
+
+		for (int i = 0; i < clist.length; i++) {
+			if (clist[i].equals("-s")) {
+				srcDir = clist[++i];
+			} else if (clist[i].equals("-d")) {
+				dstDir = clist[++i];
+			} else {
+				fname = clist[i];
+			}
+		}
+
+		return success;
 	}
 
 	/**
@@ -182,6 +356,7 @@ public class LerosAsm {
 		}
 		LerosAsm la = new LerosAsm(args);
 		la.pass1();
+		la.pass2();
 
 	}
 
