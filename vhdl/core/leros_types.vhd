@@ -61,6 +61,7 @@ package leros_types is
 		log_add : std_logic;
 		add_sub : std_logic;
 		sel_imm : std_logic;
+		store : std_logic;
 		outp : std_logic;
 	end record;
 
@@ -83,16 +84,13 @@ package leros_types is
 	type fedec_out_type is record
 		dec : decode_type;
 		imm : std_logic_vector(15 downto 0);
-		data : std_logic_vector(15 downto 0);
+		varidx : std_logic_vector(7 downto 0);
 	end record;
 
-	type ex_in_type is record
-		dec : decode_type;
-		imm : std_logic_vector(15 downto 0);
-		dm_rdaddr : std_logic_vector(DM_BITS-1 downto 0);
-		dm_wraddr : std_logic_vector(DM_BITS-1 downto 0);
-		wren : std_logic;
-	end record;
+-- 	type ex_in_type is record
+-- 		dec : decode_type;
+-- 		imm : std_logic_vector(15 downto 0);
+-- 	end record;
 
 	type ex_out_type is record
 		accu : std_logic_vector(15 downto 0);

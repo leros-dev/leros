@@ -30,10 +30,15 @@ public class Instruction {
 		new Instruction("xor", 0x0300, 8, Type.ALU),
 		new Instruction("add", 0x0400, 8, Type.ALU),
 		new Instruction("sub", 0x0600, 8, Type.ALU),
+		// waste for load high byte
+		new Instruction("loadh", 0x5000, 8, Type.ALU),
 		// BR/JMP 1
 		new Instruction("brnz", 0x1000, 8, Type.BRANCH),
 		// OUT (temp) 2
 		new Instruction("out", 0x2000, 8, Type.IO),
+		// Indirect load/store
+		// STORE - a real wast 4
+		new Instruction("store", 0x4000, 8, Type.NOP),
 		// NOP (temp) f
 		new Instruction("nop", 0xf000, 0, Type.NOP),
 	};

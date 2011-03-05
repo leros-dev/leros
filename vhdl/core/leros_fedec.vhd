@@ -20,7 +20,8 @@ architecture rtl of leros_fedec is
 	signal imin : im_in_type;
 	signal imout : im_out_type;
 	
-	signal alu_op, br_op, nop : std_logic;
+	-- alu_op not really used, right?
+	signal alu_op, br_op, nop, loadh : std_logic;
 	
 	signal pc, pc_next : unsigned(IM_BITS-1 downto 0);
 	signal ir, immr : std_logic_vector(15 downto 0);
@@ -34,51 +35,48 @@ begin
 		clk, reset, imin, imout
 	);
 
-	-- what is that used for?
-	dout.data <= imout.data;
+	dout.varidx <= imout.data(7 downto 0);
 	dout.imm <= immr;
 	
 -- decode process
-process(br_op, din, immr, imout, pc)
+process(br_op, din, imout, pc)
 begin
 	-- some defaults
 	decode.op <= op_and;
-	decode.al_ena <= '1';
-	decode.ah_ena <= '1';
+	decode.al_ena <= '0';
+	decode.ah_ena <= '0';
 	decode.log_add <= '0';
 	decode.add_sub <= '0';
 	decode.sel_imm <= '0';
+	decode.store <= '0';
 	decode.outp <= '0';
-	
-	decode.al_ena <= '1';
-	decode.ah_ena <= '1';
 	
 	-- more defaults
 	alu_op <= '0';
 	br_op <= '0';
+	loadh <= '0';
 	
 	-- first level decode
 	case imout.data(15 downto 12) is
 		when "0000" =>
 			alu_op <= '1';
+			decode.al_ena <= '1';
+			decode.ah_ena <= '1';
 		when "0001" =>
 			br_op <= '1';
-			decode.al_ena <= '0';
-			decode.ah_ena <= '0';
 		when "0010" =>   -- just a temporal out instruction
-			decode.al_ena <= '0';
-			decode.ah_ena <= '0';
 			decode.outp <= '1';
+		when "0100" =>   -- store - a waste
+			decode.store <= '1';
+		when "0101" =>   -- waste for load high byte
+			alu_op <= '1';
+			loadh <= '1';
+			decode.ah_ena <= '1';
 		when "1111" =>   -- just a temporal nop
 			nop <= '1';
-			decode.al_ena <= '0';
-			decode.ah_ena <= '0';
 		when others =>
 			null;
 	end case;
-
-	decode.sel_imm <= imout.data(11);
-	decode.log_add <= imout.data(10);
 
 	-- second level decode	
 	-- logic
@@ -95,6 +93,9 @@ begin
 			null;
 	end case;
 	
+	decode.sel_imm <= imout.data(11);
+	decode.log_add <= imout.data(10);
+
 	-- arithmetics - one bit (8) left for shift...
 	decode.add_sub <= imout.data(9);
 	
@@ -119,7 +120,12 @@ begin
 		ir <= imout.data;
 		dout.dec <= decode;
 --		if decode.add_sub='1' then
+		if loadh='1' then
+			immr(7 downto 0) <= (others => '0');
+			immr(15 downto 8) <= imout.data(7 downto 0);
+		else
 			immr <= std_logic_vector(resize(signed(imout.data(7 downto 0)), 16));
+		end if;
 --		else
 --			immr(7 downto 0) <= imout.data(7 downto 0);
 --			immr(15 downto 0) <= (others => '0');

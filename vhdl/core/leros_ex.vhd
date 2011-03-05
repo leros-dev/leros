@@ -26,7 +26,7 @@ entity leros_ex is
 	port  (
 		clk : in std_logic;
 		reset : in std_logic;
-		din : in ex_in_type;
+		din : in fedec_out_type;
 		dout : out ex_out_type
 	);
 end leros_ex;
@@ -93,10 +93,13 @@ begin
 		
 end process;
 
-	-- a MUX for PC? will be added
+	-- a MUX for PC (jal ?) will be added
 	wrdata <= std_logic_vector(accu);
-	wraddr <= din.dm_wraddr;
-	rdaddr <= din.dm_rdaddr;
+	-- a MUX for indirect read/write will be added
+	wraddr <= din.imm(DM_BITS-1 downto 0);
+	-- MUX for indirect read needed
+	-- If DM > 256 zero extend the varidx
+	rdaddr <= din.varidx(DM_BITS-1 downto 0);
 	
 
 process(clk, reset)
@@ -131,7 +134,9 @@ end process;
 process (clk)
 begin
 	if rising_edge(clk) then
-		if din.wren='1' then
+		-- is store overloaded?
+		-- now we have only 'register' read and write
+		if din.dec.store='1' then
 			dm(to_integer(unsigned(wraddr))) <= wrdata;
 		end if;
 		rddata <= dm(to_integer(unsigned(rdaddr)));

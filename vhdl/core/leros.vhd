@@ -22,7 +22,6 @@ architecture rtl of leros is
 	signal fdin : fedec_in_type;
 	signal fdout : fedec_out_type;
 	
-	signal exin : ex_in_type;
 	signal exout : ex_out_type;
 
 	signal outreg1, outreg2, outreg3 : std_logic_vector(15 downto 0);
@@ -41,12 +40,6 @@ begin
 	end if;
 end process;
 
-	exin.imm <= fdout.imm;
-	exin.dec <= fdout.dec;
-	exin.wren <= fdout.data(10);
-	exin.dm_rdaddr <= fdout.data(7 downto 0); -- this is the smae as imm at the moment
-	exin.dm_wraddr <= fdout.data(15 downto 8);
-	
 	fdin.accu <= exout.accu;
 	fdin.zf <= exout.zf;
 	
@@ -56,7 +49,7 @@ end process;
 		clk, reset, fdin, fdout
 	);
 	ex: entity work.leros_ex port map(
-		clk, reset, exin, exout
+		clk, reset, fdout, exout
 	);
 	
 end rtl;
