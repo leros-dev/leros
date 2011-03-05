@@ -22,6 +22,7 @@ all: clean base
 base:
 	$(WINE) vlib work
 	$(WINE) vcom $(OPTIONS) $(LEROSDIR)/core/leros_types.vhd
+	$(WINE) vcom $(OPTIONS) $(LEROSDIR)/generated/leros_rom.vhd
 	$(WINE) vcom $(OPTIONS) $(LEROSDIR)/core/leros_im.vhd
 	$(WINE) vcom $(OPTIONS) $(LEROSDIR)/core/leros_fedec.vhd
 	$(WINE) vcom $(OPTIONS) $(LEROSDIR)/core/leros_ex.vhd

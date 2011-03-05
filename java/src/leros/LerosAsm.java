@@ -13,6 +13,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import leros.Instruction.Type;
+
 public class LerosAsm {
 
 	static final int ADDRBITS = 8;
@@ -183,7 +185,7 @@ public class LerosAsm {
 	String getRomHeader() {
 		
 		String line = "--\n";
-		line += "--\trom.vhd\n";
+		line += "--\tleros_rom.vhd\n";
 		line += "--\n";
 		line += "--\tgeneric VHDL version of ROM\n";
 		line += "--\n";
@@ -193,43 +195,22 @@ public class LerosAsm {
 		line += "\n";
 		line += "library ieee;\n";
 		line += "use ieee.std_logic_1164.all;\n";
-		line += "use ieee.std_logic_arith.all;\n";
-		line += "use ieee.std_logic_unsigned.all;\n";
 		line += "\n";
-		line += "entity rom is\n";
+		line += "entity leros_rom is\n";
 //		line += "generic (width : integer; addr_width : integer);\t-- for compatibility\n";
 		line += "port (\n";
-		line += "\tclk\t\t\t: in std_logic;\n";
-		line += "\taddress\t\t: in std_logic_vector("+(ADDRBITS-1)+" downto 0);\n";
-		line += "\tq\t\t\t: out std_logic_vector("+(DATABITS-1)+" downto 0)\n";
+		line += "    address : in std_logic_vector("+(ADDRBITS-1)+" downto 0);\n";
+		line += "    q : out std_logic_vector("+(DATABITS-1)+" downto 0)\n";
 		line += ");\n";
-		line += "end rom;\n";
+		line += "end leros_rom;\n";
 		line += "\n";
-		line += "architecture rtl of rom is\n";
-		line += "\n";
-		line += "\tsignal areg\t\t: std_logic_vector("+(ADDRBITS-1)+" downto 0);\n";
-		line += "\tsignal data\t\t: std_logic_vector("+(DATABITS-1)+" downto 0);\n";
+		line += "architecture rtl of leros_rom is\n";
 		line += "\n";
 		line += "begin\n";
 		line += "\n";
-		line += "process(clk) begin\n";
+		line += "process(address) begin\n";
 		line += "\n";
-//		line += "\tif falling_edge(clk) then\n";
-//		line += "\t\tareg <= address;\n";
-//		line += "\tend if;\n";
-		line += "\tif rising_edge(clk) then\n";
-//		line += "\t\tq <= data;\n";
-		line += "\t\tareg <= address;\n";
-		line += "\tend if;\n";
-		line += "\n";
-		line += "end process;\n";
-		line += "\n";
-		line += "\tq <= data;\n";
-		line += "\n";
-		line += "process(areg) begin\n";
-		line += "\n";
-		line += "\tcase areg is\n";
-		line += "\n";
+		line += "case address is\n";
 		
 		return line;
 	}
@@ -237,8 +218,8 @@ public class LerosAsm {
 	String getRomFeet() {
 		
 		String line = "\n";
-		line += "\t\twhen others => data <= \""+bin(0, DATABITS)+"\";\n";
-		line += "\tend case;\n";
+		line += "    when others => q <= \""+bin(0, DATABITS)+"\";\n";
+		line += "end case;\n";
 		line += "end process;\n";
 		line += "\n";
 		line += "end rtl;\n";
@@ -254,8 +235,7 @@ public class LerosAsm {
 		try {
 			BufferedReader inraw = new BufferedReader(new FileReader(srcDir + fname));
 			
-			FileWriter romvhd = new FileWriter(dstDir + "rom.vhd");
-			System.out.println(dstDir + "rom.vhd");
+			FileWriter romvhd = new FileWriter(dstDir + "leros_rom.vhd");
 			romvhd.write(getRomHeader());
 
 
@@ -265,7 +245,7 @@ public class LerosAsm {
 				Line l = getLine(in);
 
 				if (l.instr==null) {
-					romvhd.write("        ");
+					romvhd.write("                                               ");
 				} else {
 					int opcode = l.instr.opcode;
 
@@ -280,21 +260,23 @@ public class LerosAsm {
 							}
 						} else {
 							opVal = l.intVal;
+							opcode = l.instr.setImmediate();
 						}
 
 						
 						int mask = (1<<l.instr.opdSize)-1;
 
-//						// for branches and jumps opVal points to the target address
-//						if (l.instr.jType==JmpType.JMP || l.instr.jType==JmpType.BR) {
-//							// relative address
-//							opVal = opVal-pc-1;
-//							// check maximum relative offset
-//							if (opVal>(mask>>1) || opVal<(-((mask>>1)+1))) {
-//								error(in, "jmp/br address too far: "+opVal);								
-//							}
-//							opVal &= mask;
-//						}
+						// for branches and jumps opVal points to the target address
+						if (l.instr.type==Type.BRANCH) {
+							System.out.println("branch "+opVal+" "+pc);
+							// relative address
+							opVal = opVal-pc;
+							// check maximum relative offset
+							if (opVal>(mask>>1) || opVal<(-((mask>>1)+1))) {
+								error(in, "branch address too far: "+opVal);								
+							}
+							opVal &= mask;
+						}
 
 						// general check
 						if (opVal>mask || opVal<0) {
@@ -305,11 +287,11 @@ public class LerosAsm {
 
 //					romData[romLen] = opcode;
 //					++romLen;
-					romvhd.write("\t\twhen \""+bin(pc, ADDRBITS) +
-							"\" => data <= \""+bin(opcode, DATABITS)+"\";");
+					romvhd.write("    when \""+bin(pc, ADDRBITS) +
+							"\" => q <= \""+bin(opcode, DATABITS)+"\";");
 					++pc;
 				}
-				romvhd.write("\t-- "+inraw.readLine()+"\n");
+				romvhd.write(" -- "+inraw.readLine()+"\n");
 
 			}
 

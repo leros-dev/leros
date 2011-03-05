@@ -17,6 +17,7 @@ all: directories
 
 directories:
 	-mkdir rbf
+	-mkdir vhdl/generated
 
 # configure the FPGA
 config:

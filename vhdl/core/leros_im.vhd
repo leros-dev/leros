@@ -34,52 +34,35 @@ end process;
 
 	dout.data <= data;
 	
--- 		when "0000" =>
--- 			decode.op <= op_add;
--- 		when "0001" =>
--- 			decode.op <= op_sub;
--- 		when "0010" =>
--- 			decode.op <= op_load;
--- 		when "0011" =>
--- 		when "0100" =>
--- 			decode.op <= op_add;
--- 			decode.sel_imm <= '1';
--- 		when "0101" =>
--- 			decode.op <= op_sub;
--- 			decode.sel_imm <= '1';
--- 		when "0110" =>
--- 			decode.op <= op_load;
--- 			decode.sel_imm <= '1';
--- 		when others =>
--- 			decode.acc_en <= '0';
-
-
-process(areg) begin
-
-	case areg is
-
-		when X"00" => data <= X"0000"; -- never executed
-		when X"01" => data <= X"0800"; -- load imm
-		when X"02" => data <= X"0e01"; -- sub 1 
-		when X"03" => data <= X"0e01"; -- sub 1 
-		when X"04" => data <= X"f000"; -- nop
-		when X"05" => data <= X"10fe"; -- brnz
-		when X"06" => data <= X"f000"; -- nop
-		when X"07" => data <= X"0801"; -- load 1
-		when X"08" => data <= X"2000"; -- outp
-		when X"09" => data <= X"0800"; -- load imm
-		when X"0a" => data <= X"0e01"; -- sub 1 
-		when X"0b" => data <= X"0e01"; -- sub 1 
-		when X"0c" => data <= X"f000"; -- nop
-		when X"0d" => data <= X"10fe"; -- brnz
-		when X"0e" => data <= X"f000"; -- nop
-		when X"0f" => data <= X"0800"; -- load 0
-		when X"10" => data <= X"2000"; -- outp
-		when X"11" => data <= X"0801"; -- load imm
-		when X"12" => data <= X"f000"; -- nop
-		when X"13" => data <= X"10ee"; -- brnz
-		when others => data <= X"f000"; 
-	end case;
-end process;
+	rom: entity work.leros_rom port map(areg, data);
+	
+-- use generated table
+-- process(areg) begin
+-- 
+-- 	case areg is
+-- 
+-- 		when X"00" => data <= X"0000"; -- never executed
+-- 		when X"01" => data <= X"0805"; -- load imm
+-- 		when X"02" => data <= X"0e01"; -- sub 1 
+-- 		when X"03" => data <= X"0e01"; -- sub 1 
+-- 		when X"04" => data <= X"f000"; -- nop
+-- 		when X"05" => data <= X"10fe"; -- brnz
+-- 		when X"06" => data <= X"f000"; -- nop
+-- 		when X"07" => data <= X"0801"; -- load 1
+-- 		when X"08" => data <= X"2000"; -- outp
+-- 		when X"09" => data <= X"0805"; -- load imm
+-- 		when X"0a" => data <= X"0e01"; -- sub 1 
+-- 		when X"0b" => data <= X"0e01"; -- sub 1 
+-- 		when X"0c" => data <= X"f000"; -- nop
+-- 		when X"0d" => data <= X"10fe"; -- brnz
+-- 		when X"0e" => data <= X"f000"; -- nop
+-- 		when X"0f" => data <= X"0800"; -- load 0
+-- 		when X"10" => data <= X"2000"; -- outp
+-- 		when X"11" => data <= X"0801"; -- load imm
+-- 		when X"12" => data <= X"f000"; -- nop
+-- 		when X"13" => data <= X"10ee"; -- brnz
+-- 		when others => data <= X"f000"; 
+-- 	end case;
+-- end process;
 
 end rtl;
