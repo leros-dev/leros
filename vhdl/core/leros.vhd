@@ -41,7 +41,6 @@ begin
 end process;
 
 	fdin.accu <= exout.accu;
-	fdin.zf <= exout.zf;
 	
 	outreg1 <= exout.outp;
 	

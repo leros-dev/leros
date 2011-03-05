@@ -21,7 +21,7 @@ architecture rtl of leros_fedec is
 	signal imout : im_out_type;
 	
 	-- alu_op not really used, right?
-	signal alu_op, br_op, nop, loadh : std_logic;
+	signal alu_op, br_op, nop, loadh, zf : std_logic;
 	
 	signal pc, pc_next : unsigned(IM_BITS-1 downto 0);
 	signal ir, immr : std_logic_vector(15 downto 0);
@@ -39,7 +39,7 @@ begin
 	dout.imm <= immr;
 	
 -- decode process
-process(br_op, din, imout, pc)
+process(br_op, din, imout, pc, zf)
 begin
 	-- some defaults
 	decode.op <= op_and;
@@ -99,11 +99,16 @@ begin
 	-- arithmetics - one bit (8) left for shift...
 	decode.add_sub <= imout.data(9);
 	
+	-- should be checked in ModelSim
+	if unsigned(din.accu)=0 then
+		zf <= '1';
+	else
+		zf <= '0';
+	end if;
+	
 	-- branch
 	pc_next <= pc+1;
-	-- perhaps move the zf decetion into this stage to avoid
-	-- a critical path in ex
-	if br_op='1' and din.zf='0' then
+	if br_op='1' and zf='0' then
 		-- now just do a bnz
 		pc_next <= pc + unsigned(resize(signed(imout.data(7 downto 0)), IM_BITS));
 	end if;

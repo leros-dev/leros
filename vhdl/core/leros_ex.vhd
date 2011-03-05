@@ -114,13 +114,6 @@ begin
 		if din.dec.ah_ena = '1' then
 			accu(15 downto 8) <= a_mux(15 downto 8);
 		end if;
-		-- shall we set this on each operation?
-		-- I think yes
-		if unsigned(a_mux)=0 then
-			dout.zf <= '1';
-		else
-			dout.zf <= '0';
-		end if;
 		-- a simple output port for the hello world example
 		if din.dec.outp='1' then
 			dout.outp <= std_logic_vector(accu);
