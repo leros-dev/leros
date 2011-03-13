@@ -41,31 +41,20 @@ port (
 --
 --	two ram banks
 --
-	rama_a		: out std_logic_vector(17 downto 0);
-	rama_d		: inout std_logic_vector(15 downto 0);
-	rama_ncs	: out std_logic;
-	rama_noe	: out std_logic;
-	rama_nlb	: out std_logic;
-	rama_nub	: out std_logic;
-	rama_nwe	: out std_logic;
-	ramb_a		: out std_logic_vector(17 downto 0);
-	ramb_d		: inout std_logic_vector(15 downto 0);
-	ramb_ncs	: out std_logic;
-	ramb_noe	: out std_logic;
-	ramb_nlb	: out std_logic;
-	ramb_nub	: out std_logic;
-	ramb_nwe	: out std_logic;
-
---
---	config/program flash and big nand flash
---
-	fl_a	: out std_logic_vector(18 downto 0);
-	fl_d	: inout std_logic_vector(7 downto 0);
-	fl_ncs	: out std_logic;
-	fl_ncsb	: out std_logic;
-	fl_noe	: out std_logic;
-	fl_nwe	: out std_logic;
-	fl_rdy	: in std_logic;
+-- 	rama_a		: out std_logic_vector(17 downto 0);
+-- 	rama_d		: inout std_logic_vector(15 downto 0);
+-- 	rama_ncs	: out std_logic;
+-- 	rama_noe	: out std_logic;
+-- 	rama_nlb	: out std_logic;
+-- 	rama_nub	: out std_logic;
+-- 	rama_nwe	: out std_logic;
+-- 	ramb_a		: out std_logic_vector(17 downto 0);
+-- 	ramb_d		: inout std_logic_vector(15 downto 0);
+-- 	ramb_ncs	: out std_logic;
+-- 	ramb_noe	: out std_logic;
+-- 	ramb_nlb	: out std_logic;
+-- 	ramb_nub	: out std_logic;
+-- 	ramb_nwe	: out std_logic;
 
 --
 --	I/O pins of board
@@ -123,7 +112,7 @@ begin
 	-- let's go for 200 MHz ;-)
 	-- but for now 100 MHz is enough
 	pll_inst : entity work.pll generic map(
-		multiply_by => 5,
+		multiply_by => 10,
 		divide_by => 1
 	)
 	port map (
@@ -217,7 +206,7 @@ end process;
 -- 		end if;
 -- 	end process;
 
-	ram_din <= ramb_d & rama_d;
+-- 	ram_din <= ramb_d & rama_d;
 	
 -- remove the comment for RAM access counting
 -- ram_count <= ram_ncs;
@@ -227,20 +216,20 @@ end process;
 --	To put this RAM address in an output register
 --	we have to make an assignment (FAST_OUTPUT_REGISTER)
 --
-	rama_a <= ram_addr;
-	rama_ncs <= ram_ncs;
-	rama_noe <= ram_noe;
-	rama_nwe <= ram_nwe;
-	rama_nlb <= '0';
-	rama_nub <= '0';
-
-	ramb_a <= ram_addr;
-	ramb_ncs <= ram_ncs;
-	ramb_noe <= ram_noe;
-	ramb_nwe <= ram_nwe;
-	ramb_nlb <= '0';
-	ramb_nub <= '0';
-
-	freeio <= 'Z';
+-- 	rama_a <= ram_addr;
+-- 	rama_ncs <= ram_ncs;
+-- 	rama_noe <= ram_noe;
+-- 	rama_nwe <= ram_nwe;
+-- 	rama_nlb <= '0';
+-- 	rama_nub <= '0';
+-- 
+-- 	ramb_a <= ram_addr;
+-- 	ramb_ncs <= ram_ncs;
+-- 	ramb_noe <= ram_noe;
+-- 	ramb_nwe <= ram_nwe;
+-- 	ramb_nlb <= '0';
+-- 	ramb_nub <= '0';
+-- 
+-- 	freeio <= 'Z';
 
 end rtl;
