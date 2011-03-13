@@ -1,3 +1,11 @@
+--
+--  Copyright 2011 Martin Schoeberl <masca@imm.dtu.dk>,
+--                 Technical University of Denmark, DTU Informatics. 
+--  All rights reserved.
+--
+--  License: TBD, BSD style requested, decision pending.
+--
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;

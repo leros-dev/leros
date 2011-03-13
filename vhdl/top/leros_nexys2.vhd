@@ -1,4 +1,11 @@
 --
+--  Copyright 2011 Martin Schoeberl <masca@imm.dtu.dk>,
+--                 Technical University of Denmark, DTU Informatics. 
+--  All rights reserved.
+--
+--  License: TBD, BSD style requested, decision pending.
+--
+--
 --	leros_nexys2.vhd
 --
 --	top level for cycore borad with EP1C12
