@@ -1,5 +1,10 @@
+
+
 # cleanup
 EXTENSIONS=class rbf rpt sof pin summary ttf qdf dat wlf done qws
+
+# Assembler fils
+APP=test
 
 ifeq ($(WINDIR),)
 	USBRUNNER=./USBRunner
@@ -11,13 +16,26 @@ endif
 
 USB=true
 
-all: directories
+all: directories tools rom
 	make lerosusb
 	make config
 
 directories:
 	-mkdir rbf
 	-mkdir vhdl/generated
+
+tools:
+	-rm -rf java/classes
+	-rm -rf java/lib
+	mkdir java/classes
+	mkdir java/lib
+	javac -d java/classes -sourcepath java/src java/src/leros/*java
+	cd java/classes && jar cf ../lib/leros-tools.jar *
+
+rom:
+	-rm -rf vhdl/generated
+	mkdir vhdl/generated
+	java -cp java/lib/leros-tools.jar leros.LerosAsm -s asm -d vhdl/generated $(APP).asm
 
 # configure the FPGA
 config:
