@@ -6,13 +6,14 @@ R2 = ?
 
 // first instruction is not executed
 	nop
-// second instruciton is executed twice
+// second instruction is executed twice
 
 // A real blink in SW with 0.5 Hz
 //	100.000.000 cycle loop
 // 100 MHz clock, inner loop is 3 cycles
 // inner loop 65635*3 = 196605
 // outer loop 509 ca. 512 is ok
+
 
 start:
 	load 0
@@ -30,7 +31,7 @@ ll2:	sub 1
 	brnz ll1	
 	nop
 
-	load 1
+	load 0
 	out 0
 
 	load 0
@@ -48,7 +49,7 @@ ll4:	sub 1
 	brnz ll3	
 	nop
 
-	load 0
+	load 1
 	out 0
 
 	load 1

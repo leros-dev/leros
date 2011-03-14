@@ -30,25 +30,11 @@ architecture rtl of leros is
 	
 	signal exout : ex_out_type;
 
-	signal outreg1, outreg2, outreg3 : std_logic_vector(15 downto 0);
 
 begin
-
--- relax all I/O pin pathes
-process(clk)
-begin
-
-	-- plain register assignments generate something strange 
-	if rising_edge(clk) then
-		out_port <= outreg3;
-		outreg3 <= not outreg2;
-		outreg2 <= outreg1;
-	end if;
-end process;
 
 	fdin.accu <= exout.accu;
-	
-	outreg1 <= exout.outp;
+	out_port <= exout.outp;
 	
 	fd: entity work.leros_fedec port map (
 		clk, reset, fdin, fdout

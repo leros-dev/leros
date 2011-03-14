@@ -2,14 +2,15 @@ onerror {resume}
 quietly WaveActivateNextPane {} 0
 add wave -noupdate -radix hexadecimal /tb_leros/cpu/fd/clk
 add wave -noupdate -radix hexadecimal /tb_leros/cpu/fd/reset
+add wave -noupdate -radix hexadecimal /tb_leros/outp
 add wave -noupdate -radix hexadecimal /tb_leros/cpu/fd/pc
 add wave -noupdate -radix hexadecimal /tb_leros/cpu/fd/ir
-add wave -noupdate -radix hexadecimal -expand -subitemconfig {/tb_leros/cpu/fd/din.accu {-radix hexadecimal} /tb_leros/cpu/fd/din.zf {-radix hexadecimal}} /tb_leros/cpu/fd/din
-add wave -noupdate -radix hexadecimal -expand -subitemconfig {/tb_leros/cpu/fd/dout.dec {-radix hexadecimal -expand} /tb_leros/cpu/fd/dout.dec.op {-radix hexadecimal} /tb_leros/cpu/fd/dout.dec.al_ena {-radix hexadecimal} /tb_leros/cpu/fd/dout.dec.ah_ena {-radix hexadecimal} /tb_leros/cpu/fd/dout.dec.log_add {-radix hexadecimal} /tb_leros/cpu/fd/dout.dec.add_sub {-radix hexadecimal} /tb_leros/cpu/fd/dout.dec.sel_imm {-radix hexadecimal} /tb_leros/cpu/fd/dout.dec.store {-radix hexadecimal} /tb_leros/cpu/fd/dout.dec.outp {-radix hexadecimal} /tb_leros/cpu/fd/dout.imm {-radix hexadecimal} /tb_leros/cpu/fd/dout.data {-radix hexadecimal}} /tb_leros/cpu/fd/dout
+add wave -noupdate -radix hexadecimal -expand -subitemconfig {/tb_leros/cpu/fd/din.accu {-height 15 -radix hexadecimal}} /tb_leros/cpu/fd/din
+add wave -noupdate -radix hexadecimal -expand -subitemconfig {/tb_leros/cpu/fd/dout.dec {-height 15 -radix hexadecimal -expand} /tb_leros/cpu/fd/dout.dec.op {-height 15 -radix hexadecimal} /tb_leros/cpu/fd/dout.dec.al_ena {-height 15 -radix hexadecimal} /tb_leros/cpu/fd/dout.dec.ah_ena {-height 15 -radix hexadecimal} /tb_leros/cpu/fd/dout.dec.log_add {-height 15 -radix hexadecimal} /tb_leros/cpu/fd/dout.dec.add_sub {-height 15 -radix hexadecimal} /tb_leros/cpu/fd/dout.dec.sel_imm {-height 15 -radix hexadecimal} /tb_leros/cpu/fd/dout.dec.store {-height 15 -radix hexadecimal} /tb_leros/cpu/fd/dout.dec.outp {-height 15 -radix hexadecimal} /tb_leros/cpu/fd/dout.imm {-height 15 -radix hexadecimal} /tb_leros/cpu/fd/dout.varidx {-radix hexadecimal}} /tb_leros/cpu/fd/dout
 add wave -noupdate -radix hexadecimal /tb_leros/cpu/fd/alu_op
 add wave -noupdate -radix hexadecimal /tb_leros/cpu/fd/br_op
 add wave -noupdate -radix hexadecimal /tb_leros/cpu/fd/immr
-add wave -noupdate -radix hexadecimal -subitemconfig {/tb_leros/cpu/ex/din.dec {-radix hexadecimal} /tb_leros/cpu/ex/din.imm {-radix hexadecimal}} /tb_leros/cpu/ex/din
+add wave -noupdate -radix hexadecimal /tb_leros/cpu/ex/din
 add wave -noupdate -radix hexadecimal /tb_leros/cpu/ex/dout
 add wave -noupdate -radix hexadecimal /tb_leros/cpu/ex/accu
 add wave -noupdate -radix hexadecimal /tb_leros/cpu/ex/opd
