@@ -47,7 +47,9 @@ architecture rtl of leros_top_de2 is
 	signal ioout : io_out_type;
 	signal ioin : io_in_type;
 
-	signal outp 			: std_logic_vector(15 downto 0);
+	signal outp : std_logic_vector(15 downto 0);
+	signal btn_reg : std_logic_vector(3 downto 0);
+	
 	
 begin
 
@@ -80,7 +82,7 @@ end process;
 	cpu: entity work.leros
 		port map(clk_int, int_res, ioout, ioin);
 
-	ioin.rddata <= (others => '0');
+	ioin.rddata(15 downto 4) <= (others => '0');
 				
 process(clk_int)
 begin
@@ -90,6 +92,8 @@ begin
 			outp <= ioout.wrdata;
 		end if;
 		oLEDG <= outp(7 downto 0);
+		btn_reg <= iKEY;
+		ioin.rddata(3 downto 0) <= not btn_reg;
 	end if;
 end process;
 
