@@ -28,8 +28,7 @@ architecture rtl of leros_fedec is
 	signal imin : im_in_type;
 	signal imout : im_out_type;
 	
-	-- alu_op not really used, right?
-	signal alu_op, br_op, nop, loadh, zf : std_logic;
+	signal zf : std_logic;
 	
 	signal pc, pc_next : unsigned(IM_BITS-1 downto 0);
 	signal ir, immr : std_logic_vector(15 downto 0);
@@ -43,70 +42,16 @@ begin
 		clk, reset, imin, imout
 	);
 
+	dec: entity work.leros_decode port map(
+		imout.data(15 downto 8), decode
+	);
+	
 	dout.varidx <= imout.data(7 downto 0);
 	dout.imm <= immr;
 	
 -- decode process
-process(br_op, din, imout, pc, zf)
+process(din, decode, imout, pc, zf)
 begin
-	-- some defaults
-	decode.op <= op_and;
-	decode.al_ena <= '0';
-	decode.ah_ena <= '0';
-	decode.log_add <= '0';
-	decode.add_sub <= '0';
-	decode.sel_imm <= '0';
-	decode.store <= '0';
-	decode.outp <= '0';
-	
-	-- more defaults
-	alu_op <= '0';
-	br_op <= '0';
-	loadh <= '0';
-	
-	-- first level decode
-	case imout.data(15 downto 12) is
-		when "0000" =>
-			alu_op <= '1';
-			decode.al_ena <= '1';
-			decode.ah_ena <= '1';
-		when "0001" =>
-			br_op <= '1';
-		when "0010" =>   -- just a temporal out instruction
-			decode.outp <= '1';
-		when "0100" =>   -- store - a waste
-			decode.store <= '1';
-		when "0101" =>   -- waste for load high byte
-			alu_op <= '1';
-			loadh <= '1';
-			decode.ah_ena <= '1';
-		when "1111" =>   -- just a temporal nop
-			nop <= '1';
-		when others =>
-			null;
-	end case;
-
-	-- second level decode	
-	-- logic
-	case imout.data(9 downto 8) is
-		when "00" =>
-			decode.op <= op_ld;
-		when "01" =>
-			decode.op <= op_and;
-		when "10" =>
-			decode.op <= op_or;
-		when "11" =>
-			decode.op <= op_xor;
-		when others =>
-			null;
-	end case;
-	
-	decode.sel_imm <= imout.data(11);
-	decode.log_add <= imout.data(10);
-
-	-- arithmetics - one bit (8) left for shift...
-	decode.add_sub <= imout.data(9);
-	
 	-- should be checked in ModelSim
 	if unsigned(din.accu)=0 then
 		zf <= '1';
@@ -114,9 +59,11 @@ begin
 		zf <= '0';
 	end if;
 	
+	-- shall we do the branch in the ex stage so
+	-- we will have a real branch delay slot?
 	-- branch
 	pc_next <= pc+1;
-	if br_op='1' and zf='0' then
+	if decode.br_op='1' and zf='0' then
 		-- now just do a bnz
 		pc_next <= pc + unsigned(resize(signed(imout.data(7 downto 0)), IM_BITS));
 	end if;
@@ -133,7 +80,8 @@ begin
 		ir <= imout.data;
 		dout.dec <= decode;
 --		if decode.add_sub='1' then
-		if loadh='1' then
+		-- sign extension depends on loadh?????
+		if decode.loadh='1' then
 			immr(7 downto 0) <= (others => '0');
 			immr(15 downto 8) <= imout.data(7 downto 0);
 		else

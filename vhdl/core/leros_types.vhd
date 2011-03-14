@@ -42,6 +42,9 @@ package leros_types is
 		sel_imm : std_logic;
 		store : std_logic;
 		outp : std_logic;
+		-- the following are used *in* the decode stage, not in the ex stage
+		br_op : std_logic;
+		loadh : std_logic;
 	end record;
 
 	type im_in_type is record

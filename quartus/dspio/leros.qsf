@@ -241,6 +241,7 @@ set_global_assignment -name RESERVE_ALL_UNUSED_PINS_NO_OUTPUT_GND "AS INPUT TRI-
 set_global_assignment -name VHDL_FILE ../../vhdl/core/leros_types.vhd
 set_global_assignment -name VHDL_FILE ../../vhdl/generated/leros_rom.vhd
 set_global_assignment -name VHDL_FILE ../../vhdl/core/leros_im.vhd
+set_global_assignment -name VHDL_FILE ../../vhdl/core/leros_decode.vhd
 set_global_assignment -name VHDL_FILE ../../vhdl/core/leros_fedec.vhd
 set_global_assignment -name VHDL_FILE ../../vhdl/core/leros_ex.vhd
 set_global_assignment -name VHDL_FILE ../../vhdl/core/leros.vhd

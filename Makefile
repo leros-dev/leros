@@ -39,7 +39,7 @@ tools:
 	-rm -rf java/lib
 	mkdir java/classes
 	mkdir java/lib
-	javac -d java/classes -sourcepath java/src java/src/leros/*java
+	javac -d java/classes -sourcepath java/src java/src/leros/*.java
 	cd java/classes && jar cf ../lib/leros-tools.jar *
 
 rom:

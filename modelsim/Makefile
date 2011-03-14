@@ -24,6 +24,7 @@ base:
 	$(WINE) vcom $(OPTIONS) $(LEROSDIR)/core/leros_types.vhd
 	$(WINE) vcom $(OPTIONS) $(LEROSDIR)/generated/leros_rom.vhd
 	$(WINE) vcom $(OPTIONS) $(LEROSDIR)/core/leros_im.vhd
+	$(WINE) vcom $(OPTIONS) $(LEROSDIR)/core/leros_decode.vhd
 	$(WINE) vcom $(OPTIONS) $(LEROSDIR)/core/leros_fedec.vhd
 	$(WINE) vcom $(OPTIONS) $(LEROSDIR)/core/leros_ex.vhd
 	$(WINE) vcom $(OPTIONS) $(LEROSDIR)/core/leros.vhd
