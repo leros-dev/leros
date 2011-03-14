@@ -33,24 +33,17 @@ public class Instruction {
 	}
 
 	private static Instruction[] ia = new Instruction[] {
-		// ALU 0
-		new Instruction("load", 0x0000, 8, Type.ALU),
-		new Instruction("and", 0x0100, 8, Type.ALU),
-		new Instruction("or",  0x0200, 8, Type.ALU),
-		new Instruction("xor", 0x0300, 8, Type.ALU),
-		new Instruction("add", 0x0400, 8, Type.ALU),
-		new Instruction("sub", 0x0600, 8, Type.ALU),
-		// waste for load high byte
-		new Instruction("loadh", 0x5000, 8, Type.ALU),
-		// BR/JMP 1
-		new Instruction("brnz", 0x1000, 8, Type.BRANCH),
-		// OUT (temp) 2
-		new Instruction("out", 0x2000, 8, Type.IO),
-		// Indirect load/store
-		// STORE - a real wast 4
-		new Instruction("store", 0x4000, 8, Type.NOP),
-		// NOP (temp) f
-		new Instruction("nop", 0xf000, 0, Type.NOP),
+		new Instruction("nop",   0x0000, 0, Type.NOP),
+		new Instruction("add",   0x0800, 8, Type.ALU),
+		new Instruction("sub",   0x1000, 8, Type.ALU),
+		new Instruction("load",  0x2000, 8, Type.ALU),
+		new Instruction("and",   0x2200, 8, Type.ALU),
+		new Instruction("or",    0x2400, 8, Type.ALU),
+		new Instruction("xor",   0x2600, 8, Type.ALU),
+		new Instruction("loadh", 0x2800, 8, Type.ALU),
+		new Instruction("store", 0x3000, 8, Type.NOP),
+		new Instruction("out",   0x3800, 8, Type.IO),
+		new Instruction("brnz",  0x4800, 8, Type.BRANCH),
 	};
 
 	public static Map<String, Instruction> map = new HashMap<String, Instruction>();
@@ -81,7 +74,7 @@ public class Instruction {
 			throw new Error("Immediate not supported for "+this);			
 		}
 		if (type==Type.ALU) {
-			op |= 0x0800;
+			op |= 0x0100;
 		}
 		return op;
 	}
