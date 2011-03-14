@@ -18,6 +18,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+use work.leros_types.all;
 use work.sc_pack.all;
 
 
@@ -34,10 +35,6 @@ end leros_top_de2;
 
 architecture rtl of leros_top_de2 is
 
-
---
---	Signals
---
 	signal clk_int			: std_logic;
 
 	-- for generation of internal reset
@@ -46,6 +43,9 @@ architecture rtl of leros_top_de2 is
 
 	attribute altera_attribute : string;
 	attribute altera_attribute of res_cnt : signal is "POWER_UP_LEVEL=LOW";
+
+	signal ioout : io_out_type;
+	signal ioin : io_in_type;
 
 	signal outp 			: std_logic_vector(15 downto 0);
 	
@@ -66,26 +66,29 @@ begin
 --	internal reset generation
 --	should include the PLL lock signal
 --
-
 process(clk_int)
 begin
 	if rising_edge(clk_int) then
 		if (res_cnt/="111") then
 			res_cnt <= res_cnt+1;
 		end if;
-
 		int_res <= not res_cnt(0) or not res_cnt(1) or not res_cnt(2);
 	end if;
 end process;
 
+
 	cpu: entity work.leros
-		port map(clk_int, int_res,
-			outp);
-			
+		port map(clk_int, int_res, ioout, ioin);
+
+	ioin.rddata <= (others => '0');
+				
 process(clk_int)
 begin
 
 	if rising_edge(clk_int) then
+		if ioout.wr='1' then
+			outp <= ioout.wrdata;
+		end if;
 		oLEDG <= outp(7 downto 0);
 	end if;
 end process;

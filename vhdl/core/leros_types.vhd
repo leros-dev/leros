@@ -39,9 +39,11 @@ package leros_types is
 		ah_ena : std_logic;
 		log_add : std_logic;
 		add_sub : std_logic;
+		shr : std_logic;
 		sel_imm : std_logic;
 		store : std_logic;
 		outp : std_logic;
+		inp : std_logic;
 		-- the following are used *in* the decode stage, not in the ex stage
 		br_op : std_logic;
 		loadh : std_logic;
@@ -75,8 +77,19 @@ package leros_types is
 
 	type ex_out_type is record
 		accu : std_logic_vector(15 downto 0);
-		outp : std_logic_vector(15 downto 0);
 	end record;
+	
+	type io_out_type is record
+		addr : std_logic_vector(7 downto 0);
+		rd : std_logic;
+		wr : std_logic;
+		wrdata : std_logic_vector(15 downto 0);
+	end record;
+
+	type io_in_type is record
+		rddata : std_logic_vector(15 downto 0);
+	end record;
+	
 
 end package;
 

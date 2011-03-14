@@ -35,6 +35,7 @@ entity leros_ex is
 		clk : in std_logic;
 		reset : in std_logic;
 		din : in fedec_out_type;
+		ioin : in io_in_type;
 		dout : out ex_out_type
 	);
 end leros_ex;
@@ -72,7 +73,7 @@ begin
 end process;
 
 -- that's the ALU	
-process(din, accu, opd, log, arith)
+process(din, accu, opd, log, arith, ioin)
 begin
 	if din.dec.add_sub='0' then
 		arith <= accu + opd;
@@ -94,7 +95,15 @@ begin
 	end case;
 	
 	if din.dec.log_add='0' then
-		a_mux <= log;
+		if din.dec.shr='1' then
+			a_mux <= '0' & accu(15 downto 1);
+		else
+			if din.dec.inp='1' then
+				a_mux <= unsigned(ioin.rddata);
+			else
+				a_mux <= log;
+			end if;
+		end if;
 	else
 		a_mux <= arith;
 	end if;
@@ -114,7 +123,7 @@ process(clk, reset)
 begin
 	if reset='1' then
 		accu <= (others => '0');
-		dout.outp <= (others => '0');
+--		dout.outp <= (others => '0');
 	elsif rising_edge(clk) then
 		if din.dec.al_ena = '1' then
 			accu(7 downto 0) <= a_mux(7 downto 0);
@@ -123,9 +132,9 @@ begin
 			accu(15 downto 8) <= a_mux(15 downto 8);
 		end if;
 		-- a simple output port for the hello world example
-		if din.dec.outp='1' then
-			dout.outp <= std_logic_vector(accu);
-		end if;
+--		if din.dec.outp='1' then
+--			dout.outp <= std_logic_vector(accu);
+--		end if;
 	end if;
 end process;
 

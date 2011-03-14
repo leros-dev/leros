@@ -19,6 +19,8 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+use work.leros_types.all;
+
 entity leros_nexys2 is
 port (
 	clk     : in std_logic;
@@ -43,6 +45,8 @@ architecture rtl of leros_nexys2 is
 	attribute altera_attribute : string;
 	attribute altera_attribute of res_cnt : signal is "POWER_UP_LEVEL=LOW";
 
+	signal ioout : io_out_type;
+	signal ioin : io_in_type;
 	
 	signal outp 			: std_logic_vector(15 downto 0);
 	
@@ -84,14 +88,18 @@ end process;
 
 
 	cpu: entity work.leros
-		port map(clk_int, int_res,
-			outp);
+		port map(clk_int, int_res, ioout, ioin);
+
+	ioin.rddata <= (others => '0');
 	
 	rstx <= '0'; -- just a default to make ISE happy
 	
 process(clk_int)
 begin
 	if rising_edge(clk_int) then
+		if ioout.wr='1' then
+			outp <= ioout.wrdata;
+		end if;
 		led <= outp(7 downto 0);
 	end if;
 end process;

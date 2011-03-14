@@ -33,9 +33,11 @@ begin
 	dec.ah_ena <= '0';
 	dec.log_add <= '0';
 	dec.add_sub <= '0';
+	dec.shr <= '0';
 	dec.sel_imm <= '0';
 	dec.store <= '0';
 	dec.outp <= '0';
+	dec.inp <= '0';
 	
 	-- used in decode, not in ex
 	dec.br_op <= '0';
@@ -46,7 +48,7 @@ begin
 	-- add = '0'
 	dec.add_sub <= '0';	
 	
-	dec.add_sub <= not instr(2);
+	dec.add_sub <= instr(2);
 
 	dec.sel_imm <= instr(0);
 	-- bit 1 and 2 partially unused
@@ -56,9 +58,11 @@ begin
 			dec.al_ena <= '1';
 			dec.ah_ena <= '1';
 			dec.log_add <= '1';
-		when "00010" =>		-- reserved
-			null;
-		when "00011" =>		-- reserved for shr
+		when "00010" =>		-- shr
+			dec.al_ena <= '1';
+			dec.ah_ena <= '1';
+			dec.shr <= '1';
+		when "00011" =>		-- reserved
 			null;
 		when "00100" =>		-- 
 			dec.al_ena <= '1';
@@ -69,7 +73,13 @@ begin
 		when "00110" =>		-- store
 			dec.store <= '1';
 		when "00111" =>		-- I/O (ld/st indirect)
-			dec.outp <= '1';
+			if instr(2)='0' then
+				dec.outp <= '1';
+			else
+				dec.al_ena <= '1';
+				dec.ah_ena <= '1';
+				dec.inp <= '1';
+			end if;
 		when "01000" =>		-- brl
 			null;
 		when "01001" =>		-- branch conditional
@@ -91,63 +101,5 @@ begin
 			null;
 	end case;
 end process;
-
-
--- process(instr)
--- begin
--- 	-- some defaults
--- 	decode.op <= op_and;
--- 	decode.al_ena <= '0';
--- 	decode.ah_ena <= '0';
--- 	decode.log_add <= '0';
--- 	decode.add_sub <= '0';
--- 	decode.sel_imm <= '0';
--- 	decode.store <= '0';
--- 	decode.outp <= '0';
--- 	
--- 	-- used in decode, not in ex
--- 	decode.br_op <= '0';
--- 	decode.loadh <= '0';
--- 	
--- 	-- first level decode
--- 	case instr(7 downto 4) is
--- 		when "0000" =>
--- 			decode.al_ena <= '1';
--- 			decode.ah_ena <= '1';
--- 		when "0001" =>
--- 			decode.br_op <= '1';
--- 		when "0010" =>   -- just a temporal out instruction
--- 			decode.outp <= '1';
--- 		when "0100" =>   -- store - a waste
--- 			decode.store <= '1';
--- 		when "0101" =>   -- waste for load high byte
--- 			decode.loadh <= '1';
--- 			decode.ah_ena <= '1';
--- 		when "1111" =>   -- just a temporal nop
--- 		when others =>
--- 			null;
--- 	end case;
--- 
--- 	-- second level decode	
--- 	-- logic
--- 	case instr(1 downto 0) is
--- 		when "00" =>
--- 			decode.op <= op_ld;
--- 		when "01" =>
--- 			decode.op <= op_and;
--- 		when "10" =>
--- 			decode.op <= op_or;
--- 		when "11" =>
--- 			decode.op <= op_xor;
--- 		when others =>
--- 			null;
--- 	end case;
--- 	
--- 	decode.sel_imm <= instr(3);
--- 	decode.log_add <= instr(2);
--- 
--- 	-- arithmetics - one bit (8) left for shift...
--- 	decode.add_sub <= instr(1);	
--- end process;
 
 end rtl;

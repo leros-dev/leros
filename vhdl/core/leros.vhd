@@ -19,7 +19,8 @@ entity leros is
 	port  (
 		clk : in std_logic;
 		reset : in std_logic;
-		out_port : out std_logic_vector(15 downto 0)
+		ioout : out io_out_type;
+		ioin : in io_in_type
 	);
 end leros;
 
@@ -34,13 +35,17 @@ architecture rtl of leros is
 begin
 
 	fdin.accu <= exout.accu;
-	out_port <= exout.outp;
+	ioout.addr <= fdout.imm(7 downto 0);
+	ioout.rd <= fdout.dec.inp;
+	ioout.wr <= fdout.dec.outp;
+	ioout.wrdata <= exout.accu;
+	
 	
 	fd: entity work.leros_fedec port map (
 		clk, reset, fdin, fdout
 	);
 	ex: entity work.leros_ex port map(
-		clk, reset, fdout, exout
+		clk, reset, fdout, ioin, exout
 	);
 	
 end rtl;

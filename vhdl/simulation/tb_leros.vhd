@@ -19,6 +19,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+use work.leros_types.all;
 -- use work.sc_pack.all;
 
 
@@ -30,7 +31,10 @@ architecture rtl of tb_leros is
 
 	signal clk : std_logic := '1';
 	signal reset : std_logic := '1';
-	signal outp : std_logic_vector(15 downto 0);
+	
+	signal ioout : io_out_type;
+	signal ioin : io_in_type;
+	
 	
 begin
 
@@ -48,9 +52,9 @@ begin
 end process;
 	
 
+
 	cpu: entity work.leros
-		port map(clk, reset,
-			outp);
+		port map(clk, reset, ioout, ioin);
 			
 
 end rtl;
