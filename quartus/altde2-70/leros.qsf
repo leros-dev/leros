@@ -85,7 +85,7 @@ set_global_assignment -name VHDL_FILE ../../vhdl/simpcon/sc_pack.vhd
 set_global_assignment -name VHDL_FILE ../../vhdl/simpcon/fifo.vhd
 set_global_assignment -name VHDL_FILE ../../vhdl/simpcon/sc_uart.vhd
 set_global_assignment -name VHDL_FILE ../../vhdl/altera/cyc2_pll.vhd
-set_global_assignment -name VHDL_FILE ../../vhdl/top/leros_de2-70.vhd
+set_global_assignment -name VHDL_FILE "../../vhdl/top/leros_de2-70.vhd"
 
 set_global_assignment -name OUTPUT_PIN_LOAD 5 -section_id "3.3-V LVCMOS"
 set_global_assignment -name OUTPUT_PIN_LOAD 10 -section_id "3.3-V PCI"

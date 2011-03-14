@@ -35,7 +35,7 @@ public class Instruction {
 	private static Instruction[] ia = new Instruction[] {
 		new Instruction("nop",   0x0000, 0, Type.NOP),
 		new Instruction("add",   0x0800, 8, Type.ALU),
-		new Instruction("sub",   0x1000, 8, Type.ALU),
+		new Instruction("sub",   0x0c00, 8, Type.ALU),
 		new Instruction("load",  0x2000, 8, Type.ALU),
 		new Instruction("and",   0x2200, 8, Type.ALU),
 		new Instruction("or",    0x2400, 8, Type.ALU),
