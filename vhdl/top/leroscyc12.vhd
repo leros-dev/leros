@@ -7,7 +7,7 @@
 --
 --	leroscyc12.vhd
 --
---	top level for cycore borad with EP1C12
+--	top level for cycore board with EP1C12
 --
 --	2011-02-20	creation
 --

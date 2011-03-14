@@ -3,8 +3,17 @@
 # cleanup
 EXTENSIONS=class rbf rpt sof pin summary ttf qdf dat wlf done qws
 
+#
+#	Set USB to true for an FTDI chip based board (dspio, usbmin, lego)
+#
+USB=false
+
+
 # Assembler fils
 APP=test
+# Altera FPGA configuration cable
+#BLASTER_TYPE=ByteBlasterMV
+BLASTER_TYPE=USB-Blaster
 
 ifeq ($(WINDIR),)
 	USBRUNNER=./USBRunner
@@ -14,7 +23,9 @@ else
 	S=\;
 endif
 
-USB=true
+# The VHDL project for Quartus
+QPROJ=dspio
+QPROJ=altde2-70
 
 all: directories tools rom
 	make lerosusb
@@ -22,7 +33,6 @@ all: directories tools rom
 
 directories:
 	-mkdir rbf
-	-mkdir vhdl/generated
 
 tools:
 	-rm -rf java/classes
@@ -49,8 +59,6 @@ else
 endif
 endif
 
-QPROJ=dspio
-
 lerosusb:
 	@echo $(QPROJ)
 	for target in $(QPROJ); do \
@@ -74,8 +82,15 @@ qsyn:
 	quartus_asm quartus/$(QBT)/leros
 	quartus_sta quartus/$(QBT)/leros
 
+config_byteblaster:
+	cd quartus/$(QPROJ) && quartus_pgm -c $(BLASTER_TYPE) -m JTAG leros.cdf
+
 config_usb:
 	cd rbf && ../$(USBRUNNER) $(QPROJ).rbf
+
+# TODO: no Xilinx Makefiles available yet
+config_xilinx:
+	cd xilinx/$(XPROJ) && make config
 
 clean:
 	for ext in $(EXTENSIONS); do \
