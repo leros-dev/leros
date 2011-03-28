@@ -57,7 +57,7 @@ begin
 	-- but for now 100 MHz is enough
 	-- limit is 9.354ns => 100 MHz should be ok
 	pll_inst : entity work.sp3epll generic map(
-		multiply_by => 2,
+		multiply_by => 4,
 		divide_by => 1
 	)
 	port map (

@@ -96,7 +96,7 @@ begin
 	-- let's go for 200 MHz ;-)
 	-- but for now 100 MHz is enough
 	pll_inst : entity work.pll generic map(
-		multiply_by => 5,
+		multiply_by => 5, -- shall be 5 for 100 MHz
 		divide_by => 1
 	)
 	port map (

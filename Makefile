@@ -6,7 +6,7 @@ EXTENSIONS=class rbf rpt sof pin summary ttf qdf dat wlf done qws
 #
 #	Set USB to true for an FTDI chip based board (dspio, usbmin, lego)
 #
-USB=false
+USB=true
 
 
 # Assembler fils
@@ -24,8 +24,8 @@ else
 endif
 
 # The VHDL project for Quartus
-QPROJ=dspio
 QPROJ=altde2-70
+QPROJ=dspio
 
 all: directories tools rom
 	make lerosusb

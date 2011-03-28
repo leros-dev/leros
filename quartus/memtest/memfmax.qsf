@@ -18,14 +18,14 @@
 #
 # Quartus II
 # Version 10.1 Build 153 11/29/2010 SJ Web Edition
-# Date created = 16:33:34  February 20, 2011
+# Date created = 01:35:45  March 28, 2011
 #
 # -------------------------------------------------------------------------- #
 #
 # Notes:
 #
 # 1) The default values for assignments are stored in the file:
-#		leros_assignment_defaults.qdf
+#		memfmax_assignment_defaults.qdf
 #    If this file doesn't exist, see file:
 #		assignment_defaults.qdf
 #
@@ -36,42 +36,16 @@
 # -------------------------------------------------------------------------- #
 
 
-set_global_assignment -name FAMILY Cyclone
+set_global_assignment -name FAMILY "Cyclone IV E"
 set_global_assignment -name DEVICE AUTO
-set_global_assignment -name TOP_LEVEL_ENTITY leros_top
+set_global_assignment -name TOP_LEVEL_ENTITY memfmax
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 10.1
-set_global_assignment -name PROJECT_CREATION_TIME_DATE "16:33:34  FEBRUARY 20, 2011"
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "01:35:45  MARCH 28, 2011"
 set_global_assignment -name LAST_QUARTUS_VERSION 10.1
 set_global_assignment -name DEVICE_FILTER_SPEED_GRADE FASTEST
-set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 1
-set_global_assignment -name USE_CONFIGURATION_DEVICE ON
-set_global_assignment -name RESERVE_ALL_UNUSED_PINS "AS INPUT TRI-STATED"
-
-# Pin & Location Assignments
-# ==========================
-
-
-
-
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
-set_global_assignment -name CYCLONE_CONFIGURATION_SCHEME "PASSIVE SERIAL"
-set_global_assignment -name GENERATE_RBF_FILE ON
-set_global_assignment -name RESERVE_ASDO_AFTER_CONFIGURATION "USE AS REGULAR IO"
-set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVCMOS"
-set_global_assignment -name RESERVE_ALL_UNUSED_PINS_NO_OUTPUT_GND "AS INPUT TRI-STATED"
-
-set_global_assignment -name VHDL_FILE ../../vhdl/altera/cyc_pll.vhd
-set_global_assignment -name VHDL_FILE ../../vhdl/core/leros_types.vhd
-set_global_assignment -name VHDL_FILE ../../vhdl/generated/leros_rom.vhd
-set_global_assignment -name VHDL_FILE ../../vhdl/core/leros_im.vhd
-set_global_assignment -name VHDL_FILE ../../vhdl/core/leros_decode.vhd
-set_global_assignment -name VHDL_FILE ../../vhdl/core/leros_fedec.vhd
-set_global_assignment -name VHDL_FILE ../../vhdl/core/leros_ex.vhd
-set_global_assignment -name VHDL_FILE ../../vhdl/core/leros.vhd
-set_global_assignment -name VHDL_FILE ../../vhdl/simpcon/sc_pack.vhd
-set_global_assignment -name VHDL_FILE ../../vhdl/simpcon/fifo.vhd
-set_global_assignment -name VHDL_FILE ../../vhdl/simpcon/sc_uart.vhd
-set_global_assignment -name VHDL_FILE ../../vhdl/top/leroscyc12.vhd
+set_global_assignment -name VHDL_FILE ../../vhdl/altera/cyc3_pll.vhd
+set_global_assignment -name VHDL_FILE ../../vhdl/test/memfmax.vhd
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
