@@ -37,12 +37,25 @@ directories:
 tools:
 	-rm -rf java/classes
 	-rm -rf java/lib
+	-rm -rf java/src/leros/asm/generated
 	mkdir java/classes
 	mkdir java/lib
+	mkdir java/src/leros/asm/generated
 	javac -d java/classes -sourcepath java/src java/src/leros/*.java
+	java -classpath lib/antlr-3.3-complete.jar org.antlr.Tool \
+		-fo java/src/leros/asm/generated java/src/grammar/Leros.g
+	javac -classpath lib/antlr-3.3-complete.jar \
+		-d java/classes java/src/leros/asm/generated/*.java \
+		java/src/leros/asm/*.java
 	cd java/classes && jar cf ../lib/leros-tools.jar *
 
-rom:
+rom: tools
+	-rm -rf vhdl/generated
+	mkdir vhdl/generated
+	java -cp java/lib/leros-tools.jar$(S)lib/antlr-3.3-complete.jar \
+		leros.asm.LerosAsm -s asm -d vhdl/generated $(APP).asm
+
+rom_old:
 	-rm -rf vhdl/generated
 	mkdir vhdl/generated
 	java -cp java/lib/leros-tools.jar leros.LerosAsm -s asm -d vhdl/generated $(APP).asm
