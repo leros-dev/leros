@@ -1,8 +1,8 @@
 // Register definitions
 
-R0 = ?
-R1 = ?
-R2 = ?
+//R0 = ?
+//R1 = ?
+//R2 = ?
 
 // first instruction is not executed
 	nop

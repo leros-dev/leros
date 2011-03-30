@@ -25,7 +25,7 @@ import leros.asm.generated.*;
 public class LerosAsm {
 
 	static final int ADDRBITS = 8;
-	static final int DATABITS = 32;
+	static final int DATABITS = 16;
 	static final int ROM_LEN = 1 << ADDRBITS;
 
 	String fname;
@@ -54,7 +54,7 @@ public class LerosAsm {
 	String getRomHeader() {
 
 		String line = "--\n";
-		line += "--\tpatmos_rom.vhd\n";
+		line += "--\tleros_rom.vhd\n";
 		line += "--\n";
 		line += "--\tgeneric VHDL version of ROM\n";
 		line += "--\n";
@@ -65,7 +65,7 @@ public class LerosAsm {
 		line += "library ieee;\n";
 		line += "use ieee.std_logic_1164.all;\n";
 		line += "\n";
-		line += "entity patmos_rom is\n";
+		line += "entity leros_rom is\n";
 		// line +=
 		// "generic (width : integer; addr_width : integer);\t-- for compatibility\n";
 		line += "port (\n";
@@ -74,9 +74,9 @@ public class LerosAsm {
 		line += "    q : out std_logic_vector(" + (DATABITS - 1)
 				+ " downto 0)\n";
 		line += ");\n";
-		line += "end patmos_rom;\n";
+		line += "end leros_rom;\n";
 		line += "\n";
-		line += "architecture rtl of patmos_rom is\n";
+		line += "architecture rtl of leros_rom is\n";
 		line += "\n";
 		line += "begin\n";
 		line += "\n";
@@ -103,7 +103,7 @@ public class LerosAsm {
 
 		try {
 
-			FileWriter romvhd = new FileWriter(dstDir + "patmos_rom.vhd");
+			FileWriter romvhd = new FileWriter(dstDir + "leros_rom.vhd");
 			romvhd.write(getRomHeader());
 
 			Object o[] = list.toArray();

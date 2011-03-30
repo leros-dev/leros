@@ -1,3 +1,5 @@
+//
+// Grammar and lexical rules for the Leros assembler
 // Start with a copy of Patmos
 
 grammar Leros;
@@ -16,13 +18,22 @@ import java.util.List;
 @members {
 /** Map symbol to Integer object holding the value or address */
 HashMap symbols = new HashMap();
+// Mapping of register names
+HashMap reg = new HashMap();
 int pc = 0;
 int code[];
 boolean pass2 = false;
 
+static {
+	// some default names for registers
+	for (int i=0; i<16; ++i) {
+//		reg.put("r"+i, new Integer(i));
+	}
+}
+
 public static String niceHex(int val) {
 	String s = Integer.toHexString(val);
-	while (s.length() < 8) {
+	while (s.length() < 4) {
 		s = "0"+s;
 	}
 	s = "0x"+s;
@@ -49,56 +60,59 @@ pass2 returns [List mem]
 	}
 	}; 
 
-statement: (label)? (directive | bundle)? (COMMENT)? NEWLINE;
+statement: (label)? (directive | instruction)? (COMMENT)? NEWLINE;
 
 label:  ID ':' {symbols.put($ID.text, new Integer(pc));};
 
 // just a dummy example
 directive: '.start';
 
-// later extend to inst || instr
-bundle: instruction;
+instruction: simple | alu_reg | alu_imm | branch | io_op;
 
-instruction: alu_imm | alu | compare | branch;
+// TODO: is there a simpler way to use the $opc value
+// for the individual instruction types and have one
+// place to fill the array?
+
+simple returns [int opc] : no_opd
+	{
+		$opc = $no_opd.value;
+		System.out.println(pc+" "+niceHex($opc));
+		if (pass2) { code[pc] = $opc; }
+		++pc;
+	};
+
+
+alu_reg returns [int opc]
+	: alu register
+	{
+		$opc = $alu.value + $register.value;
+		System.out.println(pc+" "+niceHex($opc));
+		if (pass2) { code[pc] = $opc; }
+		++pc;
+	};
 
 alu_imm returns [int opc]
-	: (pred)? op_imm rs1 ',' imm_val TO rd
+	: alu imm_val
 	{
-		$opc = $op_imm.opc + ($pred.value<<22) +
-			($rs1.value<<12) + ($rd.value<<17) +
-			$imm_val.value;
-		System.out.println(pc+" "+niceHex($opc)+
-			" p"+$pred.value+" "+$op_imm.text);
+		$opc = $alu.value + $imm_val.value;
+		$opc |= 0x0100;
+		System.out.println(pc+" "+niceHex($opc));
 		if (pass2) { code[pc] = $opc; }
 		++pc;
 	};
 
-alu returns [int opc]
-	: (pred)? op_alu rs1 ',' rs2 TO rd
+io_op returns [int opc]
+	: io imm_val
 	{
-		$opc = (0x05<<26) + ($pred.value<<22) +
-			($rs1.value<<12) + ($rs2.value<<7) + ($rd.value<<17) +
-			$op_alu.func;
-		System.out.println(pc+" "+niceHex($opc)+
-			" p"+$pred.value+" "+$op_alu.text);
+		$opc = $io.value + $imm_val.value;
+		System.out.println(pc+" "+niceHex($opc));
 		if (pass2) { code[pc] = $opc; }
 		++pc;
 	};
 
-compare returns [int opc]
-	: (pred)? 'cmp' rs1 op_cmp rs2 TO pdest
-	{
-		$opc = (0x07<<26) + ($pred.value<<22) +
-			($rs1.value<<12) + ($rs2.value<<7) + ($pdest.value<<17) +
-			$op_cmp.func;
-		System.out.println(pc+" "+niceHex($opc)+
-			" p"+$pred.value+" cmp "+$op_cmp.text+" pd"+$pdest.value);
-		if (pass2) { code[pc] = $opc; }
-		++pc;
-	};
 
 branch returns [int opc]
-	: (pred)? 'br' ID
+	: 'brnz' ID
 	{
 		int off = 0;
 		if (pass2) {
@@ -110,60 +124,60 @@ branch returns [int opc]
 			}
 			off = off - pc;
 			// TODO test maximum offset
-			// at the moment 22 bits offset
-			off &= 0x3fffff;
+			// at the moment 8 bits offset
+			off &= 0xff;
 		}
-		$opc = (0x06<<26) + ($pred.value<<22) + off;
-		System.out.println(pc+" "+niceHex($opc)+
-			" p"+$pred.value+" br "+((off<<10)>>10));
+		$opc = 0x4800 + off;
 		if (pass2) { code[pc] = $opc; }
 		++pc;
 	};
 
-rs1 returns [int value]: register {$value = $register.value;};
-rs2 returns [int value]: register {$value = $register.value;};
-rd returns [int value]: register {$value = $register.value;};
-
-
+// shall use register symbols form the HashMap
 register returns [int value]
 	: REG {$value = Integer.parseInt($REG.text.substring(1));
 		if ($value<0 || $value>31) throw new Error("Wrong register name");};
 
-pred returns [int value]
-	: PRD {$value = Integer.parseInt($PRD.text.substring(1));
-		if ($value<0 || $value>15) throw new Error("Wrong predicate name");};
-
-pdest returns [int value]
-	: PRD {$value = Integer.parseInt($PRD.text.substring(1));
-		if ($value<0 || $value>15) throw new Error("Wrong predicate name");};
-
 imm_val returns [int value]
-    : INT {$value = Integer.parseInt($INT.text);
-		if ($value<-2048 || $value>2047) throw new Error("Wrong immediate");};
+	: INT {$value = Integer.parseInt($INT.text);
+//		if ($value<-128 || $value>127) throw new Error("Wrong immediate");};
+		if ($value<-128 || $value>255) throw new Error("Wrong immediate");};
 
-op_imm returns [int opc]: 
-	'addi' {$opc = 0<<26;} |
-	'ori' {$opc =  1<<26;} |
-	'andi' {$opc = 2<<26;} |
-	'xori' {$opc = 3<<26;}
+//		new Instruction("nop",   0x0000, 0, Type.NOP),
+//		new Instruction("add",   0x0800, 8, Type.ALU),
+//		new Instruction("sub",   0x0c00, 8, Type.ALU),
+//		new Instruction("shr",   0x1000, 8, Type.ALU),
+//		new Instruction("load",  0x2000, 8, Type.ALU),
+//		new Instruction("and",   0x2200, 8, Type.ALU),
+//		new Instruction("or",    0x2400, 8, Type.ALU),
+//		new Instruction("xor",   0x2600, 8, Type.ALU),
+//		new Instruction("loadh", 0x2800, 8, Type.ALU),
+//		new Instruction("store", 0x3000, 8, Type.NOP),
+//		new Instruction("out",   0x3800, 8, Type.IO),
+//		new Instruction("in",    0x3c00, 8, Type.IO),
+//		new Instruction("brnz",  0x4800, 8, Type.BRANCH),
+
+
+alu returns [int value]: 
+	'add'    {$value = 0x8000;} |
+	'sub'    {$value = 0x0c00;} |
+	'load'   {$value = 0x2000;} |
+	'and'    {$value = 0x2200;} |
+	'or'     {$value = 0x2400;} |
+	'xor'    {$value = 0x2600;} |
+	'loadh'  {$value = 0x2800;} |
+	'store'  {$value = 0x3000;} // TODO: no immediate version
 	;
 
-op_alu returns [int func]: 
-	'add' {$func = 0;} |
-	'sub' {$func = 1;} |
-	'or' {$func = 2;} |
-	'and' {$func = 3;} |
-	'xor' {$func = 4;}
+io returns [int value]: 
+	'out'    {$value = 0x3800;} |
+	'in'     {$value = 0x3c00;}
 	;
 
-op_cmp returns [int func]:
-	'==' {$func = 0;} |
-	'!=' {$func = 1;} |
-	'>=' {$func = 2;} |
-	'<=' {$func = 3;} |
-	'>' {$func = 4;} |
-	'<' {$func = 5;}
+no_opd returns [int value] :
+	'nop'    {$value = 0x0000;} |
+	'shr'    {$value = 0x1000;}
 	;
+
 
 /* Lexer rules (start with upper case) */
 
