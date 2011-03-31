@@ -67,49 +67,42 @@ label:  ID ':' {symbols.put($ID.text, new Integer(pc));};
 // just a dummy example
 directive: '.start';
 
-instruction: simple | alu_reg | alu_imm | branch | io_op;
-
-// TODO: is there a simpler way to use the $opc value
-// for the individual instruction types and have one
-// place to fill the array?
-
-simple returns [int opc] : no_opd
+instruction: instr
 	{
-		$opc = $no_opd.value;
-		System.out.println(pc+" "+niceHex($opc));
-		if (pass2) { code[pc] = $opc; }
+		System.out.println(pc+" "+niceHex($instr.opc));
+		if (pass2) { code[pc] = $instr.opc; }
 		++pc;
 	};
 
+// Is this additional rule needed to get all values up to instruction?
+instr returns [int opc] :
+	simple {$opc = $simple.opc;} |
+	alu register {$opc = $alu.value + $register.value;} |
+	alu imm_val {$opc = $alu.value + $imm_val.value + 0x0100;} |
+	branch {$opc = $branch.opc;} |
+	io imm_val {$opc = $io.value + $imm_val.value;}
+;
 
-alu_reg returns [int opc]
-	: alu register
-	{
-		$opc = $alu.value + $register.value;
-		System.out.println(pc+" "+niceHex($opc));
-		if (pass2) { code[pc] = $opc; }
-		++pc;
-	};
+simple returns [int opc] :
+	'nop'    {$opc = 0x0000;} |
+	'shr'    {$opc = 0x1000;}
+	;
 
-alu_imm returns [int opc]
-	: alu imm_val
-	{
-		$opc = $alu.value + $imm_val.value;
-		$opc |= 0x0100;
-		System.out.println(pc+" "+niceHex($opc));
-		if (pass2) { code[pc] = $opc; }
-		++pc;
-	};
+alu returns [int value]: 
+	'add'    {$value = 0x8000;} |
+	'sub'    {$value = 0x0c00;} |
+	'load'   {$value = 0x2000;} |
+	'and'    {$value = 0x2200;} |
+	'or'     {$value = 0x2400;} |
+	'xor'    {$value = 0x2600;} |
+	'loadh'  {$value = 0x2800;} |
+	'store'  {$value = 0x3000;} // TODO: no immediate version
+	;
 
-io_op returns [int opc]
-	: io imm_val
-	{
-		$opc = $io.value + $imm_val.value;
-		System.out.println(pc+" "+niceHex($opc));
-		if (pass2) { code[pc] = $opc; }
-		++pc;
-	};
-
+io returns [int value]: 
+	'out'    {$value = 0x3800;} |
+	'in'     {$value = 0x3c00;}
+	;
 
 branch returns [int opc]
 	: 'brnz' ID
@@ -128,8 +121,6 @@ branch returns [int opc]
 			off &= 0xff;
 		}
 		$opc = 0x4800 + off;
-		if (pass2) { code[pc] = $opc; }
-		++pc;
 	};
 
 // shall use register symbols form the HashMap
@@ -157,26 +148,6 @@ imm_val returns [int value]
 //		new Instruction("brnz",  0x4800, 8, Type.BRANCH),
 
 
-alu returns [int value]: 
-	'add'    {$value = 0x8000;} |
-	'sub'    {$value = 0x0c00;} |
-	'load'   {$value = 0x2000;} |
-	'and'    {$value = 0x2200;} |
-	'or'     {$value = 0x2400;} |
-	'xor'    {$value = 0x2600;} |
-	'loadh'  {$value = 0x2800;} |
-	'store'  {$value = 0x3000;} // TODO: no immediate version
-	;
-
-io returns [int value]: 
-	'out'    {$value = 0x3800;} |
-	'in'     {$value = 0x3c00;}
-	;
-
-no_opd returns [int value] :
-	'nop'    {$value = 0x0000;} |
-	'shr'    {$value = 0x1000;}
-	;
 
 
 /* Lexer rules (start with upper case) */
