@@ -1,4 +1,6 @@
-
+#
+# Makefile for Leros build
+#
 
 # cleanup
 EXTENSIONS=class rbf rpt sof pin summary ttf qdf dat wlf done qws
@@ -9,8 +11,8 @@ EXTENSIONS=class rbf rpt sof pin summary ttf qdf dat wlf done qws
 USB=true
 
 
-# Assembler fils
-APP=test
+# Assembler files
+APP=hello
 # Altera FPGA configuration cable
 #BLASTER_TYPE=ByteBlasterMV
 BLASTER_TYPE=USB-Blaster
@@ -47,6 +49,7 @@ tools:
 	javac -classpath lib/antlr-3.3-complete.jar \
 		-d java/classes java/src/leros/asm/generated/*.java \
 		java/src/leros/asm/*.java
+	javac -d java/classes -sourcepath java/src java/src/leros/sim/*.java
 	cd java/classes && jar cf ../lib/leros-tools.jar *
 
 rom: tools
@@ -54,6 +57,9 @@ rom: tools
 	mkdir vhdl/generated
 	java -cp java/lib/leros-tools.jar$(S)lib/antlr-3.3-complete.jar \
 		leros.asm.LerosAsm -s asm -d vhdl/generated $(APP).asm
+jsim: tools
+	java -cp java/lib/leros-tools.jar -Dlog=false \
+		leros.sim.LerosSim rom.txt
 
 rom_old:
 	-rm -rf vhdl/generated

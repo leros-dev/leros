@@ -64,7 +64,7 @@ begin
 			dec.shr <= '1';
 		when "00011" =>		-- reserved
 			null;
-		when "00100" =>		-- 
+		when "00100" =>		-- alu
 			dec.al_ena <= '1';
 			dec.ah_ena <= '1';
 		when "00101" =>		-- loadh
