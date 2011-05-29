@@ -38,6 +38,8 @@ begin
 	dec.store <= '0';
 	dec.outp <= '0';
 	dec.inp <= '0';
+	dec.loadind <= '0';
+	dec.storeind <= '0';
 	
 	-- used in decode, not in ex
 	dec.br_op <= '0';
@@ -72,7 +74,7 @@ begin
 			dec.ah_ena <= '1';
 		when "00110" =>		-- store
 			dec.store <= '1';
-		when "00111" =>		-- I/O (ld/st indirect)
+		when "00111" =>		-- I/O
 			if instr(2)='0' then
 				dec.outp <= '1';
 			else
@@ -84,6 +86,15 @@ begin
 			null;
 		when "01001" =>		-- branch conditional
 			dec.br_op <= '1';
+		when "01010" =>		-- loadaddr
+			null;
+		when "01100" =>		-- load indirect
+			dec.al_ena <= '1';
+			dec.ah_ena <= '1';
+			dec.loadind <= '1';
+		when "01110" =>		-- store indirect
+			dec.storeind <= '1';
+			dec.store <= '1';
 		when others =>
 			null;
 	end case;

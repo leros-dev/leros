@@ -57,6 +57,8 @@ architecture rtl of leros_ex is
 	signal wrdata, rddata : std_logic_vector(15 downto 0);
 	signal wraddr, rdaddr : std_logic_vector(DM_BITS-1 downto 0);
 	
+	signal wrind_addr, wrind_addr_reg : std_logic_vector(DM_BITS-1 downto 0);
+	
 
 begin
 
@@ -112,12 +114,28 @@ end process;
 
 	-- a MUX for PC (jal ?) will be added
 	wrdata <= std_logic_vector(accu);
-	-- a MUX for indirect read/write will be added
-	wraddr <= din.imm(DM_BITS-1 downto 0);
-	-- MUX for indirect read needed
-	-- If DM > 256 zero extend the varidx
-	rdaddr <= din.varidx(DM_BITS-1 downto 0);
 	
+process(din, rddata, wrind_addr_reg)
+	variable addr : std_logic_vector(15 downto 0);
+begin
+	addr := std_logic_vector(unsigned(rddata) + unsigned(din.varidx));
+	wrind_addr <= addr(DM_BITS-1 downto 0);
+	-- MUX for indirect read (from unregistered decode)
+	if din.indload='1' then
+		rdaddr <= addr(DM_BITS-1 downto 0);
+	else
+		-- If DM > 256 zero extend the varidx
+		rdaddr <= din.varidx(DM_BITS-1 downto 0);
+	end if;
+	-- a MUX for indirect store
+	if din.dec.storeind='1' then
+		wraddr <= wrind_addr_reg;
+	else
+		-- If DM > 256 zero extend the varidx
+		wraddr <= din.imm(DM_BITS-1 downto 0);
+	end if;
+
+end process;
 
 process(clk, reset)
 begin
@@ -131,6 +149,7 @@ begin
 		if din.dec.ah_ena = '1' then
 			accu(15 downto 8) <= a_mux(15 downto 8);
 		end if;
+		wrind_addr_reg <= wrind_addr;
 		-- a simple output port for the hello world example
 --		if din.dec.outp='1' then
 --			dout.outp <= std_logic_vector(accu);

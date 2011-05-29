@@ -48,6 +48,9 @@ begin
 	
 	dout.varidx <= imout.data(7 downto 0);
 	dout.imm <= immr;
+	-- this decode is unregistered to drive
+	-- the DM read MUX
+	dout.indload <= decode.loadind;
 	
 -- decode process
 process(din, decode, imout, pc, zf)

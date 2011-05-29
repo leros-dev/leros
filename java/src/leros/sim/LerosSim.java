@@ -56,9 +56,6 @@ public class LerosSim {
 	char dm[] = new char[DM_SIZE];
 	int progSize = 0;
 
-	int accu;
-	int pc;
-
 	public LerosSim(LerosIO io, String[] args) {
 
 		this.io = io;
@@ -176,7 +173,11 @@ branch returns [int opc]
 	 */
 	public void simulate() {
 
+		int ar, pc, accu;
+		
 		pc = 1;
+		accu = 0;
+		ar = 0;
 		for (;;) {
 			
 			int next_pc = pc+1;
@@ -191,8 +192,7 @@ branch returns [int opc]
 				val = instr & 0xff;
 			} else {
 				val = dm[instr & 0xff];
-			}
-		
+			}		
 			
 			switch (instr & 0xfe00) {
 			case 0x0000: // nop
@@ -236,6 +236,15 @@ branch returns [int opc]
 					next_pc = pc + ((instr<<24)>>24);
 				}
 				break;
+			case 0x5000: // loadaddr
+				// nop, as it is only available one cycle later
+				break;
+			case 0x6000: // load indirect
+				accu = dm[ar + (instr & 0xff)];
+				break;
+			case 0x7000: // store indirect
+				dm[ar + (instr & 0xff)] = (char) accu;
+				break;
 //			case 7: // I/O (ld/st indirect)
 //				break;
 //			case 8: // brl
@@ -248,9 +257,17 @@ branch returns [int opc]
 			
 			// keep it in 16 bit
 			accu &= 0xffff;
+			// the address register is only available for one
+			// cycle later
+			ar = dm[instr & 0xff];
+
 			
 			if (log) {
-				System.out.println("PC: "+pc+ " accu: "+accu);
+				System.out.print("PC: "+pc+ " accu: "+accu+" ar: "+ar+" Mem: ");
+				for (int i=0; i<16; ++i) {
+					System.out.print(((int) dm[i])+" ");
+				}
+				System.out.println();
 			}
 			pc = next_pc;;
 		}

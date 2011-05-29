@@ -44,6 +44,8 @@ package leros_types is
 		store : std_logic;
 		outp : std_logic;
 		inp : std_logic;
+		loadind : std_logic;
+		storeind : std_logic;
 		-- the following are used *in* the decode stage, not in the ex stage
 		br_op : std_logic;
 		loadh : std_logic;
@@ -66,6 +68,7 @@ package leros_types is
 
 	type fedec_out_type is record
 		dec : decode_type;
+		indload : std_logic;
 		imm : std_logic_vector(15 downto 0);
 		varidx : std_logic_vector(7 downto 0);
 	end record;

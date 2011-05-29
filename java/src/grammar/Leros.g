@@ -111,7 +111,9 @@ instr returns [int opc] :
 	alu register {$opc = $alu.value + $register.value;} |
 	alu imm_val {$opc = $alu.value + $imm_val.value + 0x0100;} |
 	branch {$opc = $branch.opc;} |
-	io imm_val {$opc = $io.value + $imm_val.value;}
+	io imm_val {$opc = $io.value + $imm_val.value;} |
+	loadaddr register {$opc = $loadaddr.value + $register.value;} |
+	memind {$opc = $memind.value;}
 ;
 
 simple returns [int opc] :
@@ -133,6 +135,15 @@ alu returns [int value]:
 io returns [int value]: 
 	'out'    {$value = 0x3800;} |
 	'in'     {$value = 0x3c00;}
+	;
+
+loadaddr returns [int value]:
+	'loadaddr' {$value = 0x5000;}
+	;
+
+memind returns [int value]:
+	'load' '(' 'ar' '+' imm_val ')' {$value = 0x6000 + $imm_val.value;} |
+	'store' '(' 'ar' '+' imm_val ')' {$value = 0x7000 + $imm_val.value;}
 	;
 
 branch returns [int opc]
@@ -157,26 +168,14 @@ branch returns [int opc]
 // shall use register symbols form the HashMap
 register returns [int value]
 	: REG {$value = Integer.parseInt($REG.text.substring(1));
-		if ($value<0 || $value>31) throw new Error("Wrong register name");};
+		if ($value<0 || $value>255) throw new Error("Wrong register name");};
 
 imm_val returns [int value]
 	: INT {$value = Integer.parseInt($INT.text);
 //		if ($value<-128 || $value>127) throw new Error("Wrong immediate");};
 		if ($value<-128 || $value>255) throw new Error("Wrong immediate");};
 
-//		new Instruction("nop",   0x0000, 0, Type.NOP),
-//		new Instruction("add",   0x0800, 8, Type.ALU),
-//		new Instruction("sub",   0x0c00, 8, Type.ALU),
-//		new Instruction("shr",   0x1000, 8, Type.ALU),
-//		new Instruction("load",  0x2000, 8, Type.ALU),
-//		new Instruction("and",   0x2200, 8, Type.ALU),
-//		new Instruction("or",    0x2400, 8, Type.ALU),
-//		new Instruction("xor",   0x2600, 8, Type.ALU),
-//		new Instruction("loadh", 0x2800, 8, Type.ALU),
-//		new Instruction("store", 0x3000, 8, Type.NOP),
-//		new Instruction("out",   0x3800, 8, Type.IO),
-//		new Instruction("in",    0x3c00, 8, Type.IO),
-//		new Instruction("brnz",  0x4800, 8, Type.BRANCH),
+
 
 
 
@@ -185,8 +184,6 @@ imm_val returns [int value]
 
 INT :   '0'..'9'+ ;
 REG: 'r' INT;
-PRD: 'p' INT;
-TO: '->';
 
 ID: ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_' | '0'..'9')*;
 

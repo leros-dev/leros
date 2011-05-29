@@ -12,7 +12,7 @@ USB=true
 
 
 # Assembler files
-APP=hello
+APP=test
 # Altera FPGA configuration cable
 #BLASTER_TYPE=ByteBlasterMV
 BLASTER_TYPE=USB-Blaster
@@ -58,7 +58,7 @@ rom: tools
 	java -cp java/lib/leros-tools.jar$(S)lib/antlr-3.3-complete.jar \
 		leros.asm.LerosAsm -s asm -d vhdl/generated $(APP).asm
 jsim: tools
-	java -cp java/lib/leros-tools.jar -Dlog=false \
+	java -cp java/lib/leros-tools.jar -Dlog=true \
 		leros.sim.LerosSim rom.txt
 
 rom_old:
