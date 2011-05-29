@@ -52,12 +52,12 @@ tools:
 	javac -d java/classes -sourcepath java/src java/src/leros/sim/*.java
 	cd java/classes && jar cf ../lib/leros-tools.jar *
 
-rom: tools
+rom: 
 	-rm -rf vhdl/generated
 	mkdir vhdl/generated
 	java -cp java/lib/leros-tools.jar$(S)lib/antlr-3.3-complete.jar \
 		leros.asm.LerosAsm -s asm -d vhdl/generated $(APP).asm
-jsim: tools
+jsim: 
 	java -cp java/lib/leros-tools.jar -Dlog=true \
 		leros.sim.LerosSim rom.txt
 

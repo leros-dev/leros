@@ -100,7 +100,7 @@ begin
 			end if;
 		when "01000" =>		-- brl
 			null;
-		when "01001" =>		-- branch conditional
+		when "01001" =>		-- branch
 			dec.br_op <= '1';
 		when "01010" =>		-- loadaddr
 			null;

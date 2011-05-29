@@ -51,7 +51,7 @@ architecture rtl of leros_fedec is
 	signal imin : im_in_type;
 	signal imout : im_out_type;
 	
-	signal zf : std_logic;
+	signal zf, do_branch : std_logic;
 	
 	signal pc, pc_next : unsigned(IM_BITS-1 downto 0);
 	signal decode : decode_type;
@@ -84,7 +84,7 @@ begin
 end process;
 
 -- branch 
-process(din, decode, imout, pc, zf)
+process(din, decode, imout, pc, zf, do_branch)
 begin
 	-- should be checked in ModelSim
 	if unsigned(din.accu)=0 then
@@ -92,13 +92,39 @@ begin
 	else
 		zf <= '0';
 	end if;
+	do_branch <= '0'; -- is setting and reading a signal in on process ok style?
+	
+	-- check branch condition
+	if decode.br_op='1' then
+		case imout.data(10 downto 8) is
+			when "000" =>		-- branch
+				do_branch <= '1';
+			when "001" =>		-- brz
+				if zf='1' then
+					do_branch <= '1';
+				end if;
+			when "010" =>		-- brnz
+				if zf='0' then
+					do_branch <= '1';
+				end if;
+			when "011" =>		-- brp
+				if din.accu(15)='0' then
+					do_branch <= '1';
+				end if;
+			when "100" =>		-- brn
+				if din.accu(15)='1' then
+					do_branch <= '1';
+				end if;
+			when others =>
+				null;
+		end case;
+	end if;
 	
 	-- shall we do the branch in the ex stage so
 	-- we will have a real branch delay slot?
 	-- branch
 	pc_next <= pc+1;
-	if decode.br_op='1' and zf='0' then
-		-- now just do a bnz
+	if do_branch='1' then
 		pc_next <= pc + unsigned(resize(signed(imout.data(7 downto 0)), IM_BITS));
 	end if;
 	

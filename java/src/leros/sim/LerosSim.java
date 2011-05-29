@@ -59,12 +59,12 @@ public class LerosSim {
 	public LerosSim(LerosIO io, String[] args) {
 
 		this.io = io;
-		
+
 		String s = System.getProperty("log");
-		if (s!=null) {
+		if (s != null) {
 			log = s.equals("true");
 		}
-		
+
 		srcDir = System.getProperty("user.dir");
 		dstDir = System.getProperty("user.dir");
 		processOptions(args);
@@ -113,43 +113,43 @@ public class LerosSim {
 		return success;
 	}
 
-	
 	/**
-	 * Run the simulation.
-	 * First instruction is not executed as in the hardware.
+	 * Run the simulation. First instruction is not executed as in the hardware.
 	 */
 	public void simulate() {
 
 		int ar, pc, accu;
 		int accu_dly, accu_dly1;
-		
+
 		pc = 1;
 		accu = 0;
 		ar = 0;
 		accu_dly = accu_dly1 = 0;
-		
+
 		for (;;) {
-			
+
 			// two cycles delay for branch
 			// condition modeling
 			// We should model the 'real' pipeline in the simulator...
 			accu_dly = accu_dly1;
 			accu_dly1 = accu;
-			
-			int next_pc = pc+1;
-			if (pc>=progSize) {
+
+			int next_pc = pc + 1;
+			if (pc >= progSize) {
 				return;
 			}
 			int instr = im[pc];
 			int val;
 			// immediate value
-			if ((instr & 0x0100)!=0) {
-				// sign extension?
+			if ((instr & 0x0100) != 0) {
+				// take o bit from the instruction
 				val = instr & 0xff;
+				// sign extension to 16 bit
+				if ((val & 0x80)!=0) { val |= 0xff00; }
 			} else {
 				val = dm[instr & 0xff];
-			}		
-			
+			}
+
 			switch (instr & 0xfe00) {
 			case 0x0000: // nop
 				break;
@@ -162,7 +162,7 @@ public class LerosSim {
 			case 0x1000: // shr
 				accu >>>= 1;
 				break;
-			case 0x2000: // load --- sign extension or not?
+			case 0x2000: // load
 				accu = val;
 				break;
 			case 0x2200: // and
@@ -186,10 +186,32 @@ public class LerosSim {
 			case 0x3c00: // in
 				accu = io.read(instr & 0xff);
 				break;
-			case 0x4800: // brnz
+			case 0x4800: // branch
+				// at the moment just 8 bits offset (sign extension)
+				next_pc = pc + ((instr << 24) >> 24);
+				break;
+			case 0x4900: // brz
+				if (accu_dly == 0) {
+					// at the moment just 8 bits offset (sign extension)
+					next_pc = pc + ((instr << 24) >> 24);
+				}
+				break;
+			case 0x4a00: // brnz
 				if (accu_dly != 0) {
 					// at the moment just 8 bits offset (sign extension)
-					next_pc = pc + ((instr<<24)>>24);
+					next_pc = pc + ((instr << 24) >> 24);
+				}
+				break;
+			case 0x4b00: // brp
+				if ((accu_dly & 0x8000) == 0) {
+					// at the moment just 8 bits offset (sign extension)
+					next_pc = pc + ((instr << 24) >> 24);
+				}
+				break;
+			case 0x4c00: // brn
+				if ((accu_dly & 0x8000) != 0) {
+					// at the moment just 8 bits offset (sign extension)
+					next_pc = pc + ((instr << 24) >> 24);
 				}
 				break;
 			case 0x5000: // loadaddr
@@ -201,27 +223,28 @@ public class LerosSim {
 			case 0x7000: // store indirect
 				dm[ar + (instr & 0xff)] = (char) accu;
 				break;
-//			case 7: // I/O (ld/st indirect)
-//				break;
-//			case 8: // brl
-//				break;
-//			case 9: // br conditional
-//				break;
+			// case 7: // I/O (ld/st indirect)
+			// break;
+			// case 8: // brl
+			// break;
+			// case 9: // br conditional
+			// break;
 			default:
-				throw new Error("Instruction "+instr+" at address "+pc+" not implemented");
+				throw new Error("Instruction " + instr + " at address " + pc
+						+ " not implemented");
 			}
-			
+
 			// keep it in 16 bit
 			accu &= 0xffff;
 			// the address register is only available for one
 			// cycle later
 			ar = dm[instr & 0xff];
 
-			
 			if (log) {
-				System.out.print("PC: "+pc+ " accu: "+accu+" "+accu_dly+" ar: "+ar+" Mem: ");
-				for (int i=0; i<16; ++i) {
-					System.out.print(((int) dm[i])+" ");
+				System.out.print("PC: " + pc + " accu: " + accu + " "
+						+ accu_dly + " ar: " + ar + " Mem: ");
+				for (int i = 0; i < 16; ++i) {
+					System.out.print(((int) dm[i]) + " ");
 				}
 				System.out.println();
 			}

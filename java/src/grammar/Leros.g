@@ -116,7 +116,7 @@ instr returns [int opc] :
 	memind {$opc = $memind.value;}
 ;
 
-simple returns [int opc] :
+simple returns [int opc]:
 	'nop'    {$opc = 0x0000;} |
 	'shr'    {$opc = 0x1000;}
 	;
@@ -146,8 +146,8 @@ memind returns [int value]:
 	'store' '(' 'ar' '+' imm_val ')' {$value = 0x7000 + $imm_val.value;}
 	;
 
-branch returns [int opc]
-	: 'brnz' ID
+branch returns [int opc]:
+	brinstr ID
 	{
 		int off = 0;
 		if (pass2) {
@@ -162,18 +162,30 @@ branch returns [int opc]
 			// at the moment 8 bits offset
 			off &= 0xff;
 		}
-		$opc = 0x4800 + off;
+		$opc = $brinstr.value + off;
 	};
 
+brinstr returns [int value]:
+	'branch' {$value = 0x4800;} |
+	'brz' {$value = 0x4900;} |
+	'brnz' {$value = 0x4a00;} |
+	'brp' {$value = 0x4b00;} |
+	'brn' {$value = 0x4c00;}
+	;
+
 // shall use register symbols form the HashMap
-register returns [int value]
-	: REG {$value = Integer.parseInt($REG.text.substring(1));
+register returns [int value]:
+	REG {$value = Integer.parseInt($REG.text.substring(1));
 		if ($value<0 || $value>255) throw new Error("Wrong register name");};
 
-imm_val returns [int value]
-	: INT {$value = Integer.parseInt($INT.text);
-//		if ($value<-128 || $value>127) throw new Error("Wrong immediate");};
-		if ($value<-128 || $value>255) throw new Error("Wrong immediate");};
+// at the moment just 8 bit immediate
+// can be signed or unsigned 
+imm_val returns [int value]:
+	INT {$value = Integer.parseInt($INT.text);
+		if ($value<-128 || $value>255) throw new Error("Wrong immediate");} |
+	'-' INT {$value = (-Integer.parseInt($INT.text)) & 0xff;
+		if ($value<-128 || $value>255) throw new Error("Wrong immediate");} |
+	;
 
 
 
@@ -182,8 +194,9 @@ imm_val returns [int value]
 
 /* Lexer rules (start with upper case) */
 
-INT :   '0'..'9'+ ;
+INT :  '0'..'9'+ ;
 REG: 'r' INT;
+//SINT: '-'? INT;
 
 ID: ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_' | '0'..'9')*;
 
