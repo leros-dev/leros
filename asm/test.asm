@@ -4,20 +4,16 @@
 	nop
 // second instruction is executed twice
 
+// conditional branch has one cycle delay
+// for the condition
 start:
-	load 127
-	store r1
-	load 7
-	store r3
-	nop // there is a store/load delay on registers, right?
-	load 15
-	loadaddr r3
-	store (ar+1)
+	load 1
 	load 0
-	loadaddr r3
-	load (ar+1)
-	load r1
-	out 0
+	load 0
+	load 7 // branch condidition
+	load 0
+	brnz start
+	load 127
 
 
 
