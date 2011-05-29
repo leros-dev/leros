@@ -43,7 +43,6 @@ tools:
 	mkdir java/classes
 	mkdir java/lib
 	mkdir java/src/leros/asm/generated
-	javac -d java/classes -sourcepath java/src java/src/leros/*.java
 	java -classpath lib/antlr-3.3-complete.jar org.antlr.Tool \
 		-fo java/src/leros/asm/generated java/src/grammar/Leros.g
 	javac -classpath lib/antlr-3.3-complete.jar \
