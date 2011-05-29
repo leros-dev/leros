@@ -31,7 +31,6 @@ architecture rtl of leros_fedec is
 	signal zf : std_logic;
 	
 	signal pc, pc_next : unsigned(IM_BITS-1 downto 0);
-	signal ir, immr : std_logic_vector(15 downto 0);
 	signal decode : decode_type;
 
 begin
@@ -46,13 +45,22 @@ begin
 		imout.data(15 downto 8), decode
 	);
 	
-	dout.varidx <= imout.data(7 downto 0);
-	dout.imm <= immr;
-	-- this decode is unregistered to drive
-	-- the DM read MUX
-	dout.indload <= decode.loadind;
-	
--- decode process
+-- DM address selection
+process(decode, din, imout)
+	variable addr : std_logic_vector(15 downto 0);
+begin
+	addr := std_logic_vector(unsigned(din.dm_data) + unsigned(imout.data(7 downto 0)));
+	-- MUX for indirect load/store (from unregistered decode)
+	if decode.indls='1' then
+		dout.dm_addr <= addr(DM_BITS-1 downto 0);
+	else
+		-- If DM > 256 zero extend the varidx
+		dout.dm_addr <= imout.data(DM_BITS-1 downto 0);
+	end if;
+
+end process;
+
+-- branch 
 process(din, decode, imout, pc, zf)
 begin
 	-- should be checked in ModelSim
@@ -73,22 +81,21 @@ begin
 	
 end process;
 	
-
+-- pc register
 process(clk, reset)
 begin
 	if reset='1' then
 		pc <= (others => '0');
 	elsif rising_edge(clk) then
 		pc <= pc_next;
-		ir <= imout.data;
 		dout.dec <= decode;
 --		if decode.add_sub='1' then
 		-- sign extension depends on loadh?????
 		if decode.loadh='1' then
-			immr(7 downto 0) <= (others => '0');
-			immr(15 downto 8) <= imout.data(7 downto 0);
+			dout.imm(7 downto 0) <= (others => '0');
+			dout.imm(15 downto 8) <= imout.data(7 downto 0);
 		else
-			immr <= std_logic_vector(resize(signed(imout.data(7 downto 0)), 16));
+			dout.imm <= std_logic_vector(resize(signed(imout.data(7 downto 0)), 16));
 		end if;
 --		else
 --			immr(7 downto 0) <= imout.data(7 downto 0);

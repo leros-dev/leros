@@ -35,6 +35,7 @@ architecture rtl of leros is
 begin
 
 	fdin.accu <= exout.accu;
+	fdin.dm_data <= exout.dm_data;
 	ioout.addr <= fdout.imm(7 downto 0);
 	ioout.rd <= fdout.dec.inp;
 	ioout.wr <= fdout.dec.outp;

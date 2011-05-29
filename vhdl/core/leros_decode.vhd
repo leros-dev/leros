@@ -38,20 +38,13 @@ begin
 	dec.store <= '0';
 	dec.outp <= '0';
 	dec.inp <= '0';
-	dec.loadind <= '0';
-	dec.storeind <= '0';
-	
 	-- used in decode, not in ex
 	dec.br_op <= '0';
 	dec.loadh <= '0';
+	dec.indls<= '0';	
 	
-	-- log = '0'
-	dec.log_add <= '0';
-	-- add = '0'
-	dec.add_sub <= '0';	
-	
+	-- start decoding
 	dec.add_sub <= instr(2);
-
 	dec.sel_imm <= instr(0);
 	-- bit 1 and 2 partially unused
 	case instr(7 downto 3) is
@@ -91,9 +84,9 @@ begin
 		when "01100" =>		-- load indirect
 			dec.al_ena <= '1';
 			dec.ah_ena <= '1';
-			dec.loadind <= '1';
+			dec.indls <= '1';
 		when "01110" =>		-- store indirect
-			dec.storeind <= '1';
+			dec.indls <= '1';
 			dec.store <= '1';
 		when others =>
 			null;
