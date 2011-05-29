@@ -80,7 +80,8 @@ architecture rtl of leros_ex is
 	signal wrdata, rddata : std_logic_vector(15 downto 0);
 	signal wraddr, rdaddr : std_logic_vector(DM_BITS-1 downto 0);
 	
-	signal wraddr_reg : std_logic_vector(DM_BITS-1 downto 0);
+	signal wraddr_dly : std_logic_vector(DM_BITS-1 downto 0);
+	signal pc_dly : std_logic_vector(IM_BITS-1 downto 0);
 	
 
 begin
@@ -89,7 +90,8 @@ begin
 	dout.dm_data <= rddata;
 	rdaddr <= din.dm_addr;
 	-- address for the write needs one cycle delay
-	wraddr <= wraddr_reg;
+	wraddr <= wraddr_dly;
+	
 	
 process(din, rddata)
 begin
@@ -139,9 +141,16 @@ begin
 		
 end process;
 
-	-- a MUX for PC (jal ?) will be added
-	wrdata <= std_logic_vector(accu);
-	
+-- a MUX between 'normal' data and the PC for jal
+process(din, accu, pc_dly)
+begin
+	if din.dec.jal='1' then
+		wrdata(IM_BITS-1 downto 0) <= pc_dly;
+		wrdata(15 downto IM_BITS) <= (others => '0');
+	else
+		wrdata <= std_logic_vector(accu);
+	end if;
+end process;	
 
 
 process(clk, reset)
@@ -156,7 +165,8 @@ begin
 		if din.dec.ah_ena = '1' then
 			accu(15 downto 8) <= a_mux(15 downto 8);
 		end if;
-		wraddr_reg <= din.dm_addr;
+		wraddr_dly <= din.dm_addr;
+		pc_dly <= din.pc;
 		-- a simple output port for the hello world example
 --		if din.dec.outp='1' then
 --			dout.outp <= std_logic_vector(accu);

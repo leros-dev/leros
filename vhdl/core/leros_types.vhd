@@ -55,6 +55,7 @@ package leros_types is
 		-- the following are used *in* the decode stage, not in the ex stage
 		indls : std_logic;
 		br_op : std_logic;
+		jal : std_logic;
 		loadh : std_logic;
 	end record;
 
@@ -78,6 +79,7 @@ package leros_types is
 		dec : decode_type;
 		imm : std_logic_vector(15 downto 0);
 		dm_addr : std_logic_vector(DM_BITS-1 downto 0);
+		pc : std_logic_vector(IM_BITS-1 downto 0);
 	end record;
 
 -- 	type ex_in_type is record

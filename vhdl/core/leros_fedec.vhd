@@ -53,11 +53,13 @@ architecture rtl of leros_fedec is
 	
 	signal zf, do_branch : std_logic;
 	
-	signal pc, pc_next : unsigned(IM_BITS-1 downto 0);
+	signal pc, pc_next, pc_op, pc_add : unsigned(IM_BITS-1 downto 0);
 	signal decode : decode_type;
 
 begin
 
+	dout.pc <= std_logic_vector(pc_add);
+	
 	imin.rdaddr <= std_logic_vector(pc_next);
 	
 	im: entity work.leros_im port map(
@@ -84,7 +86,7 @@ begin
 end process;
 
 -- branch 
-process(din, decode, imout, pc, zf, do_branch)
+process(decode, din, do_branch, imout, pc, pc_add, pc_op, zf)
 begin
 	-- should be checked in ModelSim
 	if unsigned(din.accu)=0 then
@@ -123,9 +125,17 @@ begin
 	-- shall we do the branch in the ex stage so
 	-- we will have a real branch delay slot?
 	-- branch
-	pc_next <= pc+1;
 	if do_branch='1' then
-		pc_next <= pc + unsigned(resize(signed(imout.data(7 downto 0)), IM_BITS));
+		pc_op <= unsigned(resize(signed(imout.data(7 downto 0)), IM_BITS));
+	else
+		pc_op <= to_unsigned(1, IM_BITS);
+	end if;
+	pc_add <= pc + pc_op;
+	-- jump and link
+	if decode.jal='1' then
+		pc_next <= unsigned(din.accu(IM_BITS-1 downto 0));
+	else
+		pc_next <= pc_add;
 	end if;
 	
 end process;

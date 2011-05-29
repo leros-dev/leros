@@ -63,6 +63,7 @@ begin
 	dec.inp <= '0';
 	-- used in decode, not in ex
 	dec.br_op <= '0';
+	dec.jal <= '0';
 	dec.loadh <= '0';
 	dec.indls<= '0';	
 	
@@ -98,8 +99,9 @@ begin
 				dec.ah_ena <= '1';
 				dec.inp <= '1';
 			end if;
-		when "01000" =>		-- brl
-			null;
+		when "01000" =>		-- jal
+			dec.jal <= '1';
+			dec.store <= '1';
 		when "01001" =>		-- branch
 			dec.br_op <= '1';
 		when "01010" =>		-- loadaddr

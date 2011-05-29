@@ -186,6 +186,10 @@ public class LerosSim {
 			case 0x3c00: // in
 				accu = io.read(instr & 0xff);
 				break;
+			case 0x4000: // jal
+				dm[instr & 0xff] = (char) (pc+1);
+				next_pc = accu_dly;
+				break;
 			case 0x4800: // branch
 				// at the moment just 8 bits offset (sign extension)
 				next_pc = pc + ((instr << 24) >> 24);

@@ -129,7 +129,8 @@ alu returns [int value]:
 	'or'     {$value = 0x2400;} |
 	'xor'    {$value = 0x2600;} |
 	'loadh'  {$value = 0x2800;} |
-	'store'  {$value = 0x3000;} // TODO: no immediate version
+	'store'  {$value = 0x3000;} | // TODO: no immediate version
+	'jal'    {$value = 0x4000;} // no immediate version
 	;
 
 io returns [int value]: 
@@ -185,6 +186,32 @@ imm_val returns [int value]:
 		if ($value<-128 || $value>255) throw new Error("Wrong immediate");} |
 	'-' INT {$value = (-Integer.parseInt($INT.text)) & 0xff;
 		if ($value<-128 || $value>255) throw new Error("Wrong immediate");} |
+	'<' ID
+	{
+		int val = 0;
+		if (pass2) {
+			Integer v = (Integer) symbols.get($ID.text);
+        		if ( v!=null ) {
+				val = v.intValue() & 0xff;
+		        } else {
+				throw new Error("Undefined label "+$ID.text);
+			}
+		}
+		$value = val;
+	} |
+	'>' ID
+	{
+		int val = 0;
+		if (pass2) {
+			Integer v = (Integer) symbols.get($ID.text);
+        		if ( v!=null ) {
+				val = (v.intValue()>>8) & 0xff;
+		        } else {
+				throw new Error("Undefined label "+$ID.text);
+			}
+		}
+		$value = val;
+	}
 	;
 
 
