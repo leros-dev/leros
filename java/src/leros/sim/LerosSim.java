@@ -114,59 +114,6 @@ public class LerosSim {
 	}
 
 	
-/*
-// Is this additional rule needed to get all values up to instruction?
-instr returns [int opc] :
-	simple {$opc = $simple.opc;} |
-	alu register {$opc = $alu.value + $register.value;} |
-	alu imm_val {$opc = $alu.value + $imm_val.value + 0x0100;} |
-	branch {$opc = $branch.opc;} |
-	io imm_val {$opc = $io.value + $imm_val.value;}
-;
-
-simple returns [int opc] :
-	'nop'    {$opc = 0x0000;} |
-	'shr'    {$opc = 0x1000;}
-	;
-
-alu returns [int value]: 
-	'add'    {$value = 0x0800;} |
-	'sub'    {$value = 0x0c00;} |
-	'load'   {$value = 0x2000;} |
-	'and'    {$value = 0x2200;} |
-	'or'     {$value = 0x2400;} |
-	'xor'    {$value = 0x2600;} |
-	'loadh'  {$value = 0x2800;} |
-	'store'  {$value = 0x3000;} // TODO: no immediate version
-	;
-
-io returns [int value]: 
-	'out'    {$value = 0x3800;} |
-	'in'     {$value = 0x3c00;}
-	;
-
-branch returns [int opc]
-	: 'brnz' ID
-	{
-		int off = 0;
-		if (pass2) {
-			Integer v = (Integer) symbols.get($ID.text);
-        		if ( v!=null ) {
-				off = v.intValue();
-		        } else {
-				throw new Error("Undefined label "+$ID.text);
-			}
-			off = off - pc;
-			// TODO test maximum offset
-			// at the moment 8 bits offset
-			off &= 0xff;
-		}
-		$opc = 0x4800 + off;
-	};
-
-	
-	
- */
 	/**
 	 * Run the simulation.
 	 * First instruction is not executed as in the hardware.
@@ -174,11 +121,20 @@ branch returns [int opc]
 	public void simulate() {
 
 		int ar, pc, accu;
+		int accu_dly, accu_dly1;
 		
 		pc = 1;
 		accu = 0;
 		ar = 0;
+		accu_dly = accu_dly1 = 0;
+		
 		for (;;) {
+			
+			// two cycles delay for branch
+			// condition modeling
+			// We should model the 'real' pipeline in the simulator...
+			accu_dly = accu_dly1;
+			accu_dly1 = accu;
 			
 			int next_pc = pc+1;
 			if (pc>=progSize) {
@@ -231,7 +187,7 @@ branch returns [int opc]
 				accu = io.read(instr & 0xff);
 				break;
 			case 0x4800: // brnz
-				if (accu != 0) {
+				if (accu_dly != 0) {
 					// at the moment just 8 bits offset (sign extension)
 					next_pc = pc + ((instr<<24)>>24);
 				}
@@ -263,13 +219,14 @@ branch returns [int opc]
 
 			
 			if (log) {
-				System.out.print("PC: "+pc+ " accu: "+accu+" ar: "+ar+" Mem: ");
+				System.out.print("PC: "+pc+ " accu: "+accu+" "+accu_dly+" ar: "+ar+" Mem: ");
 				for (int i=0; i<16; ++i) {
 					System.out.print(((int) dm[i])+" ");
 				}
 				System.out.println();
 			}
-			pc = next_pc;;
+			pc = next_pc;
+
 		}
 	}
 
