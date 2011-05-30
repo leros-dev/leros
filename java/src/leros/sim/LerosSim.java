@@ -178,7 +178,7 @@ public class LerosSim {
 				accu = (accu & 0xff) + (val << 8);
 				break;
 			case 0x3000: // store
-				dm[val] = (char) accu;
+				dm[instr & 0x00ff] = (char) accu;
 				break;
 			case 0x3800: // out
 				io.write(instr & 0xff, accu);

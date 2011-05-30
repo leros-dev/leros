@@ -10,21 +10,9 @@
 // for target address in accu
 //
 start:
-	load <function
-	loadh >function // can be omitted for small programs
-	nop
-	jal r3
 	load 1
-	load 2
-	load 3
-	branch end
-function:
-	load 5
-	store r0
-	load r3
-	nop
-	jal r3
+	store r1
+	store r2
+	store r3
 end:
-	load 76
-	out 0
 
