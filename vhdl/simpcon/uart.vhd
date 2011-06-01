@@ -61,7 +61,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity sc_uart is
+entity uart is
 
 	generic (addr_bits : integer;
 			 clk_freq : integer;
@@ -74,10 +74,10 @@ entity sc_uart is
 
 -- SimpCon interface
 
-		address		: in std_logic_vector(addr_bits-1 downto 0);
-		wr_data		: in std_logic_vector(31 downto 0);
+		address		: in std_logic;
+		wr_data		: in std_logic_vector(15 downto 0);
 		rd, wr		: in std_logic;
-		rd_data		: out std_logic_vector(31 downto 0);
+		rd_data		: out std_logic_vector(15 downto 0);
 		rdy_cnt		: out unsigned(1 downto 0);
 
 		txd		: out std_logic;
@@ -85,9 +85,9 @@ entity sc_uart is
 		ncts	: in std_logic;
 		nrts	: out std_logic
 		);
-end sc_uart;
+end uart;
 
-architecture rtl of sc_uart is
+architecture rtl of uart is
 
 	component fifo is
 
@@ -161,7 +161,7 @@ architecture rtl of sc_uart is
 begin
 
 	rdy_cnt <= "00";	-- no wait states
-	rd_data(31 downto 8) <= std_logic_vector(to_unsigned(0, 24));
+	rd_data(15 downto 8) <= (others => '0');
 --
 --	The registered MUX is all we need for a SimpCon read.
 --	The read data is stored in registered rd_data.
@@ -177,14 +177,14 @@ begin
 			ua_rd <= '0';
 			if rd='1' then
 				-- that's our very simple address decoder
-				if address(0)='0' then
+				if address='0' then
 					rd_data(7 downto 0) <= "00000" & parity_error & rdrf & tdre;
 				else
 					rd_data(7 downto 0) <= ua_dout;
 					ua_rd <= rd;
 				end if;
 			end if;
-			if wr = '1' and address(0) = '0' then
+			if wr = '1' and address = '0' then
 				parity_mode(1 downto 0) <= wr_data(1 downto 0);
 			end if;
 		end if;
@@ -192,7 +192,7 @@ begin
 	end process;
 
 	-- write is on address offset 1	
-	ua_wr <= wr and address(0);
+	ua_wr <= wr and address;
 
 --
 --	serial clock

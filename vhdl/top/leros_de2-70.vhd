@@ -108,7 +108,33 @@ end process;
 	cpu: entity work.leros
 		port map(clk_int, int_res, ioout, ioin);
 
-	ioin.rddata(15 downto 4) <= (others => '0');
+--	ioin.rddata(15 downto 4) <= (others => '0');
+	
+		ua: entity work.uart generic map (
+			addr_bits => 1,
+			clk_freq => 100000000,
+			baud_rate => 115200,
+			txf_depth => 2,
+			txf_thres => 1,
+			rxf_depth => 2,
+			rxf_thres => 1
+		)
+		port map(
+			clk => clk_int,
+			reset => int_res,
+
+			address => ioout.addr(0),
+			wr_data => ioout.wrdata,
+			rd => ioout.rd,
+			wr => ioout.wr,
+			rd_data => ioin.rddata,
+			rdy_cnt => open,
+
+			txd	 => ser_txd,
+			rxd	 => ser_rxd,
+			ncts => '0',
+			nrts => open
+	);
 				
 process(clk_int)
 begin
@@ -119,7 +145,7 @@ begin
 		end if;
 		oLEDG <= outp(7 downto 0);
 		btn_reg <= iKEY;
-		ioin.rddata(3 downto 0) <= not btn_reg;
+--		ioin.rddata(3 downto 0) <= not btn_reg;
 	end if;
 end process;
 

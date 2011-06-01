@@ -8,21 +8,19 @@
 
 start:
 	load 76
-	out 0
+	out 1
 	load 101
-	out 0
+	out 1
 	load 114
-	out 0
+	out 1
 	load 111
-	out 0
+	out 1
 	load 115
-	out 0
+	out 1
 	load 13
-	out 0
+	out 1
 	load 10
-	out 0
+	out 1
 
-//	load 1
-//	nop
-//	brnz start
+	branch start
 

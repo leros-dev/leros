@@ -83,7 +83,7 @@ set_global_assignment -name VHDL_FILE ../../vhdl/core/leros_ex.vhd
 set_global_assignment -name VHDL_FILE ../../vhdl/core/leros.vhd
 set_global_assignment -name VHDL_FILE ../../vhdl/simpcon/sc_pack.vhd
 set_global_assignment -name VHDL_FILE ../../vhdl/simpcon/fifo.vhd
-set_global_assignment -name VHDL_FILE ../../vhdl/simpcon/sc_uart.vhd
+set_global_assignment -name VHDL_FILE ../../vhdl/simpcon/uart.vhd
 set_global_assignment -name VHDL_FILE ../../vhdl/altera/cyc2_pll.vhd
 set_global_assignment -name VHDL_FILE "../../vhdl/top/leros_de2-70.vhd"
 
