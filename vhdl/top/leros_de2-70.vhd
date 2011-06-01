@@ -45,7 +45,6 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 use work.leros_types.all;
-use work.sc_pack.all;
 
 
 entity leros_top_de2 is
@@ -111,12 +110,11 @@ end process;
 --	ioin.rddata(15 downto 4) <= (others => '0');
 	
 		ua: entity work.uart generic map (
-			addr_bits => 1,
 			clk_freq => 100000000,
 			baud_rate => 115200,
-			txf_depth => 2,
+			txf_depth => 1,
 			txf_thres => 1,
-			rxf_depth => 2,
+			rxf_depth => 1,
 			rxf_thres => 1
 		)
 		port map(
@@ -128,12 +126,9 @@ end process;
 			rd => ioout.rd,
 			wr => ioout.wr,
 			rd_data => ioin.rddata,
-			rdy_cnt => open,
 
 			txd	 => ser_txd,
-			rxd	 => ser_rxd,
-			ncts => '0',
-			nrts => open
+			rxd	 => ser_rxd
 	);
 				
 process(clk_int)

@@ -1,26 +1,39 @@
 --
+--  Copyright 2000-2011 Martin Schoeberl <masca@imm.dtu.dk>,
+--  All rights reserved.
 --
---  This file is a part of JOP, the Java Optimized Processor
---
---  Copyright (C) 2001-2008, Martin Schoeberl (martin@jopdesign.com)
---
---  This program is free software: you can redistribute it and/or modify
---  it under the terms of the GNU General Public License as published by
---  the Free Software Foundation, either version 3 of the License, or
---  (at your option) any later version.
---
---  This program is distributed in the hope that it will be useful,
---  but WITHOUT ANY WARRANTY; without even the implied warranty of
---  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
---  GNU General Public License for more details.
---
---  You should have received a copy of the GNU General Public License
---  along with this program.  If not, see <http://www.gnu.org/licenses/>.
---
+-- Redistribution and use in source and binary forms, with or without
+-- modification, are permitted provided that the following conditions are met:
+-- 
+--    1. Redistributions of source code must retain the above copyright notice,
+--       this list of conditions and the following disclaimer.
+-- 
+--    2. Redistributions in binary form must reproduce the above copyright
+--       notice, this list of conditions and the following disclaimer in the
+--       documentation and/or other materials provided with the distribution.
+-- 
+-- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER ``AS IS'' AND ANY EXPRESS
+-- OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+-- OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN
+-- NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY
+-- DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+-- (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+-- LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+-- ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+-- (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+-- THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-- 
+-- The views and conclusions contained in the software and documentation are
+-- those of the authors and should not be interpreted as representing official
+-- policies, either expressed or implied, of the copyright holder.
+-- 
 
 
 --
---	sc_uart.vhd
+--	This file is an adapted version of the SimpCon UART (from JOP).
+--	Simplify to have a one cycle read.
+--
+--	uart.vhd
 --
 --	8-N/E/O-1 serial interface
 --	
@@ -28,34 +41,154 @@
 --
 --	Author: Martin Schoeberl	martin@jopdesign.com
 --
---
---	resources on ACEX1K30-3
---
---		100 LCs, max 90 MHz
---
---	resetting rts with fifo_full-1 works with C program on pc
---	but not with javax.comm: sends some more bytes after deassert
---	of rts (16 byte blocks regardless of rts).
---	Try to stop with half full fifo.
---
---	todo:
---
---
---	2000-12-02	first working version
---	2002-01-06	changed tdr and rdr to fifos.
---	2002-05-15	changed clkdiv calculation
---	2002-11-01	don't wait if read fifo is full, just drop the byte
---	2002-11-03	use threshold in fifo to reset rts 
---				don't send if cts is '0'
---	2002-11-08	rx fifo to 20 characters and stop after 4
---	2003-07-05	new IO standard, change cts/rts to neg logic
---	2003-09-19	sync ncts in!
---	2004-03-23	two stop bits
---	2005-11-30	change interface to SimpCon
---	2006-08-07	rxd input register with clk to avoid Quartus tsu violation
---	2006-08-13	use 3 FFs for the rxd input at clk
---  2009-03-03  incorporate changes for parity bits
 
+--	2000-12-02	first working version
+--  history deleted
+--	2011-06-02	simplify for Leros
+
+
+--
+--	The FIFO for read and write buffers
+--
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity fifo_elem is
+
+generic (width : integer);
+port (
+	clk		: in std_logic;
+	reset	: in std_logic;
+
+	din		: in std_logic_vector(width-1 downto 0);
+	dout	: out std_logic_vector(width-1 downto 0);
+
+	rd		: in std_logic;
+	wr		: in std_logic;
+
+	rd_prev	: out std_logic;
+	full	: out std_logic
+);
+end fifo_elem;
+
+architecture rtl of fifo_elem is
+
+	signal buf		: std_logic_vector(width-1 downto 0);
+	signal f		: std_logic;
+
+begin
+
+	dout <= buf;
+
+process(clk, reset, f)
+
+begin
+
+	full <= f;
+
+	if (reset='1') then
+
+		buf <= (others => '0');
+		f <= '0';
+		rd_prev <= '0';
+
+	elsif rising_edge(clk) then
+
+		rd_prev <= '0';
+		if f='0' then
+			if wr='1' then
+				rd_prev <= '1';
+				buf <= din;
+				f <= '1';
+			end if;
+		else
+			if rd='1' then
+				f <= '0';
+			end if;
+		end if;
+
+	end if;
+
+end process;
+
+end rtl;
+
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity fifo is
+
+generic (width : integer := 8; depth : integer := 4; thres : integer := 2);
+port (
+	clk		: in std_logic;
+	reset	: in std_logic;
+
+	din		: in std_logic_vector(width-1 downto 0);
+	dout	: out std_logic_vector(width-1 downto 0);
+
+	rd		: in std_logic;
+	wr		: in std_logic;
+
+	empty	: out std_logic;
+	full	: out std_logic;
+	half	: out std_logic
+);
+end fifo ;
+
+architecture rtl of fifo is
+
+component fifo_elem is
+
+generic (width : integer);
+port (
+	clk		: in std_logic;
+	reset	: in std_logic;
+
+	din		: in std_logic_vector(width-1 downto 0);
+	dout	: out std_logic_vector(width-1 downto 0);
+
+	rd		: in std_logic;
+	wr		: in std_logic;
+
+	rd_prev	: out std_logic;
+	full	: out std_logic
+);
+end component;
+
+	signal r, w, rp, f	: std_logic_vector(depth-1 downto 0);
+	type d_array is array (0 to depth-1) of std_logic_vector(width-1 downto 0);
+	signal di, do		: d_array;
+	
+begin
+
+
+	g1: for i in 0 to depth-1 generate
+
+		f1: fifo_elem generic map (width)
+			port map (clk, reset, di(i), do(i), r(i), w(i), rp(i), f(i));
+
+		x: if i<depth-1 generate
+			r(i) <= rp(i+1);
+			w(i+1) <= f(i);
+			di(i+1) <= do(i);
+		end generate;
+
+	end generate;
+
+	di(0) <= din;
+	dout <= do(depth-1);
+	w(0) <= wr;
+	r(depth-1) <= rd;
+
+	full <= f(0);
+	half <= f(depth-thres);
+	empty <= not f(depth-1);
+	
+end rtl;
+
+--
+--	The UART
+--
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -63,8 +196,7 @@ use ieee.numeric_std.all;
 
 entity uart is
 
-	generic (addr_bits : integer;
-			 clk_freq : integer;
+	generic (clk_freq : integer;
 			 baud_rate : integer;
 			 txf_depth : integer; txf_thres : integer;
 			 rxf_depth : integer; rxf_thres : integer);
@@ -78,12 +210,9 @@ entity uart is
 		wr_data		: in std_logic_vector(15 downto 0);
 		rd, wr		: in std_logic;
 		rd_data		: out std_logic_vector(15 downto 0);
-		rdy_cnt		: out unsigned(1 downto 0);
 
 		txd		: out std_logic;
-		rxd		: in std_logic;
-		ncts	: in std_logic;
-		nrts	: out std_logic
+		rxd		: in std_logic
 		);
 end uart;
 
@@ -124,8 +253,6 @@ architecture rtl of uart is
 	signal tf_full		: std_logic;
 	signal tf_half		: std_logic;
 
-	signal ncts_buf		: std_logic_vector(2 downto 0);	-- sync in
-
 	signal tsr			: std_logic_vector(10 downto 0); -- tx shift register
 
 	signal tx_clk		: std_logic;
@@ -160,8 +287,21 @@ architecture rtl of uart is
 
 begin
 
-	rdy_cnt <= "00";	-- no wait states
 	rd_data(15 downto 8) <= (others => '0');
+	
+process(address, rd, rdrf, tdre, ua_dout)
+begin
+	ua_rd <= '0';
+	if address='0' then
+		rd_data(7 downto 0) <= "000000" & rdrf & tdre;
+	else
+		rd_data(7 downto 0) <= ua_dout;
+		if rd='1' then
+			ua_rd <= rd;
+		end if;
+	end if;
+end process;
+
 --
 --	The registered MUX is all we need for a SimpCon read.
 --	The read data is stored in registered rd_data.
@@ -170,20 +310,9 @@ begin
 	begin
 
 		if (reset='1') then
-			rd_data(7 downto 0) <= (others => '0');
 			parity_mode <= PARITY_NONE;
 		elsif rising_edge(clk) then
 
-			ua_rd <= '0';
-			if rd='1' then
-				-- that's our very simple address decoder
-				if address='0' then
-					rd_data(7 downto 0) <= "00000" & parity_error & rdrf & tdre;
-				else
-					rd_data(7 downto 0) <= ua_dout;
-					ua_rd <= rd;
-				end if;
-			end if;
 			if wr = '1' and address = '0' then
 				parity_mode(1 downto 0) <= wr_data(1 downto 0);
 			end if;
@@ -280,12 +409,8 @@ begin
 			uart_tx_state <= s0;
 			tsr <= "11111111111";
 			tf_rd <= '0';
-			ncts_buf <= "111";
 
 		elsif rising_edge(clk) then
-
-			ncts_buf(0) <= ncts;
-			ncts_buf(2 downto 1) <= ncts_buf(1 downto 0);
 
 			case uart_tx_state is
 
@@ -301,7 +426,7 @@ begin
 					end if;
 					
 					i := 0;
-					if (tf_empty='0' and ncts_buf(2)='0') then
+					if tf_empty='0' then
 						uart_tx_state <= s1;
 						tsr <= parity_tx & tf_dout & '0' & '1';
 						tf_rd <= '1';
@@ -335,10 +460,12 @@ begin
 		port map (clk, reset, rsr(8 downto 1), ua_dout, ua_rd, rf_wr, rf_empty, rf_full, rf_half);
 
 	rdrf <= not rf_empty;
-	nrts <= rf_half;			-- glitches even on empty fifo!
 
 --
 --	filter rxd
+--
+-- TODO: this is not really needed and should go away
+-- just do a dual FF synchronizer
 --
 	with rx_buf select
 		rx_d <=	'0' when "000",
