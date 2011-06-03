@@ -190,34 +190,6 @@ public class LerosSim {
 				dm[instr & 0xff] = (char) (pc+1);
 				next_pc = accu_dly;
 				break;
-			case 0x4800: // branch
-				// at the moment just 8 bits offset (sign extension)
-				next_pc = pc + ((instr << 24) >> 24);
-				break;
-			case 0x4900: // brz
-				if (accu_dly == 0) {
-					// at the moment just 8 bits offset (sign extension)
-					next_pc = pc + ((instr << 24) >> 24);
-				}
-				break;
-			case 0x4a00: // brnz
-				if (accu_dly != 0) {
-					// at the moment just 8 bits offset (sign extension)
-					next_pc = pc + ((instr << 24) >> 24);
-				}
-				break;
-			case 0x4b00: // brp
-				if ((accu_dly & 0x8000) == 0) {
-					// at the moment just 8 bits offset (sign extension)
-					next_pc = pc + ((instr << 24) >> 24);
-				}
-				break;
-			case 0x4c00: // brn
-				if ((accu_dly & 0x8000) != 0) {
-					// at the moment just 8 bits offset (sign extension)
-					next_pc = pc + ((instr << 24) >> 24);
-				}
-				break;
 			case 0x5000: // loadaddr
 				// nop, as it is only available one cycle later
 				break;
@@ -234,9 +206,46 @@ public class LerosSim {
 			// case 9: // br conditional
 			// break;
 			default:
-				throw new Error("Instruction " + instr + " at address " + pc
-						+ " not implemented");
+				// branches use the immediate bit for decode
+				// TODO: we could change the encoding so it
+				// does not 'consume' the immediate bit - would
+				// this be simpler (and lead to less HW?)
+				switch (instr & 0xff00) {
+				case 0x4800: // branch
+					// at the moment just 8 bits offset (sign extension)
+					next_pc = pc + ((instr << 24) >> 24);
+					break;
+				case 0x4900: // brz
+					if (accu_dly == 0) {
+						// at the moment just 8 bits offset (sign extension)
+						next_pc = pc + ((instr << 24) >> 24);
+					}
+					break;
+				case 0x4a00: // brnz
+					if (accu_dly != 0) {
+						// at the moment just 8 bits offset (sign extension)
+						next_pc = pc + ((instr << 24) >> 24);
+					}
+					break;
+				case 0x4b00: // brp
+					if ((accu_dly & 0x8000) == 0) {
+						// at the moment just 8 bits offset (sign extension)
+						next_pc = pc + ((instr << 24) >> 24);
+					}
+					break;
+				case 0x4c00: // brn
+					if ((accu_dly & 0x8000) != 0) {
+						// at the moment just 8 bits offset (sign extension)
+						next_pc = pc + ((instr << 24) >> 24);
+					}
+					break;
+
+				default:
+					throw new Error("Instruction " + instr + " at address " + pc
+							+ " not implemented");
+				}
 			}
+
 
 			// keep it in 16 bit
 			accu &= 0xffff;
