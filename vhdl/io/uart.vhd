@@ -118,7 +118,7 @@ use ieee.std_logic_1164.all;
 
 entity fifo is
 
-generic (width : integer := 8; depth : integer := 4; thres : integer := 2);
+generic (width : integer := 8; depth : integer := 4);
 port (
 	clk		: in std_logic;
 	reset	: in std_logic;
@@ -130,8 +130,7 @@ port (
 	wr		: in std_logic;
 
 	empty	: out std_logic;
-	full	: out std_logic;
-	half	: out std_logic
+	full	: out std_logic
 );
 end fifo ;
 
@@ -181,13 +180,14 @@ begin
 	r(depth-1) <= rd;
 
 	full <= f(0);
-	half <= f(depth-thres);
 	empty <= not f(depth-1);
 	
 end rtl;
 
 --
 --	The UART
+-- this UART consumes 104 LCs!!! The original version
+-- was way smaller - let's get it down again.
 --
 
 library ieee;
@@ -198,8 +198,8 @@ entity uart is
 
 	generic (clk_freq : integer;
 			 baud_rate : integer;
-			 txf_depth : integer; txf_thres : integer;
-			 rxf_depth : integer; rxf_thres : integer);
+			 txf_depth : integer;
+			 rxf_depth : integer);
 	port (
 		clk		: in std_logic;
 		reset	: in std_logic;
@@ -220,7 +220,7 @@ architecture rtl of uart is
 
 	component fifo is
 
-		generic (width : integer; depth : integer; thres : integer);
+		generic (width : integer; depth : integer);
 		port (
 			clk		: in std_logic;
 			reset	: in std_logic;
@@ -232,8 +232,7 @@ architecture rtl of uart is
 			wr		: in std_logic;
 
 			empty	: out std_logic;
-			full	: out std_logic;
-			half	: out std_logic
+			full	: out std_logic
 			);
 	end component;
 
@@ -251,9 +250,8 @@ architecture rtl of uart is
 	signal tf_rd		: std_logic;
 	signal tf_empty		: std_logic;
 	signal tf_full		: std_logic;
-	signal tf_half		: std_logic;
 
-	signal tsr			: std_logic_vector(10 downto 0); -- tx shift register
+	signal tsr			: std_logic_vector(9 downto 0); -- tx shift register
 
 	signal tx_clk		: std_logic;
 
@@ -264,31 +262,24 @@ architecture rtl of uart is
 	signal rf_wr		: std_logic;
 	signal rf_empty		: std_logic;
 	signal rf_full		: std_logic;
-	signal rf_half		: std_logic;
 
 	signal rxd_reg		: std_logic_vector(2 downto 0);
 	signal rx_buf		: std_logic_vector(2 downto 0);	-- sync in, filter
 	signal rx_d			: std_logic;					-- rx serial data
 	
-	signal rsr			: std_logic_vector(10 downto 0); -- rx shift register
+	signal rsr			: std_logic_vector(9 downto 0); -- rx shift register
 
 	signal rx_clk		: std_logic;
 	signal rx_clk_ena	: std_logic;
 	
-	constant PARITY_NONE : std_logic_vector(1 downto 0) := "00";
-	constant PARITY_ODD : std_logic_vector(1 downto 0) := "01";
-	constant PARITY_EVEN : std_logic_vector(1 downto 0) := "11";
-
-	signal parity_mode  : std_logic_vector(1 downto 0) := PARITY_NONE;
-	signal parity_error  : std_logic;
-
 	constant clk16_cnt	: integer := (clk_freq/baud_rate+8)/16-1;
 	
 
 begin
 
 	rd_data(15 downto 8) <= (others => '0');
-	
+
+-- This is a single cycle read, different from SimpCon	
 process(address, rd, rdrf, tdre, ua_dout)
 begin
 	ua_rd <= '0';
@@ -301,24 +292,6 @@ begin
 		end if;
 	end if;
 end process;
-
---
---	The registered MUX is all we need for a SimpCon read.
---	The read data is stored in registered rd_data.
---
-	process(clk, reset)
-	begin
-
-		if (reset='1') then
-			parity_mode <= PARITY_NONE;
-		elsif rising_edge(clk) then
-
-			if wr = '1' and address = '0' then
-				parity_mode(1 downto 0) <= wr_data(1 downto 0);
-			end if;
-		end if;
-
-	end process;
 
 	-- write is on address offset 1	
 	ua_wr <= wr and address;
@@ -391,23 +364,22 @@ end process;
 --
 --	transmit fifo
 --
-	tf: fifo generic map (8, txf_depth, txf_thres)
-		port map (clk, reset, wr_data(7 downto 0), tf_dout, tf_rd, ua_wr, tf_empty, tf_full, tf_half);
+	tf: fifo generic map (8, txf_depth)
+		port map (clk, reset, wr_data(7 downto 0), tf_dout, tf_rd, ua_wr, tf_empty, tf_full);
 
 --
 --	state machine for actual shift out
 --
 	process(clk, reset)
 
-		variable i : integer range 0 to 12;
-		variable parity_tx  : std_logic;
+		variable i : integer range 0 to 11;
 
 	begin
 		
 
 		if (reset='1') then
 			uart_tx_state <= s0;
-			tsr <= "11111111111";
+			tsr <= "1111111111";
 			tf_rd <= '0';
 
 		elsif rising_edge(clk) then
@@ -415,30 +387,22 @@ end process;
 			case uart_tx_state is
 
 				when s0 =>
-
-					-- even parity
-					parity_tx := ( (tf_dout(7) xor tf_dout(6)) xor (tf_dout(5) xor tf_dout(4)) ) xor ( (tf_dout(3) xor tf_dout(2)) xor (tf_dout(1) xor tf_dout(0)) );
-
-					if (parity_mode = PARITY_ODD) then   -- odd parity
-						parity_tx := not parity_tx;
-					elsif (parity_mode = PARITY_NONE) then  -- no parity, stop bit
-						parity_tx := '1';
-					end if;
 					
 					i := 0;
 					if tf_empty='0' then
 						uart_tx_state <= s1;
-						tsr <= parity_tx & tf_dout & '0' & '1';
+						-- is there a reason to start with a stop bit?
+						tsr <= tf_dout & '0' & '1';
 						tf_rd <= '1';
 					end if; 
 
 				when s1 =>
 					tf_rd <= '0';
 					if (tx_clk='1') then
-						tsr(10) <= '1';
-						tsr(9 downto 0) <= tsr(10 downto 1);
+						tsr(9) <= '1';
+						tsr(8 downto 0) <= tsr(9 downto 1);
 						i := i+1;
-						if (i=12) or (i=11 and parity_mode=PARITY_NONE) then -- two stop bits
+						if i=11 then
 							uart_tx_state <= s0;
 						end if;
 						
@@ -456,8 +420,8 @@ end process;
 --
 --	receive fifo
 --
-	rf: fifo generic map (8, rxf_depth, rxf_thres)
-		port map (clk, reset, rsr(8 downto 1), ua_dout, ua_rd, rf_wr, rf_empty, rf_full, rf_half);
+	rf: fifo generic map (8, rxf_depth)
+		port map (clk, reset, rsr(8 downto 1), ua_dout, ua_rd, rf_wr, rf_empty, rf_full);
 
 	rdrf <= not rf_empty;
 
@@ -483,17 +447,15 @@ end process;
 --
 	process(clk, reset)
 
-		variable i : integer range 0 to 11;
-		variable parity_rx : std_logic;
+		variable i : integer range 0 to 10;
 
 	begin
 
 		if (reset='1') then
 			uart_rx_state <= s0;
-			rsr <= "00000000000";
+			rsr <= "0000000000";
 			rf_wr <= '0';
 			rx_clk_ena <= '0';
-			parity_error <= '0';
 
 		elsif rising_edge(clk) then
 
@@ -512,18 +474,11 @@ end process;
 
 				when s1 =>
 					if (rx_clk='1') then
-						rsr(10) <= rx_d;
-						rsr(9 downto 0) <= rsr(10 downto 1);
+						rsr(9) <= rx_d;
+						rsr(8 downto 0) <= rsr(9 downto 1);
 						i := i+1;
 
-						if i=11 then
-							uart_rx_state <= s2;
-						end if;
-
-						if i=10 and parity_mode=PARITY_NONE then
-							rsr(10) <= rx_d;
-							rsr(9) <= rx_d;
-							rsr(8 downto 0) <= rsr(10 downto 2);
+						if i=10 then
 							uart_rx_state <= s2;
 						end if;
 					end if;
@@ -531,22 +486,7 @@ end process;
 				when s2 =>
 					rx_clk_ena <= '0';
 					
-					if rsr(0)='0' and rsr(10)='1' then
-						
-						parity_rx := ( (rsr(8) xor rsr(7)) xor (rsr(6) xor rsr(5)) ) xor ( (rsr(4) xor rsr(3)) xor (rsr(2) xor rsr(1)) );
-
-						if (rsr(9) = parity_rx) then -- ok for even parity
-							parity_error <= '0';
-							if (parity_mode = PARITY_ODD) then  -- odd parity
-								parity_error <= '1';								
-							end if;
-						else -- ok for odd parity
-							parity_error <= '0';
-							if (parity_mode = PARITY_EVEN) then  -- even parity
-								parity_error <= '1';
-							end if;
-						end if;
-						
+					if rsr(0)='0' and rsr(9)='1' then						
 						if rf_full='0' then				-- if full just drop it
 							rf_wr <= '1';
 						end if;

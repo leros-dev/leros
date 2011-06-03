@@ -113,9 +113,7 @@ end process;
 			clk_freq => 100000000,
 			baud_rate => 115200,
 			txf_depth => 1,
-			txf_thres => 1,
-			rxf_depth => 1,
-			rxf_thres => 1
+			rxf_depth => 1
 		)
 		port map(
 			clk => clk_int,
