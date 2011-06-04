@@ -31,6 +31,8 @@
 
 package leros.sim;
 
+import java.io.IOException;
+
 /**
  * Simulation of IO devices connected to Leros. IO mapping is at the moment not
  * the same as in VHDL.
@@ -44,7 +46,7 @@ public class LerosIO {
 
 	public void write(int addr, int data) {
 		switch (addr) {
-		case UART:
+		case UART+1:	// data register
 			System.out.print((char) data);
 			break;
 
@@ -58,10 +60,23 @@ public class LerosIO {
 
 		int ret = 0;
 		switch (addr) {
-		case UART:
-			ret = 'a';
+		case UART:		// status register
+			ret = 1;
+			try {
+				if (System.in.available()!=0) {
+					ret |= 2;
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			break;
-
+		case UART+1:	// data registers
+			try {
+				ret = System.in.read();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			break;
 		default:
 			System.out.println("IO address " + addr + " not defined");
 			break;

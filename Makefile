@@ -57,7 +57,7 @@ rom:
 	java -cp java/lib/leros-tools.jar$(S)lib/antlr-3.3-complete.jar \
 		leros.asm.LerosAsm -s asm -d vhdl/generated $(APP).asm
 jsim: rom
-	java -cp java/lib/leros-tools.jar -Dlog=true \
+	java -cp java/lib/leros-tools.jar -Dlog=false \
 		leros.sim.LerosSim rom.txt
 
 rom_old:
