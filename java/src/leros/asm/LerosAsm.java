@@ -46,7 +46,7 @@ import leros.asm.generated.*;
 
 public class LerosAsm {
 
-	static final int ADDRBITS = 8;
+	static final int ADDRBITS = 9;
 	static final int DATABITS = 16;
 	static final int ROM_LEN = 1 << ADDRBITS;
 

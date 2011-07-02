@@ -13,6 +13,7 @@ USB=false
 
 # Assembler files
 APP=test
+APP=muvium
 # Altera FPGA configuration cable
 #BLASTER_TYPE=ByteBlasterMV
 BLASTER_TYPE=USB-Blaster
@@ -59,6 +60,8 @@ rom:
 jsim: rom
 	java -cp java/lib/leros-tools.jar -Dlog=false \
 		leros.sim.LerosSim rom.txt
+sim: rom
+	cd modelsim; make
 
 rom_old:
 	-rm -rf vhdl/generated
