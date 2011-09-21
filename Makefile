@@ -38,6 +38,7 @@ QPROJ=dspio
 # Some shortcuts
 MUVIUM=LerosMuviumSDK
 MUVIUM_CP=./$(S)./lib/Muvium-Leros.jar$(S)./lib/Muvium-Leros-API.jar$(S)./lib/jdom.jar$(S)./lib/jaxen.jar$(S).
+TARGET_SRC=java/target/src
 
 all: directories tools rom
 	make lerosusb
@@ -47,24 +48,32 @@ directories:
 	-mkdir rbf
 
 tools:
-	-rm -rf java/classes
-	-rm -rf java/lib
-	-rm -rf java/src/leros/asm/generated
-	mkdir java/classes
-	mkdir java/lib
-	mkdir java/src/leros/asm/generated
+	-rm -rf rbf
+	-rm -rf java/tools/classes
+	-rm -rf java/tools/lib
+	-rm -rf java/tools/src/leros/asm/generated
+	mkdir rbf
+	mkdir java/tools/classes
+	mkdir java/tools/lib
+	mkdir java/tools/src/leros/asm/generated
 	java -classpath lib/antlr-3.3-complete.jar org.antlr.Tool \
-		-fo java/src/leros/asm/generated java/src/grammar/Leros.g
+		-fo java/tools/src/leros/asm/generated \
+		java/tools/src/grammar/Leros.g
 	javac -classpath lib/antlr-3.3-complete.jar \
-		-d java/classes java/src/leros/asm/generated/*.java \
-		java/src/leros/asm/*.java
-	javac -d java/classes -sourcepath java/src java/src/leros/sim/*.java
-	cd java/classes && jar cf ../lib/leros-tools.jar *
+		-d java/tools/classes java/tools/src/leros/asm/generated/*.java \
+		java/tools/src/leros/asm/*.java
+	javac -d java/tools/classes -sourcepath \
+		java/tools/src java/tools/src/leros/sim/*.java
+	cd java/tools/classes && jar cf ../lib/leros-tools.jar *
 
 java_app:
-	cd $(MUVIUM); javac -target 1.5 -g -cp ./$(S)./lib/Muvium-Leros-API.jar$(S).  Blink.java
-	cd $(MUVIUM); java -cp $(MUVIUM_CP) MuviumMetal Blink config.xml  muvium.asm
-	cd $(MUVIUM); cp muvium.asm ../asm
+	-rm -rf java/target/classes
+	mkdir java/target/classes
+	javac -target 1.5 -g -cp $(MUVIUM)/lib/Muvium-Leros-API.jar \
+		-d java/target/classes -sourcepath  $(TARGET_SRC) $(TARGET_SRC)/$(JAPP).java
+	cd $(MUVIUM); java -cp $(MUVIUM_CP)$(S)../java/target/classes \
+		MuviumMetal $(JAPP) config.xml ../asm/muvium.asm
+#	cd $(MUVIUM); cp muvium.asm ../asm
 
 japp:
 	make java_app
@@ -75,7 +84,7 @@ japp:
 rom: 
 	-rm -rf vhdl/generated
 	mkdir vhdl/generated
-	java -cp java/lib/leros-tools.jar$(S)lib/antlr-3.3-complete.jar \
+	java -cp java/tools/lib/leros-tools.jar$(S)lib/antlr-3.3-complete.jar \
 		leros.asm.LerosAsm -s asm -d vhdl/generated $(APP).asm
 
 jsim: rom
