@@ -1,5 +1,4 @@
-import leros.Native;
-
+import com.muvium.leros.Native;
 import com.muvium.MuviumRunnable;
 
 /*
@@ -11,22 +10,29 @@ import com.muvium.MuviumRunnable;
 public class Blink extends MuviumRunnable {
 
  
-    public void run(){
-	for (;;) {
-		Native.wr(0, 0);
-		for (int i=0; i<255; ++i)
-			for (int j=0; j<255; ++j)
-				for (int k=0; k<255; ++k)
-					for (int l=0; l<255; ++l)
-						;
-		Native.wr(1, 0);
-		for (int i=0; i<255; ++i)
-			for (int j=0; j<255; ++j)
-				for (int k=0; k<255; ++k)
-					for (int l=0; l<255; ++l)
-						;
+	private static void delayMs( int milliseconds ){
+		for (int i= milliseconds; i != 0; i--)
+			 for (int j=100; j != 0; j--);
 	}
+	
+    public void run(){
+    	
+    	for (;;) {
+    		Native.wr(0, 0);
+ 
+    		delayMs( 250 );
+    		
+     		Native.wr(1, 0);
+     		
+     		delayMs( 250 );
+    		
+    		
+    	} 
     }
+    
 }
+
+	
+ 
 
  

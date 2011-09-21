@@ -31,8 +31,6 @@
 
 package leros.sim;
 
-import java.io.IOException;
-
 /**
  * Simulation of IO devices connected to Leros. IO mapping is at the moment not
  * the same as in VHDL.
@@ -40,47 +38,49 @@ import java.io.IOException;
  * @author martin
  * 
  */
-public class LerosIO {
+public class LerosIO implements ILerosIO{
 
-	final static int UART = 0;
+    final static int UART_STATUS = 0;
+    final static int UART_IO = 1;
+    final static int LED = 2;
+    
+    int[] command = new int[]{ 10,10,30,20,1,1};
+    int commandIndex = 0;
+    
+    public void write(int addr, int data) {
+        switch (addr) {
+ 
+        case UART_IO:
+          
+            System.out.println( data);
+           
+            break;
+            
+        case LED:
+            System.out.println( "LED = " + String.valueOf(data) );
+            break;
+        default:
+            System.out.println("IO address " + addr + " not defined");
+            break;
+        }
+    }
 
-	public void write(int addr, int data) {
-		switch (addr) {
-		case UART+1:	// data register
-			System.out.print((char) data);
-			break;
+    public int read(int addr) {
 
-		default:
-			System.out.println("IO address " + addr + " not defined");
-			break;
-		}
-	}
+        int ret = 0;
+        switch (addr) {
+        case UART_STATUS:
+            ret = 255;
+            break;
+        case UART_IO:
+            ret = command[commandIndex++];
+            if( commandIndex == command.length ) commandIndex=0;
+            break;
 
-	public int read(int addr) {
-
-		int ret = 0;
-		switch (addr) {
-		case UART:		// status register
-			ret = 1;
-			try {
-				if (System.in.available()!=0) {
-					ret |= 2;
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			break;
-		case UART+1:	// data registers
-			try {
-				ret = System.in.read();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			break;
-		default:
-			System.out.println("IO address " + addr + " not defined");
-			break;
-		}
-		return ret;
-	}
+        default:
+            System.out.println("IO address " + addr + " not defined");
+            break;
+        }
+        return ret;
+    }
 }

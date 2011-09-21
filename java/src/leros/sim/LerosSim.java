@@ -48,7 +48,7 @@ public class LerosSim {
 	String srcDir = "./";
 	boolean log;
 
-	LerosIO io;
+	ILerosIO io;
 
 	final static int IM_SIZE = 1024;
 	final static int DM_SIZE = 1024;
@@ -56,6 +56,8 @@ public class LerosSim {
 	char dm[] = new char[DM_SIZE];
 	int progSize = 0;
 
+	int executedInstructions;
+	
 	public LerosSim(LerosIO io, String[] args) {
 
 		this.io = io;
@@ -64,7 +66,7 @@ public class LerosSim {
 		if (s != null) {
 			log = s.equals("true");
 		}
-
+		log=false;
 		srcDir = System.getProperty("user.dir");
 		dstDir = System.getProperty("user.dir");
 		processOptions(args);
@@ -105,6 +107,11 @@ public class LerosSim {
 				srcDir = clist[++i];
 			} else if (clist[i].equals("-d")) {
 				dstDir = clist[++i];
+			} else if (clist[i].equals("-qio")) {
+				QuickIO qio = new QuickIO();
+				qio.setVisible(true);
+				io = qio;
+				
 			} else {
 				fname = clist[i];
 			}
@@ -136,6 +143,7 @@ public class LerosSim {
 
 			int next_pc = pc + 1;
 			if (pc >= progSize) {
+			    System.out.println("Excuted = " + executedInstructions );
 				return;
 			}
 			int instr = im[pc];
@@ -149,7 +157,8 @@ public class LerosSim {
 			} else {
 				val = dm[instr & 0xff];
 			}
-
+			executedInstructions++;
+			
 			switch (instr & 0xfe00) {
 			case 0x0000: // nop
 				break;
@@ -245,7 +254,7 @@ public class LerosSim {
 							+ " not implemented");
 				}
 			}
-
+	    
 
 			// keep it in 16 bit
 			accu &= 0xffff;
@@ -264,6 +273,8 @@ public class LerosSim {
 			pc = next_pc;
 
 		}
+		
+
 	}
 
 	/**
@@ -272,7 +283,7 @@ public class LerosSim {
 	public static void main(String[] args) {
 
 		if (args.length < 1) {
-			System.out.println("usage: java LerosSim [-s srcDir] filename");
+			System.out.println("usage: java LerosSim [-s srcDir] [-qio] filename");
 			System.exit(-1);
 		}
 		LerosSim ls = new LerosSim(new LerosIO(), args);
