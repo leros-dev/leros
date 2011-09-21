@@ -20,11 +20,11 @@ public class Blink extends MuviumRunnable {
     	for (;;) {
     		Native.wr(0, 0);
  
-    		delayMs( 250 );
+    		delayMs( 200 );
     		
      		Native.wr(1, 0);
      		
-     		delayMs( 250 );
+     		delayMs( 200 );
     		
     		
     	} 

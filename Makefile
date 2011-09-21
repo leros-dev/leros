@@ -8,12 +8,17 @@ EXTENSIONS=class rbf rpt sof pin summary ttf qdf dat wlf done qws
 #
 #	Set USB to true for an FTDI chip based board (dspio, usbmin, lego)
 #
-USB=false
+USB=true
 
 
 # Assembler files
 APP=test
 APP=muvium
+
+# Java application
+JAPP=Blink
+JAPP_PKG=.
+
 # Altera FPGA configuration cable
 #BLASTER_TYPE=ByteBlasterMV
 BLASTER_TYPE=USB-Blaster
@@ -27,8 +32,12 @@ else
 endif
 
 # The VHDL project for Quartus
-QPROJ=dspio
 QPROJ=altde2-70
+QPROJ=dspio
+
+# Some shortcuts
+MUVIUM=LerosMuviumSDK
+MUVIUM_CP=./$(S)./lib/Muvium-Leros.jar$(S)./lib/Muvium-Leros-API.jar$(S)./lib/jdom.jar$(S)./lib/jaxen.jar$(S).
 
 all: directories tools rom
 	make lerosusb
@@ -52,11 +61,23 @@ tools:
 	javac -d java/classes -sourcepath java/src java/src/leros/sim/*.java
 	cd java/classes && jar cf ../lib/leros-tools.jar *
 
+java_app:
+	cd $(MUVIUM); javac -target 1.5 -g -cp ./$(S)./lib/Muvium-Leros-API.jar$(S).  Blink.java
+	cd $(MUVIUM); java -cp $(MUVIUM_CP) MuviumMetal Blink config.xml  muvium.asm
+	cd $(MUVIUM); cp muvium.asm ../asm
+
+japp:
+	make java_app
+	make rom -e APP=muvium
+	make lerosusb
+	make config
+
 rom: 
 	-rm -rf vhdl/generated
 	mkdir vhdl/generated
 	java -cp java/lib/leros-tools.jar$(S)lib/antlr-3.3-complete.jar \
 		leros.asm.LerosAsm -s asm -d vhdl/generated $(APP).asm
+
 jsim: rom
 	java -cp java/lib/leros-tools.jar -Dlog=false \
 		leros.sim.LerosSim rom.txt
