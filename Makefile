@@ -37,7 +37,7 @@ QPROJ=dspio
 
 # Some shortcuts
 MUVIUM=LerosMuviumSDK
-MUVIUM_CP=./$(S)./lib/Muvium-Leros.jar$(S)./lib/Muvium-Leros-API.jar$(S)./lib/jdom.jar$(S)./lib/jaxen.jar$(S).
+MUVIUM_CP=./$(S)./lib/Muvium-Leros.jar$(S)./MUVIUM_CP=./$(S)./lib/jdom.jar$(S)./lib/jaxen.jar$(S).
 TARGET_SRC=java/target/src
 
 all: directories tools rom
@@ -69,11 +69,10 @@ tools:
 java_app:
 	-rm -rf java/target/classes
 	mkdir java/target/classes
-	javac -target 1.5 -g -cp $(MUVIUM)/lib/Muvium-Leros-API.jar \
-		-d java/target/classes -sourcepath  $(TARGET_SRC) $(TARGET_SRC)/$(JAPP).java
+	javac -target 1.5 -g -d java/target/classes \
+		-sourcepath  $(TARGET_SRC) $(TARGET_SRC)/$(JAPP).java
 	cd $(MUVIUM); java -cp $(MUVIUM_CP)$(S)../java/target/classes \
 		MuviumMetal $(JAPP) config.xml ../asm/muvium.asm
-#	cd $(MUVIUM); cp muvium.asm ../asm
 
 japp:
 	make java_app
@@ -93,10 +92,6 @@ jsim: rom
 sim: rom
 	cd modelsim; make
 
-rom_old:
-	-rm -rf vhdl/generated
-	mkdir vhdl/generated
-	java -cp java/lib/leros-tools.jar leros.LerosAsm -s asm -d vhdl/generated $(APP).asm
 
 # configure the FPGA
 config:
