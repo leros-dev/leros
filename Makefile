@@ -19,6 +19,12 @@ APP=muvium
 JAPP=Blink
 JAPP_PKG=.
 
+# Target Java compiler
+# muvium has issues with the current Oracle javac,
+# so we use jikes
+JAVAC_TARG=jikes/jikes
+# JAVAC_TARG=javac
+
 # Altera FPGA configuration cable
 #BLASTER_TYPE=ByteBlasterMV
 BLASTER_TYPE=USB-Blaster
@@ -69,7 +75,7 @@ tools:
 java_app:
 	-rm -rf java/target/classes
 	mkdir java/target/classes
-	javac -target 1.5 -g -d java/target/classes \
+	$(JAVAC_TARG) -target 1.5 -g -d java/target/classes \
 		-sourcepath  $(TARGET_SRC) $(TARGET_SRC)/$(JAPP).java
 	cd $(MUVIUM); java -cp $(MUVIUM_CP)$(S)../java/target/classes \
 		MuviumMetal $(JAPP) config.xml ../asm/muvium.asm
