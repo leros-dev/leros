@@ -43,6 +43,8 @@ public class Native {
 	
 	public final static int LED_PORT = 0;
 	public final static int BUTTON_PORT = 0;
+	public final static int UART_STATUS = 2;
+	public final static int UART_DATA = 3;
 	/**
 	 * Read from an IO device.
 	 * Only 8 bit address and 16 bit data are used.

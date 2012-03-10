@@ -32,17 +32,18 @@
 package leros.sim;
 
 /**
- * Simulation of IO devices connected to Leros. IO mapping is at the moment not
- * the same as in VHDL.
+ * Simulation of IO devices connected to Leros.
+ * IO mapping needs a definition of a minimum default.
+ * LEDs, buttons, and a UART
  * 
  * @author martin
  * 
  */
 public class LerosIO implements ILerosIO{
 
-    final static int UART_STATUS = 0;
-    final static int UART_IO = 1;
-    final static int LED = 2;
+    final static int UART_STATUS = 2;
+    final static int UART_IO = 3;
+    final static int LED = 0;
     
     int[] command = new int[]{ 10,10,30,20,1,1};
     int commandIndex = 0;
@@ -52,7 +53,7 @@ public class LerosIO implements ILerosIO{
  
         case UART_IO:
           
-            System.out.println( data);
+            System.out.println((char) data);
            
             break;
             

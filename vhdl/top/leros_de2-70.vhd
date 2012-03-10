@@ -109,24 +109,24 @@ end process;
 
 --	ioin.rddata(15 downto 4) <= (others => '0');
 	
-		ua: entity work.uart generic map (
-			clk_freq => 100000000,
-			baud_rate => 115200,
-			txf_depth => 1,
-			rxf_depth => 1
-		)
-		port map(
-			clk => clk_int,
-			reset => int_res,
+	ua: entity work.uart generic map (
+		clk_freq => 100000000,
+		baud_rate => 115200,
+		txf_depth => 1,
+		rxf_depth => 1
+	)
+	port map(
+		clk => clk_int,
+		reset => int_res,
 
-			address => ioout.addr(0),
-			wr_data => ioout.wrdata,
-			rd => ioout.rd,
-			wr => ioout.wr,
-			rd_data => ioin.rddata,
+		address => ioout.addr(0),
+		wr_data => ioout.wrdata,
+		rd => ioout.rd,
+		wr => ioout.wr,
+		rd_data => ioin.rddata,
 
-			txd	 => ser_txd,
-			rxd	 => ser_rxd
+		txd	 => ser_txd,
+		rxd	 => ser_rxd
 	);
 				
 process(clk_int)

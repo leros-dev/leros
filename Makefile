@@ -44,7 +44,12 @@ QPROJ=dspio
 # Some shortcuts
 MUVIUM=LerosMuviumSDK
 MUVIUM_CP=./$(S)./lib/Muvium-Leros.jar$(S)./MUVIUM_CP=./$(S)./lib/jdom.jar$(S)./lib/jaxen.jar$(S).
+# We need paths to the JDK and the main application
+# Java packages are at the moment ignored, maybe do it JOP like
+# Redefine TARGET_SRC to put your sources somewhere else
+JDK_SRC=java/target/src
 TARGET_SRC=java/target/src
+SOURCE_PATH=$(JDK_SRC)$(S)$(TARGET_SRC)
 
 all: directories tools rom
 	make lerosusb
@@ -76,7 +81,7 @@ java_app:
 	-rm -rf java/target/classes
 	mkdir java/target/classes
 	$(JAVAC_TARG) -target 1.5 -g -d java/target/classes \
-		-sourcepath  $(TARGET_SRC) $(TARGET_SRC)/$(JAPP).java
+		-sourcepath  $(SOURCE_PATH) $(TARGET_SRC)/$(JAPP).java
 	cd $(MUVIUM); java -cp $(MUVIUM_CP)$(S)../java/target/classes \
 		MuviumMetal $(JAPP) config.xml ../asm/muvium.asm
 
@@ -93,7 +98,7 @@ rom:
 		leros.asm.LerosAsm -s asm -d vhdl/generated $(APP).asm
 
 jsim: rom
-	java -cp java/lib/leros-tools.jar -Dlog=false \
+	java -cp java/tools/lib/leros-tools.jar -Dlog=false \
 		leros.sim.LerosSim rom.txt
 sim: rom
 	cd modelsim; make
