@@ -20,3 +20,5 @@ still needs to be flashed out.
 * 2011-05-29 2h: Add indirect load and store.
 * 2011-05-29 1.5h: Complete branches (unconditional and 4 conditional).
 * 2011-05-29 1h: Add jump and link instruction. Leros should now be complete and I stop counting the hours.
+
+Sum: 33 hours
