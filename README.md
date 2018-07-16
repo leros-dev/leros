@@ -12,10 +12,10 @@ Leros is documented in following two publications:
 
 1. Martin Schoeberl.
 [Leros: A Tiny Microcontroller for FPGAs](http://www.jopdesign.com/doc/leros.pdf).
-In Proceedings of the 21st International Conference on Field Programmable Logic and Applications (FPL 2011) , Chania, Crete, Greece, September 2011.
+In Proceedings of the 21st International Conference on Field Programmable Logic and Applications (FPL 2011), Chania, Crete, Greece, September 2011.
 2. James Caska and Martin Schoeberl.
 [Java dust: How small can embedded Java be?](http://www.jopdesign.com/doc/lerosjvm.pdf)
-In Proceedings of the 9th International Workshop on Java Technologies for Real-Time and Embedded Systems (JTRES 2011) , York, UK, ACM, September 2011.
+In Proceedings of the 9th International Workshop on Java Technologies for Real-Time and Embedded Systems (JTRES 2011), York, UK, ACM, September 2011.
 
 ## Architecture
 
