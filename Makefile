@@ -41,6 +41,7 @@ endif
 # The VHDL project for Quartus
 QPROJ=dspio
 QPROJ=altde2-70
+QPROJ=altde2-115
 
 # Some shortcuts
 MUVIUM=LerosMuviumSDK
@@ -117,10 +118,11 @@ else
 endif
 endif
 
+# TODO: drop the loop, or better drop the dspio support
 lerosusb:
 	@echo $(QPROJ)
 	for target in $(QPROJ); do \
-		make qsyn -e QBT=$$target || exit; \
+		make qsyn -e QPROJ=$$target || exit; \
 		cd quartus/$$target && quartus_cpf -c leros.sof ../../rbf/$$target.rbf; \
 	done
 
@@ -129,16 +131,16 @@ lerosusb:
 #		called by jopser, jopusb,...
 #
 qsyn:
-	echo $(QBT)
-	echo "building $(QBT)"
-	-rm -rf quartus/$(QBT)/db
-	-rm -f quartus/$(QBT)/leros.sof
-	-rm -f jbc/$(QBT).jbc
-	-rm -f rbf/$(QBT).rbf
-	quartus_map quartus/$(QBT)/leros
-	quartus_fit quartus/$(QBT)/leros
-	quartus_asm quartus/$(QBT)/leros
-	quartus_sta quartus/$(QBT)/leros
+	echo $(QPROJ)
+	echo "building $(QPROJ)"
+	-rm -rf quartus/$(QPROJ)/db
+	-rm -f quartus/$(QPROJ)/leros.sof
+	-rm -f jbc/$(QPROJ).jbc
+	-rm -f rbf/$(QPROJ).rbf
+	quartus_map quartus/$(QPROJ)/leros
+	quartus_fit quartus/$(QPROJ)/leros
+	quartus_asm quartus/$(QPROJ)/leros
+	quartus_sta quartus/$(QPROJ)/leros
 
 config_byteblaster:
 	cd quartus/$(QPROJ) && quartus_pgm -c $(BLASTER_TYPE) -m JTAG leros.cdf
