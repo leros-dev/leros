@@ -13,8 +13,7 @@ import chisel3._
  */
 class Leros() extends Module {
   val io = IO(new Bundle {
-    // val dout = Output(UInt(width = 32))
-    val dout = Output(UInt(32.W)) // 32.W is Chisel 3
+    val dout = Output(UInt(32.W))
   })
 
   println("Generating Leros")
@@ -22,5 +21,6 @@ class Leros() extends Module {
 }
 
 object Leros extends App {
-  Driver.execute(Array[String](), () => new Leros())
+
+  Driver.execute(Array("--target-dir", "generated"), () => new Leros())
 }
