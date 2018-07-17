@@ -6,25 +6,21 @@
 
 package leros
 
-import Chisel._
+import chisel3._
 
 /**
- * Create and connect a n x n NoC.
+ * Leros top level
  */
 class Leros() extends Module {
-  val io = new Bundle {
-    val dout = UInt(width = 32).asOutput
-  }
+  val io = IO(new Bundle {
+    // val dout = Output(UInt(width = 32))
+    val dout = Output(UInt(32.W)) // 32.W is Chisel 3
+  })
 
   println("Generating Leros")
-  // single output for the synthesizer results
-  // val or = dout.fold(UInt(0))(_ | _)
-  // io.dout := Reg(next = or)
-
+  io.dout := 42.U
 }
 
 object Leros extends App {
-
-  chiselMain(Array("--backend", "v", "--targetDir", "generated"),
-    () => Module(new Leros()))
+  Driver.execute(Array[String](), () => new Leros())
 }
