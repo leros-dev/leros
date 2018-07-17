@@ -39,10 +39,10 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.List;
 
-import org.antlr.runtime.ANTLRInputStream;
-import org.antlr.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
 
-import leros.asm.generated.*;
+import grammar.*;
 
 public class LerosAsm {
 
@@ -194,7 +194,7 @@ public class LerosAsm {
 		parser.pass1();
 		// parser.dump();
 		parser.reset();
-		List code = parser.pass2();
+		List code = parser.pass2().mem;
 		System.out.println(code);
 
 		la.dump(code);

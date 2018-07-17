@@ -64,16 +64,15 @@ tools:
 	-rm -rf rbf
 	-rm -rf java/tools/classes
 	-rm -rf java/tools/lib
-	-rm -rf java/tools/src/leros/asm/generated
+	-rm -rf generated
 	mkdir rbf
 	mkdir java/tools/classes
 	mkdir java/tools/lib
-	mkdir java/tools/src/leros/asm/generated
-	java -classpath lib/antlr-3.3-complete.jar org.antlr.Tool \
-		-fo java/tools/src/leros/asm/generated \
+	java -classpath lib/antlr-4.7.1-complete.jar org.antlr.v4.Tool \
+		-o . \
 		java/tools/src/grammar/Leros.g
-	javac -classpath lib/antlr-3.3-complete.jar \
-		-d java/tools/classes java/tools/src/leros/asm/generated/*.java \
+	javac -classpath lib/antlr-4.7.1-complete.jar \
+		-d java/tools/classes java/tools/src/grammar/*.java \
 		java/tools/src/leros/asm/*.java
 	javac -d java/tools/classes -sourcepath \
 		java/tools/src java/tools/src/leros/sim/*.java
@@ -96,7 +95,7 @@ japp:
 rom: 
 	-rm -rf vhdl/generated
 	mkdir vhdl/generated
-	java -cp java/tools/lib/leros-tools.jar$(S)lib/antlr-3.3-complete.jar \
+	java -cp java/tools/lib/leros-tools.jar$(S)lib/antlr-4.7.1-complete.jar \
 		leros.asm.LerosAsm -s asm -d vhdl/generated $(APP).asm
 
 jsim: rom

@@ -36,14 +36,14 @@
 grammar Leros;
 
 @header {
-package leros.asm.generated;
+package grammar;
 
 import java.util.HashMap;
 import java.util.List;
 
 }
 
-@lexer::header {package leros.asm.generated;}
+// @lexer::header {package leros.asm.generated;}
 
 
 @members {
