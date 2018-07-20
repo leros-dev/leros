@@ -22,6 +22,30 @@ In Proceedings of the 9th International Workshop on Java Technologies for Real-T
 Leros is an accumulator machine with a register file. Memory is accessed
 via indirect load and store instructions.
 
+## Leros Aims
+
+*An accumulator instruction that does less than a typical RISC
+instruction is probably more RISC than the typical load/store
+register based RISC architecture.*
+
+ * A simple architecture
+   * Results in a cheap FPGA implementation
+   * Easy to use in teaching
+   * Just few instructions
+ * Different bit width
+   * 16-bit version for tiny microcontroller
+   * 32-bit version as a reasonable target for C
+   * 64-bit version for a Linux port
+
+Further aims:
+
+ * Serve as an example of a small Chisel project for the Chisel book
+ * Use in teaching in fall 2018
+ * Provide virtual memory (with paging) for a Linux port
+ * Use for student projects
+ * Use for manycore experiments (NoC with more than 9 cores on a DE2-115)
+
+
 ## Instruction Set Architecture
 
 The instructions of Leros can be categorized into following types:
@@ -35,7 +59,7 @@ The instructions of Leros can be categorized into following types:
  * Shift right
  * Input and output
 
-Encoding:
+### Encoding
 
 Instructions are 16 bits wide. The higher byte is used to encode the
 instruction, the lower byte contains either an immediate value, a
@@ -50,6 +74,11 @@ register number, or a branch offset.
 For example `00001001.00000010` is an add immediate instruction that
 adds 2 to the accumulator, where `00001000.00000011` adds the content
 of R3 to the accumulator.
+
+### List of Instructions
+
+Following table shows all currently defined instructions (21, if you include
+all conditional branch variations).
 
 Not all instruction bits are currently used (unused are marked with `-`).
 Bit 0 selects between immediate and using a register. The following list
@@ -83,7 +112,7 @@ is the complete instruction set.
 +--------+----------+
 ```
 
-Comments:
+#### Comments
 
 `loadh` makes only sense for immediate values.
 For 32 bits we just need two more immediate loads, could simply by as follows:
@@ -100,8 +129,21 @@ Can easily be extended to 64 bits when ignoring the immediate bit.
 Load function from ALU could be dropped.
 
 Load address and following load/store should be emitted as pair as they are
-dependedent. Possible interrupts should be disabled between those two instructions.
+dependent. Possible interrupts should be disabled between those two instructions.
 
+
+## Getting Started
+
+
+
+To run a small test program in the simulator execute:
+```bash
+make APP=test tools jsim
+```
+
+More targets (e.g., synthesize for an FPGA) can be found in the Makefile.
+
+*TODO: more descriptions*
 
 ## Leros Versions and Compilers
 
