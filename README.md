@@ -60,6 +60,7 @@ Bit 0 selects between immediate and using a register.
 |001110-i| out      |
 |000001-i| in       |
 |01000---| jal      |
+|01001000| br       |
 |01001001| brz      |
 |01001010| brnz     |
 |01001011| brp      |
@@ -67,7 +68,6 @@ Bit 0 selects between immediate and using a register.
 |01010---| ldaddr   |
 |01100---| load ind |
 |01110---| store ind|
-|01001000| br       |
 +--------+----------+
 ```
 
