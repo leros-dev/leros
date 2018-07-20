@@ -19,8 +19,8 @@ In Proceedings of the 9th International Workshop on Java Technologies for Real-T
 
 ## Architecture
 
-Leros is an accumulator machine with support to use a block of
-the memory as registers.
+Leros is an accumulator machine with a register file. Memory is accessed
+via indirect load and store instructions.
 
 ## Instruction Set Architecture
 
@@ -28,6 +28,7 @@ The instructions of Leros can be categorized into following types:
 
  * ALU operation with the accumulator and an immediate
  * ALU operation with the accumulator and a register
+ * Load and store
  * Indirect load and store
  * Conditional branches
  * Jump and link
@@ -40,8 +41,19 @@ Instructions are 16 bits wide. The higher byte is used to encode the
 instruction, the lower byte contains either an immediate value, a
 register number, or a branch offset.
 
-Not all instruction bits are currently used (marked with `-`).
-Bit 0 selects between immediate and using a register.
+```
++--------+--------+
+|iiiiiiii|nnnnnnnn|
++--------+--------+
+```
+
+For example `00001001.00000010` is an add immediate instruction that
+adds 2 to the accumulator, where `00001000.00000011` adds the content
+of R3 to the accumulator.
+
+Not all instruction bits are currently used (unused are marked with `-`).
+Bit 0 selects between immediate and using a register. The following list
+is the complete instruction set.
 
 
 ```
@@ -50,7 +62,7 @@ Bit 0 selects between immediate and using a register.
 |000010-i| add      |
 |000011-i| sub      |
 |00010--i| shr      |
-|00011--i| reserved |
+|00011--i| unused   |
 |0010000i| load     |
 |0010001i| and      |
 |0010010i| or       |
