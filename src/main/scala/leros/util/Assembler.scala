@@ -10,4 +10,6 @@ object Assembler {
   val symbols = collection.mutable.Map[String, Int]()
 
   def getProgramFix() = prog
+
+  def getProgram() = getProgramFix()
 }

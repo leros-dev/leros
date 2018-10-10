@@ -11,7 +11,7 @@ import leros.util._
 class LerosSim {
 
   // The complete processor state.
-  // We ignore for now which size we are working with (16 or 32 bits).
+  // We ignore for now which size we are working with (16, 32, or even 64 bits).
   // We will mask out the bits later when it matters.
 
   val prog = Assembler.getProgramFix()

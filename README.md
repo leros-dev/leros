@@ -131,6 +131,8 @@ Load function from ALU could be dropped.
 Load address and following load/store should be emitted as pair as they are
 dependent. Possible interrupts should be disabled between those two instructions.
 
+Why do we have a nop? addi 0 can serve as nop if needed.
+
 
 ## Getting Started
 
