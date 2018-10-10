@@ -3,7 +3,9 @@ package leros.util
 object Assembler {
 
   val prog = Array[Int](
-    0x21ab, // load 0xab
+    0x0903, // addi 0x3
+    0x09ff, // -1
+    0x0d02, // subi 2
     0x0000)
 
   // collect destination addresses in first pass

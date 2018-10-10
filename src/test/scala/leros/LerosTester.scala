@@ -19,7 +19,7 @@ class LerosTester(dut: Leros) extends PeekPokeTester(dut) {
 //    peek(dut.pc)
 //    peek(dut.accu)
 //    peek(dut.instr)
-    println("pc: " + peek(dut.io.dbg.pc).toString(16) + " acc: " + peek(dut.io.dbg.acc).toString(16) + " opc: " + peek(dut.io.dbg.opc).toString(16))
+    println("pc: " + peek(dut.io.dbg.pc).toString(16) + " acc: " + peek(dut.io.dbg.acc).toString(16) + " instr: " + peek(dut.io.dbg.instr).toString(16))
     step(1)
     maxInstructions -= 1
 //    run = peek(dut.exit) == 0 &&

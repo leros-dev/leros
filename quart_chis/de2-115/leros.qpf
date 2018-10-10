@@ -1,0 +1,14 @@
+# -------------------------------------------------------------------------- #
+#
+# Quartus Prime
+# Version 16.1.0 Build 196 10/24/2016 SJ Lite Edition
+# Date created = 20:40:15  October 10, 2018
+#
+# -------------------------------------------------------------------------- #
+
+QUARTUS_VERSION = "16.1"
+DATE = "20:40:15  October 10, 2018"
+
+# Revisions
+
+PROJECT_REVISION = "leros"
