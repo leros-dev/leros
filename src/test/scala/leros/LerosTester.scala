@@ -13,7 +13,7 @@ import chisel3.iotesters.PeekPokeTester
 class LerosTester(dut: Leros) extends PeekPokeTester(dut) {
 
   var run = true
-  var maxInstructions = 5
+  var maxInstructions = 10
   while(run) {
 // Looks like peeking elements in gone in Chisel 2
 //    peek(dut.pc)

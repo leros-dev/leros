@@ -14,7 +14,7 @@ class LerosSim {
   // We ignore for now which size we are working with (16, 32, or even 64 bits).
   // We will mask out the bits later when it matters.
 
-  val prog = Assembler.getProgramFix()
+  val prog = Assembler.getProgram()
 
   var pc = 0
   var accu = 0
