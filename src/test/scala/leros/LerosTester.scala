@@ -17,7 +17,7 @@ class LerosTester(dut: Leros) extends PeekPokeTester(dut) {
   while(run) {
 // Looks like peeking elements in gone in Chisel 2
 //    peek(dut.pc)
-//    peek(dut.accu)
+//    peek(dut.accuReg)
 //    peek(dut.instr)
     println("pc: " + peek(dut.io.dbg.pc).toString(16) + " acc: " + peek(dut.io.dbg.acc).toString(16) + " instr: " + peek(dut.io.dbg.instr).toString(16))
     step(1)
@@ -32,7 +32,7 @@ class LerosTester(dut: Leros) extends PeekPokeTester(dut) {
 
 object LerosTester extends App {
   println("Testing Leros")
-  iotesters.Driver.execute(Array[String](), () => new Leros(32, 10)) {
+  iotesters.Driver.execute(Array("--target-dir", "generated", "--fint-write-vcd"), () => new Leros(32, 10)) {
     c => new LerosTester(c)
   }
 }

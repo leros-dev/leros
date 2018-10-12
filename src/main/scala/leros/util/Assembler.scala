@@ -6,6 +6,9 @@ object Assembler {
     0x0903, // addi 0x3
     0x09ff, // -1
     0x0d02, // subi 2
+    0x21ab, // ldi 0xab
+    0x230f, // and 0x0f
+    0x25c3, // or 0xc3
     0x0000
   )
 
@@ -15,7 +18,7 @@ object Assembler {
   def getProgramFix() = prog
 
   def getProgram() = {
-    if (false)
+    if (true)
       getProgramFix()
     else {
       // FERTL does not like large vectors
