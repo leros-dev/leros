@@ -46,7 +46,9 @@ object Constants {
   val ORI = 0x25
   val XOR = 0x26
   val XORI = 0x27
-  val LOADH = 0x29 // only immediate useful
+  val LDHI = 0x29 // only immediate useful
+  val LDH2I = 0x2a
+  val LDH3I = 0x2b
   val ST = 0x30
   val OUT = 0x39 // is IN/OUT immediate only?
   val IN = 0x05

@@ -105,7 +105,18 @@ class Decode() extends Module {
       imm := true.B
       ena := true.B
     }
-    is(LOADH.U) {
+    is(LDHI.U) {
+      f := sub
+      imm := true.B
+      ena := true.B
+    }
+    // Following only useful for 32-bit Leros
+    is(LDH2I.U) {
+      f := sub
+      imm := true.B
+      ena := true.B
+    }
+    is(LDH3I.U) {
       f := sub
       imm := true.B
       ena := true.B
@@ -216,7 +227,7 @@ class Leros(size: Int, memSize: Int, prog: String) extends Module {
 */
 
   val exit = RegInit(false.B)
-  exit := dec.io.dout.exit
+  exit := RegNext(dec.io.dout.exit)
 
   println("Generating Leros")
   io.dout := 42.U

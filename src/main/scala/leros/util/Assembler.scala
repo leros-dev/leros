@@ -61,11 +61,11 @@ object Assembler {
       s.substring(1).toInt
     }
 
-    def regIndirect(s: String): Int = {
-      assert(s.startsWith("(r"))
-      assert(s.endsWith(")"))
-      s.substring(2, s.length - 1).toInt
-    }
+    //    def regIndirect(s: String): Int = {
+    //      assert(s.startsWith("(r"))
+    //      assert(s.endsWith(")"))
+    //      s.substring(2, s.length - 1).toInt
+    //    }
 
     for (line <- source.getLines()) {
       if (!pass2) println(line)
@@ -84,34 +84,34 @@ object Assembler {
         case "ld" => (LD << 8) + regNumber(tokens(1))
         case "addi" => (ADDI << 8) + toInt(tokens(1))
         case "subi" => (SUBI << 8) + toInt(tokens(1))
-        case "andi" => (ANDI<<8) + toInt(tokens(1))
-        case "ori" => (ORI<<8) + toInt(tokens(1))
-        case "xori" => (XORI<<8) + toInt(tokens(1))
+        case "andi" => (ANDI << 8) + toInt(tokens(1))
+        case "ori" => (ORI << 8) + toInt(tokens(1))
+        case "xori" => (XORI << 8) + toInt(tokens(1))
         case "ldi" => (LDI << 8) + toInt(tokens(1))
-        case "st" => (ST<<8) + regNumber(tokens(1))
-        case "ldind" => 0xa0 + regIndirect(tokens(1))
-        case "stind" => 0xb0 + regIndirect(tokens(1))
-        case "br" => (BR, if (pass2) symbols(tokens(1)) else 0)
-        case "brz" => (0xd2, if (pass2) symbols(tokens(1)) else 0)
-        case "brnz" => (0xd3, if (pass2) symbols(tokens(1)) else 0)
-        case "io" => 0xf0 + toInt(tokens(1))
+        case "ldhi" => (LDHI << 8) + toInt(tokens(1))
+        case "ldh2i" => (LDH2I << 8) + toInt(tokens(1))
+        case "ldh3i" => (LDH3I << 8) + toInt(tokens(1))
+        case "st" => (ST << 8) + regNumber(tokens(1))
+        case "ldaddr" => (LDADDR << 8)
+        case "ldind" => (LDIND << 8) + toInt(tokens(1))
+        case "stind" => (STIND << 8) + toInt(tokens(1))
+        case "br" => (BR << 8) + (if (pass2) symbols(tokens(1)) else 0)
+        case "brz" => (BRZ << 8) + (if (pass2) symbols(tokens(1)) else 0)
+        case "brnz" => (BRNZ << 8) + (if (pass2) symbols(tokens(1)) else 0)
+        case "brp" => (BRP << 8) + (if (pass2) symbols(tokens(1)) else 0)
+        case "brn" => (BRN << 8) + (if (pass2) symbols(tokens(1)) else 0)
+        case "in" => (IN << 8) + toInt(tokens(1))
+        case "out" => (OUT << 8) + toInt(tokens(1))
         case "exit" => (SCALL << 8)
         case "" => // println("Empty line")
         case t: String => throw new Exception("Assembler error: unknown instruction: " + t)
         case _ => throw new Exception("Assembler error")
       }
-      // println(instr)
 
       instr match {
         case (a: Int) => {
           program = a :: program
           pc += 1
-        }
-        // that below should go, when done
-        case (a: Int, b: Int) => {
-          program = a :: program
-          program = b :: program
-          pc += 2
         }
         case _ => // println("Something else")
       }
