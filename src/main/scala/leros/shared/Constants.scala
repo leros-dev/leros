@@ -36,7 +36,7 @@ object Constants {
   val ADD = 0x08
   val ADDI = 0x09
   val SUB = 0x0c
-  val SUBI = 0x0d
+  val SUBI = 0x0d // shall we really have a subi?
   val SHR = 0x10
   val LD = 0x20
   val LDI = 0x21

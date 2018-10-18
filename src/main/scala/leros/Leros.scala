@@ -23,11 +23,13 @@ class Debug extends Bundle {
   val acc = Output(UInt())
   val pc = Output(UInt())
   val instr = Output(UInt())
+  val exit = Output(Bool())
 }
 
 class DecodeOut extends Bundle {
   val ena = Bool()
   val func = UInt()
+  val exit = Bool()
 }
 
 class Decode() extends Module {
@@ -42,6 +44,7 @@ class Decode() extends Module {
   imm := false.B
   val ena = Wire(Bool())
   ena := false.B
+  io.dout.exit := false.B
 
   switch(io.din) {
     is(ADD.U) {
@@ -106,6 +109,9 @@ class Decode() extends Module {
       f := sub
       imm := true.B
       ena := true.B
+    }
+    is(SCALL.U) {
+      io.dout.exit := true.B
     }
   }
   io.dout.ena := ena
@@ -210,13 +216,22 @@ class Leros(size: Int, memSize: Int, prog: String) extends Module {
 */
 
   val exit = RegInit(false.B)
+  exit := dec.io.dout.exit
 
   println("Generating Leros")
   io.dout := 42.U
 
-  io.dbg.acc := RegNext((alu.io.dout))
-  io.dbg.pc := RegNext((pcReg))
-  io.dbg.instr := RegNext((instr))
+  if (false) {
+    io.dbg.acc := RegNext((alu.io.dout))
+    io.dbg.pc := RegNext((pcReg))
+    io.dbg.instr := RegNext((instr))
+    io.dbg.exit := RegNext((exit))
+  } else {
+    io.dbg.acc := ((alu.io.dout))
+    io.dbg.pc := ((pcReg))
+    io.dbg.instr := ((instr))
+    io.dbg.exit := ((exit))
+  }
 }
 
 object Leros extends App {

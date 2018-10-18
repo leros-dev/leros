@@ -8,13 +8,13 @@ package leros.sim
 
 import leros.util._
 
-class LerosSim {
+class LerosSim(prog: String) {
 
   // The complete processor state.
   // We ignore for now which size we are working with (16, 32, or even 64 bits).
   // We will mask out the bits later when it matters.
 
-  val prog = Assembler.getProgram()
+  val code = Assembler.getProgram(prog)
 
   var pc = 0
   var accu = 0
@@ -25,7 +25,7 @@ class LerosSim {
 
   def step(): Unit = {
 
-    val instr = prog(pc)
+    val instr = code(pc)
     val opcode = (instr >> 8) & 0xff
     // TODO check imm flag
     val opd = instr & 0xff
@@ -40,16 +40,16 @@ class LerosSim {
     } else {
       pc += 1
     }
-    run = pc < prog.length
+    run = pc < code.length
   }
 }
 
 object LerosSim extends App {
 
-  val lsim = new LerosSim()
+  val lsim = new LerosSim(args(0))
 
   while (lsim.run) {
-    printf("pc: 0x%04x instr: 0x%04x ", lsim.pc, lsim.prog(lsim.pc))
+    printf("pc: 0x%04x instr: 0x%04x ", lsim.pc, lsim.code(lsim.pc))
     lsim.step
     printf("accu: 0x%04x\n", lsim.accu)
   }

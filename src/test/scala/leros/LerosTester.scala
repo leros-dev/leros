@@ -22,8 +22,7 @@ class LerosTester(dut: Leros) extends PeekPokeTester(dut) {
     println("pc: " + peek(dut.io.dbg.pc).toString(16) + " acc: " + peek(dut.io.dbg.acc).toString(16) + " instr: " + peek(dut.io.dbg.instr).toString(16))
     step(1)
     maxInstructions -= 1
-//    run = peek(dut.exit) == 0 &&
-    run = maxInstructions > 0
+    run = peek(dut.io.dbg.exit) == 0 && maxInstructions > 0
     // poke(dut.io.din, maxInstructions)
   }
   expect(dut.io.dbg.acc, 0, "Accu shall be zero at the end of a test case.\n")
@@ -32,7 +31,7 @@ class LerosTester(dut: Leros) extends PeekPokeTester(dut) {
 
 object LerosTester extends App {
   println("Testing Leros")
-  iotesters.Driver.execute(Array("--target-dir", "generated", "--fint-write-vcd"), () => new Leros(32, 10)) {
+  iotesters.Driver.execute(Array("--target-dir", "generated", "--fint-write-vcd"), () => new Leros(32, 10, args(0))) {
     c => new LerosTester(c)
   }
 }

@@ -70,7 +70,7 @@ class AluSimple(size: Int) extends Module {
   *
   * @param size
   */
-class Alu(size: Int) extends Module {
+class AluOpt(size: Int) extends Module {
   val io = IO(new Bundle {
     val decin = Input(new DecodeOut)
     val din = Input(UInt(size.W))
@@ -128,11 +128,22 @@ class Alu(size: Int) extends Module {
   // This generates 2 LEs per bit
   accuReg := MuxLookup(selReg, accuReg & op, Array(1.U -> (accuReg | op), 2.U -> (accuReg ^ op), 3.U -> op))
 
-  def logic(sel: UInt, a: UInt, b: UInt = {
-    sel(0) // TODO: write logic function
-  }
+//  def logic(sel: UInt, a: UInt, b: UInt = {
+//    sel(0) // TODO: write logic function
+//  }
 
   // Mux(selReg, accuReg | op, accuReg & op)
 
   io.dout := accuReg
+}
+
+class Alu(size: Int) extends Module {
+  val io = IO(new Bundle {
+    val decin = Input(new DecodeOut)
+    val din = Input(UInt(size.W))
+    val dout = Output(UInt(size.W))
+  })
+
+  val alu = Module(new AluSimple(size))
+  alu.io <> io
 }

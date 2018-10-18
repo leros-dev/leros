@@ -23,18 +23,18 @@ object Assembler {
   def getProgram(prog: String) = {
     assemble(prog)
 
-/*
-    if (true)
-      getProgramFix()
-    else {
-      // FERTL does not like large vectors
-      val code = new Array[Int](200)
-      for (i <- 0 until code.length) {
-        code(i) = ((i << 8) + i+1) & 0xffff
-      }
-      code
-    }
-  */
+    /*
+        if (true)
+          getProgramFix()
+        else {
+          // FERTL does not like large vectors
+          val code = new Array[Int](200)
+          for (i <- 0 until code.length) {
+            code(i) = ((i << 8) + i+1) & 0xffff
+          }
+          code
+        }
+      */
   }
 
   def assemble(prog: String): Array[Int] = {
@@ -57,7 +57,7 @@ object Assembler {
     }
 
     def regNumber(s: String): Int = {
-      assert(s.startsWith("r"))
+      assert(s.startsWith("r"), "Register numbers shall start with \'r\'")
       s.substring(1).toInt
     }
 
@@ -74,34 +74,30 @@ object Assembler {
       // tokens.foreach(println)
       val Pattern = "(.*:)".r
       val instr = tokens(0) match {
-        case "#" => // comment
+        case "//" => // comment
         case Pattern(l) => if (!pass2) symbols += (l.substring(0, l.length - 1) -> pc)
-        case "add" => (ADD<<8) + regNumber(tokens(1))
-        case "sub" => 0x10 + regNumber(tokens(1))
-        case "adc" => 0x20 + regNumber(tokens(1))
-        case "sbb" => 0x30 + regNumber(tokens(1))
-        case "and" => 0x40 + regNumber(tokens(1))
-        case "or" => 0x50 + regNumber(tokens(1))
-        case "xor" => 0x60 + regNumber(tokens(1))
-        case "ld" => 0x70 + regNumber(tokens(1))
-        case "addi" => (0xc0, toInt(tokens(1)))
-        case "subi" => (0xc1, toInt(tokens(1)))
-        case "adci" => (0xc2, toInt(tokens(1)))
-        case "sbbi" => (0xc3, toInt(tokens(1)))
-        case "andi" => (0xc4, toInt(tokens(1)))
-        case "ori" => (0xc5, toInt(tokens(1)))
-        case "xori" => (0xc6, toInt(tokens(1)))
-        case "ldi" => (0xc7, toInt(tokens(1)))
-        case "st" => 0x80 + regNumber(tokens(1))
+        case "add" => (ADD << 8) + regNumber(tokens(1))
+        case "sub" => (SUB << 8) + regNumber(tokens(1))
+        case "and" => (AND << 8) + regNumber(tokens(1))
+        case "or" => (OR << 8) + regNumber(tokens(1))
+        case "xor" => (XOR << 8) + regNumber(tokens(1))
+        case "ld" => (LD << 8) + regNumber(tokens(1))
+        case "addi" => (ADDI << 8) + toInt(tokens(1))
+        case "subi" => (SUBI << 8) + toInt(tokens(1))
+        case "andi" => (ANDI<<8) + toInt(tokens(1))
+        case "ori" => (ORI<<8) + toInt(tokens(1))
+        case "xori" => (XORI<<8) + toInt(tokens(1))
+        case "ldi" => (LDI << 8) + toInt(tokens(1))
+        case "st" => (ST<<8) + regNumber(tokens(1))
         case "ldind" => 0xa0 + regIndirect(tokens(1))
         case "stind" => 0xb0 + regIndirect(tokens(1))
-        case "br" => (0xd0, if (pass2) symbols(tokens(1)) else 0)
+        case "br" => (BR, if (pass2) symbols(tokens(1)) else 0)
         case "brz" => (0xd2, if (pass2) symbols(tokens(1)) else 0)
         case "brnz" => (0xd3, if (pass2) symbols(tokens(1)) else 0)
         case "io" => 0xf0 + toInt(tokens(1))
-        case "exit" => (0xff)
+        case "exit" => (SCALL << 8)
         case "" => // println("Empty line")
-        case t: String => throw new Exception("Assembler error: unknown instruction")
+        case t: String => throw new Exception("Assembler error: unknown instruction: " + t)
         case _ => throw new Exception("Assembler error")
       }
       // println(instr)
@@ -111,7 +107,7 @@ object Assembler {
           program = a :: program
           pc += 1
         }
-          // that below should go, when done
+        // that below should go, when done
         case (a: Int, b: Int) => {
           program = a :: program
           program = b :: program

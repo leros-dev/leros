@@ -1,0 +1,8 @@
+
+Changes from Leros VHDL version to new Leros:
+
+ * No sign extension on logical operations (probably)
+ * Assembler syntax change for simpler assembler in Scala
+
+
+We will probably drop the VHDL version.
