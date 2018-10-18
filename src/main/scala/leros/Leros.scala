@@ -117,12 +117,12 @@ class Decode() extends Module {
   * Contains the register for using the on-chip ROM.
   * Uses Chisel synchronous reset to also execute the first instruction.
   */
-class InstrMem(memSize: Int) extends Module {
+class InstrMem(memSize: Int, prog: String) extends Module {
   val io = IO(new Bundle {
     val addr = Input(UInt(memSize.W))
     val instr = Output(UInt(16.W))
   })
-  val progMem = VecInit(Assembler.getProgram().map(_.asUInt(16.W)))
+  val progMem = VecInit(Assembler.getProgram(prog).map(_.asUInt(16.W)))
   val memReg = RegInit(0.U(memSize.W))
   memReg := io.addr
   io.instr := progMem(memReg)
@@ -131,14 +131,14 @@ class InstrMem(memSize: Int) extends Module {
 /**
   * Leros top level
   */
-class Leros(size: Int, memSize: Int) extends Module {
+class Leros(size: Int, memSize: Int, prog: String) extends Module {
   val io = IO(new Bundle {
     val dout = Output(UInt(32.W))
     val dbg = new Debug
   })
 
   // The main architectural state
-  val accuReg = RegInit(0.U(size.W))
+//  val accuReg = RegInit(0.U(size.W))
   val pcReg = RegInit(0.U(memSize.W))
   val addrReg = RegInit(0.U(memSize.W))
 
@@ -147,7 +147,7 @@ class Leros(size: Int, memSize: Int) extends Module {
   val pcNext = pcReg + 1.U
   pcReg := pcNext
 
-  val mem = Module(new InstrMem(memSize))
+  val mem = Module(new InstrMem(memSize, prog))
   mem.io.addr := pcNext
   val instr = mem.io.instr
 
@@ -164,6 +164,12 @@ class Leros(size: Int, memSize: Int) extends Module {
   val dec = Module(new Decode())
   dec.io.din := opcode
 
+  val alu = Module(new Alu(size))
+
+  alu.io.decin := dec.io.dout
+  alu.io.din := opReg.asUInt
+
+/*
   val decout = dec.io.dout
 
   val funcReg = RegNext(decout.func)
@@ -201,17 +207,18 @@ class Leros(size: Int, memSize: Int) extends Module {
   when (enaReg) {
     accuReg := res
   }
+*/
 
   val exit = RegInit(false.B)
 
   println("Generating Leros")
   io.dout := 42.U
 
-  io.dbg.acc := RegNext(RegNext(accuReg))
-  io.dbg.pc := RegNext(RegNext(pcReg))
-  io.dbg.instr := RegNext(RegNext(instr))
+  io.dbg.acc := RegNext((alu.io.dout))
+  io.dbg.pc := RegNext((pcReg))
+  io.dbg.instr := RegNext((instr))
 }
 
 object Leros extends App {
-  Driver.execute(Array("--target-dir", "generated"), () => new Leros(32, 10))
+  Driver.execute(Array("--target-dir", "generated"), () => new Leros(32, 10, args(0)))
 }
