@@ -73,7 +73,8 @@ register number, or a branch offset.
 
 For example `00001001.00000010` is an add immediate instruction that
 adds 2 to the accumulator, where `00001000.00000011` adds the content
-of R3 to the accumulator.
+of R3 to the accumulator. For branches we use 3 of the instruction bits
+for larger offsets.
 
 ### List of Instructions
 
@@ -101,7 +102,7 @@ is the complete instruction set.
 |001110-i| out      |
 |000001-i| in       |
 |01000---| jal      |
-|01001000| br       |
+|01001---| -        |
 |01001001| brz      |
 |01001010| brnz     |
 |01001011| brp      |
@@ -109,6 +110,12 @@ is the complete instruction set.
 |01010---| ldaddr   |
 |01100---| load ind |
 |01110---| store ind|
+|10000nnn| br       |
+|10001nnn| brz      |
+|10010nnn| brnz     |
+|10011nnn| brp      |
+|10100nnn| brn      |
+|11111111| scall    |
 +--------+----------+
 ```
 

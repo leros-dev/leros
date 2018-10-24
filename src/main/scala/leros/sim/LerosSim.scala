@@ -30,13 +30,18 @@ class LerosSim(prog: String) {
 
     val instr = code(pc)
     val opcode = (instr >> 8) & 0xff
-    val opd = instr & 0xff
+    val opd = instr & 0x00ff
+    val opd11 = instr & 0x07ff
 
     var doBranch = false
     var doJal = false
 
     def sext(v: Int) = {
       (v << 24) >> 24
+    }
+
+    def sext11(v: Int) = {
+      (v << 21) >> 21
     }
 
     opcode match {
@@ -74,7 +79,7 @@ class LerosSim(prog: String) {
     }
 
     if (doBranch) {
-      pc = pc + sext(opd)
+      pc = pc + sext11(opd11) // or PC + 1
     } else if (doJal) {
       pc = accu
     } else {

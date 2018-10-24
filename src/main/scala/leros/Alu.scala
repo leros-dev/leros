@@ -32,6 +32,8 @@ class AluSimple(size: Int) extends Module {
   val res = Wire(UInt())
   res := 0.U(size.W)
 
+  // TODO: mask bits out for branch decode
+
   val op = io.din.asUInt
   switch(funcReg) {
     is(add) {

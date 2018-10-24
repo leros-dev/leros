@@ -16,14 +16,16 @@ package leros.shared
 |001110-i| out      |
 |000001-i| in       |
 |01000---| jal      |
-|01001000| br       |
-|01001001| brz      |
-|01001010| brnz     |
-|01001011| brp      |
-|01001100| brn      |
+|01001---| -        |
 |01010---| ldaddr   |
 |01100---| load ind |
 |01110---| store ind|
+|10000nnn| br       |
+|10001nnn| brz      |
+|10010nnn| brnz     |
+|10011nnn| brp      |
+|10100nnn| brn      |
+|11111111| scall    |
 +--------+----------+
  */
 
@@ -53,11 +55,11 @@ object Constants {
   val OUT = 0x39 // is IN/OUT immediate only?
   val IN = 0x05
   val JAL = 0x40
-  val BR = 0x48
-  val BRZ = 0x49
-  val BRNZ = 0x4a
-  val BRP = 0x4b
-  val BRN = 0x4c
+  val BR = 0x80
+  val BRZ = 0x88
+  val BRNZ = 0x90
+  val BRP = 0x9a
+  val BRN = 0xa0
   val LDADDR = 0x50
   val LDIND = 0x60
   val STIND = 0x70
