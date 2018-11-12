@@ -7,5 +7,5 @@
 	andi 0x1f
 	subi 0x13
 
-	exit
+	scall 0
 
