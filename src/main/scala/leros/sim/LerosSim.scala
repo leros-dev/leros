@@ -11,12 +11,12 @@ import leros.shared.Constants._
 
 class LerosSim(prog: String) {
 
-  // The complete processor state.
-  // We ignore for now which size we are working with (16, 32, or even 64 bits).
-  // We will mask out the bits later when it matters.
 
   val code = Assembler.getProgram(prog)
 
+  // The complete processor state.
+  // We ignore for now which size we are working with (16, 32, or even 64 bits).
+  // We will mask out the bits later when it matters.
   var pc = 0
   var accu = 0
   var ar = 0
@@ -44,6 +44,8 @@ class LerosSim(prog: String) {
       (v << 21) >> 21
     }
 
+    // TODO: we need to mask out 3 branch bits for matching the opcode
+
     opcode match {
       case ADD => accu = accu + reg(opd)
       case ADDI => accu = accu + sext(opd)
@@ -65,7 +67,8 @@ class LerosSim(prog: String) {
       case OUT => // TODO: define a device that maps to stdout
       case IN => // TODO: a device for reading from stdin
       case JAL => {
-        reg(opd) = pc + 1; doJal = true
+        reg(opd) = pc + 1;
+        doJal = true
       }
       case BR => doBranch = true
       case BRZ => if (accu == 0) doBranch = true
@@ -73,8 +76,17 @@ class LerosSim(prog: String) {
       case BRP => if (accu >= 0) doBranch = true
       case BRN => if (accu < 0) doBranch = true
       case LDADDR => ar = accu
-      case LDIND => accu = mem(ar + opd)
-      case STIND => mem(ar + opd) = accu
+      case LDIND => accu = mem(ar / 4 + opd) // TODO: semantics changed to have opd in words, but address in bytes
+      case LDINDBU => accu = (mem((ar + opd) / 4) >> ((ar + opd) & 0x03) * 8) & 0xff // TODO: decide on big or little ending
+      case STIND => mem(ar / 4 + opd) = accu
+      case STINDB => {
+        var v = mem((ar + opd) / 4) // TODO: decide on big/little ending and test
+        val boff = (ar + opd) & 0x03
+        val mask = ~(0xff << boff * 8)
+        v = v & mask
+        v = v | (ar & 0xff) << boff * 8
+        mem((ar + opd) / 4) = v
+      }
       case SCALL => if (opd == 0) run = false
     }
 

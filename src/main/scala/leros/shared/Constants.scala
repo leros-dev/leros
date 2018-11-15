@@ -62,6 +62,8 @@ object Constants {
   val BRN = 0xa0
   val LDADDR = 0x50
   val LDIND = 0x60
+  val LDINDBU = 0x61
   val STIND = 0x70
+  val STINDB = 0x71
   val SCALL = 0xff // 0 is simulator exit
 }
