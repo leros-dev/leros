@@ -2,24 +2,34 @@ package leros.shared
 
 /*
 +--------+----------+
-|00000--i| nop      |
-|000010-i| add      |
-|000011-i| sub      |
-|00010--i| shr      |
-|00011--i| unused   |
-|0010000i| load     |
-|0010001i| and      |
-|0010010i| or       |
-|0010011i| xor      |
-|00101--i| loadh    |
-|00110--i| store    |
-|001110-i| out      |
-|000001-i| in       |
+|00000---| nop      |
+|000010-0| add      |
+|000010-1| addi     |
+|000011-0| sub      |
+|000011-1| subi     |
+|00010---| shr      |
+|00011---| -        |
+|00100000| load     |
+|00100000| load i   |
+|00100010| and      |
+|00100011| andi     |
+|00100100| or       |
+|00100101| ori      |
+|00100110| xor      |
+|00100111| xori     |
+|00101001| loadhi   |
+|00101010| loadh2i  |
+|00101011| loadh3i  |
+|00110---| store    |
+|001110-?| out      |
+|000001-?| in       |
 |01000---| jal      |
 |01001---| -        |
 |01010---| ldaddr   |
-|01100---| load ind |
-|01110---| store ind|
+|01100--0| loadind  |
+|01100--1| loadindbu|
+|01110--0| storeind |
+|01110--1| storeindb|
 |1000nnnn| br       |
 |1001nnnn| brz      |
 |1010nnnn| brnz     |
@@ -55,15 +65,15 @@ object Constants {
   val OUT = 0x39 // is IN/OUT immediate only?
   val IN = 0x05
   val JAL = 0x40
-  val BR = 0x80
-  val BRZ = 0x90
-  val BRNZ = 0xa0
-  val BRP = 0xb0
-  val BRN = 0xc0
   val LDADDR = 0x50
   val LDIND = 0x60
   val LDINDBU = 0x61
   val STIND = 0x70
   val STINDB = 0x71
+  val BR = 0x80
+  val BRZ = 0x90
+  val BRNZ = 0xa0
+  val BRP = 0xb0
+  val BRN = 0xc0
   val SCALL = 0xff // 0 is simulator exit
 }
