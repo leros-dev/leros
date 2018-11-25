@@ -31,7 +31,7 @@ class LerosSim(prog: String) {
     val instr = code(pc)
     val opcode = (instr >> 8) & 0xff
     val opd = instr & 0x00ff
-    val opd11 = instr & 0x07ff
+    val opd12 = instr & 0x0fff
 
     var doBranch = false
     var doJal = false
@@ -40,13 +40,21 @@ class LerosSim(prog: String) {
       (v << 24) >> 24
     }
 
-    def sext11(v: Int) = {
-      (v << 21) >> 21
+    def sext12(v: Int) = {
+      (v << 20) >> 2
     }
 
-    // TODO: we need to mask out 3 branch bits for matching the opcode
+    // mask out 4 bits on a branch for matching the opcode
+    val opcodeMask = opcode & 0xf0 match {
+      case BR => opcode & 0xf0
+      case BRZ => opcode & 0xf0
+      case BRNZ => opcode & 0xf0
+      case BRP => opcode & 0xf0
+      case BRN => opcode & 0xf0
+      case _ => opcode
+    }
 
-    opcode match {
+    opcodeMask match {
       case ADD => accu = accu + reg(opd)
       case ADDI => accu = accu + sext(opd)
       case SUB => accu = accu - reg(opd)
@@ -91,7 +99,7 @@ class LerosSim(prog: String) {
     }
 
     if (doBranch) {
-      pc = pc + sext11(opd11) // or PC + 1
+      pc = pc + sext12(opd12) // TODO: or is it (as usual form the next instruction) PC + 1 + offset
     } else if (doJal) {
       pc = accu
     } else {

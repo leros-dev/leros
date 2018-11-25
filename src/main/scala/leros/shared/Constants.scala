@@ -20,11 +20,11 @@ package leros.shared
 |01010---| ldaddr   |
 |01100---| load ind |
 |01110---| store ind|
-|10000nnn| br       |
-|10001nnn| brz      |
-|10010nnn| brnz     |
-|10011nnn| brp      |
-|10100nnn| brn      |
+|1000nnnn| br       |
+|1001nnnn| brz      |
+|1010nnnn| brnz     |
+|1011nnnn| brp      |
+|1100nnnn| brn      |
 |11111111| scall    |
 +--------+----------+
  */
@@ -56,10 +56,10 @@ object Constants {
   val IN = 0x05
   val JAL = 0x40
   val BR = 0x80
-  val BRZ = 0x88
-  val BRNZ = 0x90
-  val BRP = 0x9a
-  val BRN = 0xa0
+  val BRZ = 0x90
+  val BRNZ = 0xa0
+  val BRP = 0xb0
+  val BRN = 0xc0
   val LDADDR = 0x50
   val LDIND = 0x60
   val LDINDBU = 0x61
