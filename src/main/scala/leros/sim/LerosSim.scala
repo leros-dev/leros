@@ -51,7 +51,7 @@ class LerosSim(prog: String) {
       case ADDI => accu = accu + sext(opd)
       case SUB => accu = accu - reg(opd)
       case SUBI => accu = accu - sext(opd)
-      case SHR => accu = accu >> 1
+      case SHR => accu = accu >>> 1
       case LD => accu = reg(opd)
       case LDI => accu = sext(opd)
       case LDHI => accu = (accu & 0xff) + ((opd << 24) >> 16)
