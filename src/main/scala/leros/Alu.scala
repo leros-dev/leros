@@ -1,68 +1,49 @@
 package leros
 
-import leros.Types._
-
 import chisel3._
 import chisel3.util._
 
-/**
-  * ALU including the accumulator register.
-  * The simple implementation.
-  *
-  * @param size
-  */
-class AluSimple(size: Int) extends Module {
+import leros.Types._
+
+class Alu(size: Int) extends Module {
   val io = IO(new Bundle {
-    val decin = Input(new DecodeOut)
-    val din = Input(UInt(size.W))
-    val dout = Output(UInt(size.W))
+    val op = Input(UInt(3.W))
+    val a = Input(UInt(size.W))
+    val b = Input(UInt(size.W))
+    val y = Output(UInt(size.W))
   })
 
 
-  val accuReg = RegInit(0.U(size.W))
+  val op = io.op
+  val a = io.a
+  val b = io.b
+  val res = WireInit(0.U(size.W))
 
-  // TODO: decide where the pipeline registers are placed
-  // now we have a mix between here for the decode and outside for operand
-
-  val funcReg = RegNext(io.decin.func)
-  // Disable accu on reset to avoid executing the first instruction twice (visible during reset).
-  val enaReg = RegInit(false.B)
-  enaReg := io.decin.ena
-
-  val res = Wire(UInt())
-  res := 0.U(size.W)
-
-  // TODO: mask bits out for branch decode
-
-  val op = io.din.asUInt
-  switch(funcReg) {
+  switch(op) {
     is(add) {
-      res := accuReg + op
+      res := a + b
     }
     is(sub) {
-      res := accuReg - op
+      res := a - b
     }
     is(and) {
-      res := accuReg & op
+      res := a & b
     }
     is(or) {
-      res := accuReg | op
+      res := a | b
     }
     is(xor) {
-      res := accuReg ^ op
+      res := a ^ b
     }
     is (shr) {
-      res := accuReg >> 1
+      res := a >> 1
     }
     is(ld) {
-      res := op
+      res := b
     }
   }
-  when (enaReg) {
-    accuReg := res
-  }
 
-  io.dout := accuReg
+  io.y := res
 }
 
 
@@ -72,6 +53,7 @@ class AluSimple(size: Int) extends Module {
   *
   * @param size
   */
+/*
 class AluOpt(size: Int) extends Module {
   val io = IO(new Bundle {
     val decin = Input(new DecodeOut)
@@ -139,13 +121,15 @@ class AluOpt(size: Int) extends Module {
   io.dout := accuReg
 }
 
-class Alu(size: Int) extends Module {
+*/
+
+class AluBase(size: Int) extends Module {
   val io = IO(new Bundle {
     val decin = Input(new DecodeOut)
     val din = Input(UInt(size.W))
     val dout = Output(UInt(size.W))
   })
 
-  val alu = Module(new AluSimple(size))
+  val alu = Module(new Alu(size))
   alu.io <> io
 }

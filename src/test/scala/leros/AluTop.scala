@@ -13,15 +13,17 @@ class AluTop(size: Int) extends Module {
     val dout = Output(UInt(size.W))
   })
 
-  val x = RegNext(RegNext(RegNext(io.din)))
-  val y = RegNext(x)
+  val a = RegNext(RegNext(RegNext(io.din)))
+  val b = RegNext(a)
+  val op = RegNext(b)
 
   val alu = Module(new Alu(size))
-  alu.io.din := x
-  alu.io.decin.func := y
-  alu.io.decin.ena := y(10)
+  alu.io.a := a
+  alu.io.b := b
+  alu.io.op := op
 
-  io.dout := RegNext(RegNext(alu.io.dout))
+
+  io.dout := RegNext(RegNext(alu.io.y))
 }
 object AluTop extends App {
   Driver.execute(Array("--target-dir", "generated"), () => new AluTop(32))

@@ -15,7 +15,7 @@ class LerosTester(dut: Leros) extends PeekPokeTester(dut) {
   var run = true
   var maxInstructions = 10
   while(run) {
-// Looks like peeking elements in gone in Chisel 2
+// Looks like peeking elements in gone in Chisel 3
 //    peek(dut.pc)
 //    peek(dut.accuReg)
 //    peek(dut.instr)
