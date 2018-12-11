@@ -8,16 +8,15 @@ import leros.Types._
 class Alu(size: Int) extends Module {
   val io = IO(new Bundle {
     val op = Input(UInt(3.W))
-    val a = Input(UInt(size.W))
-    val b = Input(UInt(size.W))
-    val y = Output(UInt(size.W))
+    val a = Input(SInt(size.W))
+    val b = Input(SInt(size.W))
+    val y = Output(SInt(size.W))
   })
-
 
   val op = io.op
   val a = io.a
   val b = io.b
-  val res = WireInit(0.U(size.W))
+  val res = WireInit(0.S(size.W))
 
   switch(op) {
     is(add) {
@@ -36,7 +35,10 @@ class Alu(size: Int) extends Module {
       res := a ^ b
     }
     is (shr) {
-      res := a >> 1
+      // the following does NOT result in an unsigned shift
+      // res := (a.asUInt >> 1).asSInt
+      // work around
+      res := (a >> 1) & 0x7fffffff.S
     }
     is(ld) {
       res := b
