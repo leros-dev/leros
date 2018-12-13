@@ -6,13 +6,10 @@
 
 package leros
 
-import leros.util._
-
-import leros.shared.Constants._
-import leros.Types._
-
 import chisel3._
 import chisel3.util._
+
+import leros.util._
 
 object Types {
   val nop :: add :: sub :: and :: or :: xor :: ld :: shr :: Nil = Enum(8)
@@ -20,113 +17,10 @@ object Types {
 
 
 class Debug extends Bundle {
-  val acc = Output(UInt())
+  val acc = Output(SInt())
   val pc = Output(UInt())
   val instr = Output(UInt())
   val exit = Output(Bool())
-}
-
-class DecodeOut extends Bundle {
-  val ena = Bool()
-  val func = UInt()
-  val exit = Bool()
-}
-
-class Decode() extends Module {
-  val io = IO(new Bundle {
-    val din = Input(UInt(8.W))
-    val dout = Output(new DecodeOut)
-  })
-
-  val f = Wire(UInt())
-  f := nop
-  val imm = Wire(Bool())
-  imm := false.B
-  val ena = Wire(Bool())
-  ena := false.B
-  io.dout.exit := false.B
-
-  switch(io.din) {
-    is(ADD.U) {
-      f := add
-      ena := true.B
-    }
-    is(ADDI.U) {
-      f := add
-      imm := true.B
-      ena := true.B
-    }
-    is(SUB.U) {
-      f := sub
-      ena := true.B
-    }
-    is(SUBI.U) {
-      f := sub
-      imm := true.B
-      ena := true.B
-    }
-    is(SHR.U) {
-      f := shr
-      ena := true.B
-    }
-    is(LD.U) {
-      f := ld
-      ena := true.B
-    }
-    is(LDI.U) {
-      f := ld
-      imm := true.B
-      ena := true.B
-    }
-    is(AND.U) {
-      f := and
-      ena := true.B
-    }
-    is(ANDI.U) {
-      f := and
-      imm := true.B
-      ena := true.B
-    }
-    is(OR.U) {
-      f := or
-      ena := true.B
-    }
-    is(ORI.U) {
-      f := or
-      imm := true.B
-      ena := true.B
-    }
-    is(XOR.U) {
-      f := xor
-      ena := true.B
-    }
-    is(XORI.U) {
-      f := xor
-      imm := true.B
-      ena := true.B
-    }
-    is(LDHI.U) {
-      f := sub
-      imm := true.B
-      ena := true.B
-    }
-    // Following only useful for 32-bit Leros
-    is(LDH2I.U) {
-      f := sub
-      imm := true.B
-      ena := true.B
-    }
-    is(LDH3I.U) {
-      f := sub
-      imm := true.B
-      ena := true.B
-    }
-    is(SCALL.U) {
-      io.dout.exit := true.B
-    }
-  }
-  io.dout.ena := ena
-  io.dout.func := f
 }
 
 /**
@@ -181,7 +75,7 @@ class Leros(size: Int, memSize: Int, prog: String) extends Module {
   val dec = Module(new Decode())
   dec.io.din := opcode
 
-  val accuReg = RegInit(0.U(size.W))
+  val accuReg = RegInit(0.S(size.W))
 
   // TODO: decide where the pipeline registers are placed
   // now we have a mix between here for the decode and outside for operand
@@ -195,7 +89,7 @@ class Leros(size: Int, memSize: Int, prog: String) extends Module {
 
   alu.io.op := funcReg
   alu.io.a := accuReg
-  alu.io.b := opReg.asUInt
+  alu.io.b := opReg
 
   when (enaReg) {
     accuReg := alu.io.y
