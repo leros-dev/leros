@@ -81,7 +81,6 @@ class Leros(size: Int, memSize: Int, prog: String) extends Module {
   // now we have a mix between here for the decode and outside for operand
 
   val funcReg = RegNext(dec.io.dout.func)
-  // Disable accu on reset to avoid executing the first instruction twice (visible during reset).
   val enaReg = RegInit(false.B)
   enaReg := dec.io.dout.ena
 
@@ -94,47 +93,6 @@ class Leros(size: Int, memSize: Int, prog: String) extends Module {
   when (enaReg) {
     accuReg := alu.io.y
   }
-
-
-  /*
-    val decout = dec.io.dout
-
-    val funcReg = RegNext(decout.func)
-    // Disable accu on reset to avoid executing the first instruction twice (visible during reset).
-    val enaReg = RegInit(false.B)
-    enaReg := decout.ena
-
-    val res = Wire(UInt())
-    res := 0.U(size.W)
-
-    val op = opReg.asUInt
-    switch(funcReg) {
-      is(add) {
-        res := accuReg + op
-      }
-      is(sub) {
-        res := accuReg - op
-      }
-      is(and) {
-        res := accuReg & op
-      }
-      is(or) {
-        res := accuReg | op
-      }
-      is(xor) {
-        res := accuReg ^ op
-      }
-      is (shr) {
-        res := accuReg >> 1
-      }
-      is(ld) {
-        res := op
-      }
-    }
-    when (enaReg) {
-      accuReg := res
-    }
-  */
 
   val exit = RegInit(false.B)
   exit := RegNext(dec.io.dout.exit)

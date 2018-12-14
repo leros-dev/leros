@@ -15,7 +15,7 @@ class LerosTester(dut: Leros) extends PeekPokeTester(dut) {
   var run = true
   var maxInstructions = 10
   while(run) {
-// Looks like peeking elements in gone in Chisel 3
+// Looks like peeking elements is gone in Chisel 3
 //    peek(dut.pc)
 //    peek(dut.accuReg)
 //    peek(dut.instr)
@@ -25,8 +25,8 @@ class LerosTester(dut: Leros) extends PeekPokeTester(dut) {
     run = peek(dut.io.dbg.exit) == 0 && maxInstructions > 0
     // poke(dut.io.din, maxInstructions)
   }
-  expect(dut.io.dbg.acc, 0, "Accu shall be zero at the end of a test case.\n")
-  expect(dut.io.dout, 42)
+  val res = expect(dut.io.dbg.acc, 0, "Accu shall be zero at the end of a test case.\n")
+  if (!res) System.exit(-1)
 }
 
 object LerosTester extends App {

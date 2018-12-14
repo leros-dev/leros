@@ -15,9 +15,6 @@ object Assembler {
     0x0000
   )
 
-  // collect destination addresses in first pass
-  val symbols = collection.mutable.Map[String, Int]()
-
   def getProgramFix() = prog
 
   def getProgram(prog: String) = {
@@ -36,6 +33,9 @@ object Assembler {
         }
       */
   }
+
+  // collect destination addresses in first pass
+  val symbols = collection.mutable.Map[String, Int]()
 
   def assemble(prog: String): Array[Int] = {
     assemble(prog, false)
@@ -61,12 +61,6 @@ object Assembler {
       s.substring(1).toInt
     }
 
-    //    def regIndirect(s: String): Int = {
-    //      assert(s.startsWith("(r"))
-    //      assert(s.endsWith(")"))
-    //      s.substring(2, s.length - 1).toInt
-    //    }
-
     for (line <- source.getLines()) {
       if (!pass2) println(line)
       val tokens = line.trim.split(" ")
@@ -87,6 +81,7 @@ object Assembler {
         case "andi" => (ANDI << 8) + toInt(tokens(1))
         case "ori" => (ORI << 8) + toInt(tokens(1))
         case "xori" => (XORI << 8) + toInt(tokens(1))
+        case "shr" => (SHR << 8)
         case "loadi" => (LDI << 8) + toInt(tokens(1))
         case "loadhi" => (LDHI << 8) + toInt(tokens(1))
         case "loadh2i" => (LDH2I << 8) + toInt(tokens(1))
