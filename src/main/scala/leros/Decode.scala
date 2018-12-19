@@ -39,7 +39,6 @@ class Decode() extends Module {
   })
 
   val d = DecodeOut.default
-
   // TODO: mask for branch decode
 
   switch(io.din) {
@@ -124,7 +123,7 @@ class Decode() extends Module {
       d.enah3i := true.B
     }
     is(SCALL.U) {
-      io.dout.exit := true.B
+      d.exit := true.B
     }
   }
   io.dout := d

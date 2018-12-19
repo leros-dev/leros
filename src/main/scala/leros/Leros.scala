@@ -72,6 +72,7 @@ class Leros(size: Int, memSize: Int, prog: String) extends Module {
   val decout = dec.io.dout
 
 
+
   // Operand
   val operand = Wire(SInt(size.W))
   /*
@@ -112,7 +113,7 @@ class Leros(size: Int, memSize: Int, prog: String) extends Module {
   }
 
   val exit = RegInit(false.B)
-  exit := RegNext(dec.io.dout.exit)
+  exit := RegNext(decout.exit)
 
   println("Generating Leros")
   io.dout := 42.U
