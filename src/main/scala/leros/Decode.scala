@@ -9,7 +9,27 @@ import leros.Types._
 class DecodeOut extends Bundle {
   val ena = Bool()
   val func = UInt()
+  val imm = Bool()
+  val enahi = Bool()
+  val enah2i = Bool()
+  val enah3i = Bool()
+  val nosext = Bool()
   val exit = Bool()
+}
+
+object DecodeOut {
+  def default: DecodeOut = {
+    val v = Wire(new DecodeOut)
+    v.ena := false.B
+    v.func := nop
+    v.imm := false.B
+    v.enahi := false.B
+    v.enah2i := false.B
+    v.enah3i := false.B
+    v.nosext := false.B
+    v.exit := false.B
+    v
+  }
 }
 
 class Decode() extends Module {
@@ -18,91 +38,94 @@ class Decode() extends Module {
     val dout = Output(new DecodeOut)
   })
 
-  val f = WireInit(nop)
-  val imm = WireInit(false.B)
-  val ena = WireInit(false.B)
+  val d = DecodeOut.default
 
-  io.dout.exit := false.B
+  // TODO: mask for branch decode
 
   switch(io.din) {
     is(ADD.U) {
-      f := add
-      ena := true.B
+      d.func := add
+      d.ena := true.B
     }
     is(ADDI.U) {
-      f := add
-      imm := true.B
-      ena := true.B
+      d.func := add
+      d.imm := true.B
+      d.ena := true.B
     }
     is(SUB.U) {
-      f := sub
-      ena := true.B
+      d.func := sub
+      d.ena := true.B
     }
     is(SUBI.U) {
-      f := sub
-      imm := true.B
-      ena := true.B
+      d.func := sub
+      d.imm := true.B
+      d.ena := true.B
     }
     is(SHR.U) {
-      f := shr
-      ena := true.B
+      d.func := shr
+      d.ena := true.B
     }
     is(LD.U) {
-      f := ld
-      ena := true.B
+      d.func := ld
+      d.ena := true.B
     }
     is(LDI.U) {
-      f := ld
-      imm := true.B
-      ena := true.B
+      d.func := ld
+      d.imm := true.B
+      d.ena := true.B
     }
     is(AND.U) {
-      f := and
-      ena := true.B
+      d.func := and
+      d.ena := true.B
     }
     is(ANDI.U) {
-      f := and
-      imm := true.B
-      ena := true.B
+      d.func := and
+      d.imm := true.B
+      d.ena := true.B
+      d.nosext := true.B
     }
     is(OR.U) {
-      f := or
-      ena := true.B
+      d.func := or
+      d.ena := true.B
     }
     is(ORI.U) {
-      f := or
-      imm := true.B
-      ena := true.B
+      d.func := or
+      d.imm := true.B
+      d.ena := true.B
+      d.nosext := true.B
     }
     is(XOR.U) {
-      f := xor
-      ena := true.B
+      d.func := xor
+      d.ena := true.B
     }
     is(XORI.U) {
-      f := xor
-      imm := true.B
-      ena := true.B
+      d.func := xor
+      d.imm := true.B
+      d.ena := true.B
+      d.nosext := true.B
     }
     is(LDHI.U) {
-      f := sub
-      imm := true.B
-      ena := true.B
+      d.func := ld
+      d.imm := true.B
+      d.ena := true.B
+      d.enahi := true.B
     }
     // Following only useful for 32-bit Leros
     is(LDH2I.U) {
-      f := sub
-      imm := true.B
-      ena := true.B
+      d.func := ld
+      d.imm := true.B
+      d.ena := true.B
+      d.enah2i := true.B
     }
     is(LDH3I.U) {
-      f := sub
-      imm := true.B
-      ena := true.B
+      d.func := ld
+      d.imm := true.B
+      d.ena := true.B
+      d.enah3i := true.B
     }
     is(SCALL.U) {
       io.dout.exit := true.B
     }
   }
-  io.dout.ena := ena
-  io.dout.func := f
+  io.dout := d
 }

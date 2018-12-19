@@ -64,25 +64,42 @@ class Leros(size: Int, memSize: Int, prog: String) extends Module {
 
   // Maybe decoding and sign extension into fetch
   // Play around with the pipeline registers when (1) more complete ALU and (2) longer programs (= block RAM)
-  val opcode = instr(15, 8)
-  val operand = Wire(SInt(size.W))
-  operand := instr(7, 0).asSInt // sign extension
-  // TODO: only sign extend when arithmetic
-  val opReg = RegNext(operand)
+  // Several different pipeline organizations might be interesting
 
   // Decode
-
   val dec = Module(new Decode())
-  dec.io.din := opcode
+  dec.io.din := instr(15, 8)
+  val decout = dec.io.dout
 
+
+  // Operand
+  val operand = Wire(SInt(size.W))
+  /*
+  when(decout.nosext) {
+//    operand := 0.S(24.W) ## instr(7, 0).asSInt // no sign extension
+    operand := (instr(7, 0).asSInt << 8) ## 0.S(8.W)
+  } .elsewhen(decout.enahi) {
+    operand := (instr(7, 0).asSInt << 8) ## 0.S(8.W)
+  } .elsewhen(decout.enah2i) {
+    operand := (instr(7, 0).asSInt << 16) ## 0.S(16.W)
+  } .elsewhen(decout.enah3i) {
+    operand := (instr(7, 0).asSInt << 24) ## 0.S(24.W)
+  } .otherwise {
+    operand := instr(7, 0).asSInt
+  }
+  */
+  operand := 0.S
+
+
+  val opReg = RegNext(operand)
   val accuReg = RegInit(0.S(size.W))
 
   // TODO: decide where the pipeline registers are placed
   // now we have a mix between here for the decode and outside for operand
 
-  val funcReg = RegNext(dec.io.dout.func)
+  val funcReg = RegNext(decout.func)
   val enaReg = RegInit(false.B)
-  enaReg := dec.io.dout.ena
+  enaReg := decout.ena
 
   val alu = Module(new Alu(size))
 
