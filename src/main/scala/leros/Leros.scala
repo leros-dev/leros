@@ -75,21 +75,21 @@ class Leros(size: Int, memSize: Int, prog: String) extends Module {
 
   // Operand
   val operand = Wire(SInt(size.W))
-  /*
+  val op16sex = Wire(SInt(16.W))
+  op16sex := instr(7, 0).asSInt
+  val op24sex = Wire(SInt(24.W))
+  op24sex := instr(7, 0).asSInt
   when(decout.nosext) {
-//    operand := 0.S(24.W) ## instr(7, 0).asSInt // no sign extension
-    operand := (instr(7, 0).asSInt << 8) ## 0.S(8.W)
+    operand := (0.U(24.W) ## instr(7, 0)).asSInt // no sign extension
   } .elsewhen(decout.enahi) {
-    operand := (instr(7, 0).asSInt << 8) ## 0.S(8.W)
+    operand := (op24sex.asUInt ## 0.U(8.W)).asSInt
   } .elsewhen(decout.enah2i) {
-    operand := (instr(7, 0).asSInt << 16) ## 0.S(16.W)
+    operand := (op16sex.asUInt ## 0.U(16.W)).asSInt
   } .elsewhen(decout.enah3i) {
-    operand := (instr(7, 0).asSInt << 24) ## 0.S(24.W)
+    operand := (instr(7, 0) ## 0.U(24.W)).asSInt
   } .otherwise {
     operand := instr(7, 0).asSInt
   }
-  */
-  operand := 0.S
 
 
   val opReg = RegNext(operand)
