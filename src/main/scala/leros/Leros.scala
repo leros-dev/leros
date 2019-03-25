@@ -49,7 +49,7 @@ class Leros(size: Int, memSize: Int, prog: String) extends Module {
   })
 
   // The main architectural state
-//  val accuReg = RegInit(0.U(size.W))
+  val accuReg = RegInit(0.S(size.W))
   val pcReg = RegInit(0.U(memSize.W))
   val addrReg = RegInit(0.U(memSize.W))
 
@@ -71,8 +71,6 @@ class Leros(size: Int, memSize: Int, prog: String) extends Module {
   dec.io.din := instr(15, 8)
   val decout = dec.io.dout
 
-
-
   // Operand
   val operand = Wire(SInt(size.W))
   val op16sex = Wire(SInt(16.W))
@@ -93,7 +91,6 @@ class Leros(size: Int, memSize: Int, prog: String) extends Module {
 
 
   val opReg = RegNext(operand)
-  val accuReg = RegInit(0.S(size.W))
 
   // TODO: decide where the pipeline registers are placed
   // now we have a mix between here for the decode and outside for operand
