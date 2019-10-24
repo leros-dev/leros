@@ -23,7 +23,7 @@ class AluTop(size: Int) extends Module {
   alu.io.op := op
 
 
-  io.dout := RegNext(RegNext(alu.io.y))
+  io.dout := RegNext(RegNext(alu.io.result))
 }
 object AluTop extends App {
   Driver.execute(Array("--target-dir", "generated"), () => new AluTop(32))

@@ -27,6 +27,8 @@ class Debug extends Bundle {
   * Instruction memory.
   * Contains the register for using the on-chip ROM.
   * Uses Chisel synchronous reset to also execute the first instruction.
+  *
+  * FIXME: Verilog generation from Chisel results in logic, not in a ROM.
   */
 class InstrMem(memSize: Int, prog: String) extends Module {
   val io = IO(new Bundle {
@@ -80,11 +82,11 @@ class Leros(size: Int, memSize: Int, prog: String) extends Module {
   when(decout.nosext) {
     operand := (0.U(24.W) ## instr(7, 0)).asSInt // no sign extension
   } .elsewhen(decout.enahi) {
-    operand := (op24sex.asUInt ## 0.U(8.W)).asSInt
+    operand := (op24sex.asUInt ## accuReg(7, 0)).asSInt
   } .elsewhen(decout.enah2i) {
-    operand := (op16sex.asUInt ## 0.U(16.W)).asSInt
+    operand := (op16sex.asUInt ## accuReg(15, 0)).asSInt
   } .elsewhen(decout.enah3i) {
-    operand := (instr(7, 0) ## 0.U(24.W)).asSInt
+    operand := (instr(7, 0) ## accuReg(23, 0)).asSInt
   } .otherwise {
     operand := instr(7, 0).asSInt
   }
@@ -106,7 +108,8 @@ class Leros(size: Int, memSize: Int, prog: String) extends Module {
   alu.io.b := opReg
 
   when (enaReg) {
-    accuReg := alu.io.y
+    accuReg := alu.io.result
+    printf("accu in: %x, accuReg: %x\n", alu.io.result, accuReg)
   }
 
   val exit = RegInit(false.B)

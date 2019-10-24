@@ -40,7 +40,7 @@ class AluTester(dut: Alu) extends PeekPokeTester(dut) {
           poke(dut.io.a, a)
           poke(dut.io.b, b)
           step(1)
-          expect(dut.io.y, alu(a, b, fun.toInt))
+          expect(dut.io.result, alu(a, b, fun.toInt))
         }
       }
     }

@@ -10,7 +10,7 @@ class Alu(size: Int) extends Module {
     val op = Input(UInt(3.W))
     val a = Input(SInt(size.W))
     val b = Input(SInt(size.W))
-    val y = Output(SInt(size.W))
+    val result = Output(SInt(size.W))
   })
 
   val op = io.op
@@ -45,7 +45,7 @@ class Alu(size: Int) extends Module {
     }
   }
 
-  io.y := res
+  io.result := res
 }
 
 
