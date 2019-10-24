@@ -47,7 +47,7 @@ class InstrMem(memSize: Int, prog: String) extends Module {
   * For now do a first sequential implementation.
   * Later have Leros as abstract class with base state and several implementations (different pipelines).
   */
-class Leros(size: Int, memSize: Int, prog: String) extends Module {
+class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Module {
   val io = IO(new Bundle {
     val dout = Output(UInt(32.W))
     val dbg = new Debug
@@ -117,11 +117,11 @@ class Leros(size: Int, memSize: Int, prog: String) extends Module {
   println("Generating Leros")
   io.dout := 42.U
 
-  if (false) {
-    io.dbg.acc := RegNext((accuReg))
-    io.dbg.pc := RegNext((pcReg))
-    io.dbg.instr := RegNext((instr))
-    io.dbg.exit := RegNext((exit))
+  if (fmaxReg) {
+    io.dbg.acc := RegNext(RegNext((accuReg)))
+    io.dbg.pc := RegNext(RegNext((pcReg)))
+    io.dbg.instr := RegNext(RegNext((instr)))
+    io.dbg.exit := RegNext(RegNext((exit)))
   } else {
     io.dbg.acc := ((accuReg))
     io.dbg.pc := ((pcReg))
@@ -131,5 +131,5 @@ class Leros(size: Int, memSize: Int, prog: String) extends Module {
 }
 
 object Leros extends App {
-  Driver.execute(Array("--target-dir", "generated"), () => new Leros(32, 10, args(0)))
+  Driver.execute(Array("--target-dir", "generated"), () => new Leros(32, 10, args(0), true))
 }

@@ -8,6 +8,9 @@ hwsim:
 swsim:
 	sbt "runMain leros.sim.LerosSim asm/$(APP).s"
 
+hw:
+	sbt "runMain leros.Leros asm/$(APP).s"
+
 test-alu:
 	sbt "test:runMain leros.AluTester"
 

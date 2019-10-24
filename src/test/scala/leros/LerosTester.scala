@@ -31,7 +31,7 @@ class LerosTester(dut: Leros) extends PeekPokeTester(dut) {
 
 object LerosTester extends App {
   println("Testing Leros")
-  iotesters.Driver.execute(Array("--target-dir", "generated", "--fint-write-vcd"), () => new Leros(32, 10, args(0))) {
+  iotesters.Driver.execute(Array("--target-dir", "generated", "--fint-write-vcd"), () => new Leros(32, 10, args(0), false)) {
     c => new LerosTester(c)
   }
 }
