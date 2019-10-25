@@ -8,6 +8,8 @@ package leros
 
 import chisel3._
 import chisel3.util._
+// Try our ChiselEnum
+import chisel3.experimental._
 
 import leros.util._
 
@@ -41,6 +43,10 @@ class InstrMem(memSize: Int, prog: String) extends Module {
   io.instr := progMem(memReg)
 }
 
+object State extends ChiselEnum {
+  val feDec, exe = Value
+}
+
 /**
   * Leros top level.
   *
@@ -53,19 +59,26 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
     val dbg = new Debug
   })
 
+  import State._
+
   // The main architectural state
   val accuReg = RegInit(0.S(size.W))
   val pcReg = RegInit(0.U(memSize.W))
   val addrReg = RegInit(0.U(memSize.W))
 
-  val pcNext = pcReg + 1.U
-  pcReg := pcNext
+  val stateReg = RegInit(feDec)
 
+  switch (stateReg) {
+    is (feDec) { stateReg := exe }
+    is (exe) { stateReg := feDec }
+  }
+
+  val pcNext = WireDefault(pcReg + 1.U)
+
+  // Instruction memory
   val mem = Module(new InstrMem(memSize, prog))
   mem.io.addr := pcNext
   val instr = mem.io.instr
-
-
 
   // Decode
   val dec = Module(new Decode())
@@ -91,28 +104,36 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
   }
 
 
-  val opReg = RegNext(operand)
+  val decReg = RegInit(DecodeOut.default)
+  val opdReg = RegInit(0.S(size.W))
+
+  when (stateReg === feDec) {
+    decReg := decout
+    opdReg := operand
+  }
+
 
   // TODO: decide where the pipeline registers are placed
   // now we have a mix between here for the decode and outside for operand
-
-  val funcReg = RegNext(decout.func)
-  val enaReg = RegInit(false.B)
-  enaReg := decout.ena
+  // For now do a sequential version of Leros
 
   val alu = Module(new Alu(size))
 
-  alu.io.op := funcReg
+  alu.io.op := decReg.func
   alu.io.a := accuReg
-  alu.io.b := opReg
+  alu.io.b := opdReg
 
-  when (enaReg) {
-    accuReg := alu.io.result
-    printf("accu in: %x, accuReg: %x\n", alu.io.result, accuReg)
+  when (stateReg === exe) {
+    pcReg := pcNext
+    when (decReg.ena) {
+      accuReg := alu.io.result
+    }
   }
 
+  printf("accu in: %x, accuReg: %x\n", alu.io.result, accuReg)
+
   val exit = RegInit(false.B)
-  exit := RegNext(decout.exit)
+  exit := RegNext(decReg.exit)
 
   println("Generating Leros")
   io.dout := 42.U

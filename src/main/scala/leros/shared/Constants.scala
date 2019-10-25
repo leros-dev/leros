@@ -10,7 +10,7 @@ package leros.shared
 |00010---| shr      |
 |00011---| -        |
 |00100000| load     |
-|00100000| load i   |
+|00100001| loadi    |
 |00100010| and      |
 |00100011| andi     |
 |00100100| or       |
@@ -76,4 +76,6 @@ object Constants {
   val BRP = 0xb0
   val BRN = 0xc0
   val SCALL = 0xff // 0 is simulator exit
+
+  val BRANCH_MASK = 0xf0
 }

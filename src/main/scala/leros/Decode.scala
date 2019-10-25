@@ -39,9 +39,30 @@ class Decode() extends Module {
   })
 
   val d = DecodeOut.default
-  // TODO: mask for branch decode
 
-  switch(io.din) {
+  // Branch uses only 4 bits for decode
+  val isBranch = WireDefault(false.B)
+  /* this is broken, why?
+  switch (io.din >> 4.U) {
+    is (BR.U >> 4.U) { isBranch := true.B }
+    is (BRZ.U >> 4.U) { isBranch := true.B }
+    is (BRNZ.U >> 4.U) { isBranch := true.B }
+    is (BRP.U >> 4.U) { isBranch := true.B }
+    is (BRN.U >> 4.U) { isBranch := true.B }
+  }
+   */
+  def mask(i: Int) = ((i >> 4) & 0x0f).asUInt
+
+  val field = io.din(7, 4)
+  when (field === mask(BR)) { isBranch := true.B }
+  when (field === mask(BRZ)) { isBranch := true.B }
+  when (field === mask(BRNZ)) { isBranch := true.B }
+  when (field === mask(BRP)) { isBranch := true.B }
+  when (field === mask(BRN)) { isBranch := true.B }
+
+  val instr = Mux(isBranch, io.din & BRANCH_MASK.U, io.din)
+
+  switch(instr) {
     is(ADD.U) {
       d.func := add
       d.ena := true.B

@@ -37,6 +37,7 @@ class Alu(size: Int) extends Module {
     is (shr) {
       // the following does NOT result in an unsigned shift
       // res := (a.asUInt >> 1).asSInt
+      // maybe it would be >> 1.U?
       // work around
       res := (a >> 1) & 0x7fffffff.S
     }

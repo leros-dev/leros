@@ -13,7 +13,7 @@ import chisel3.iotesters.PeekPokeTester
 class LerosTester(dut: Leros) extends PeekPokeTester(dut) {
 
   var run = true
-  var maxInstructions = 10
+  var maxCycles = 100
   while(run) {
 // Looks like peeking elements is gone in Chisel 3
 //    peek(dut.pc)
@@ -21,8 +21,8 @@ class LerosTester(dut: Leros) extends PeekPokeTester(dut) {
 //    peek(dut.instr)
     println("pc: " + peek(dut.io.dbg.pc).toString(16) + " acc: " + peek(dut.io.dbg.acc).toString(16) + " instr: " + peek(dut.io.dbg.instr).toString(16))
     step(1)
-    maxInstructions -= 1
-    run = peek(dut.io.dbg.exit) == 0 && maxInstructions > 0
+    maxCycles -= 1
+    run = peek(dut.io.dbg.exit) == 0 && maxCycles > 0
     // poke(dut.io.din, maxInstructions)
   }
   val res = expect(dut.io.dbg.acc, 0, "Accu shall be zero at the end of a test case.\n")
@@ -31,7 +31,7 @@ class LerosTester(dut: Leros) extends PeekPokeTester(dut) {
 
 object LerosTester extends App {
   println("Testing Leros")
-  iotesters.Driver.execute(Array("--target-dir", "generated", "--fint-write-vcd"), () => new Leros(32, 10, args(0), false)) {
+  iotesters.Driver.execute(Array("--target-dir", "generated", "--generate-vcd-output", "on"), () => new Leros(32, 10, args(0), false)) {
     c => new LerosTester(c)
   }
 }

@@ -13,7 +13,7 @@ start:
 	load 1
 	load 0
 	load 0
-	load 7 // branch condidition
+	load 7 // branch condition
 	load 0
 	brnz brnzok
 	branch start
