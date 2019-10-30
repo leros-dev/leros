@@ -9,6 +9,8 @@ import leros.Types._
 class DecodeOut extends Bundle {
   val ena = Bool()
   val func = UInt()
+  val isRegOpd = Bool()
+  val isStore = Bool()
   val imm = Bool()
   val enahi = Bool()
   val enah2i = Bool()
@@ -22,6 +24,8 @@ object DecodeOut {
     val v = Wire(new DecodeOut)
     v.ena := false.B
     v.func := nop
+    v.isRegOpd := false.B
+    v.isStore := false.B
     v.imm := false.B
     v.enahi := false.B
     v.enah2i := false.B
@@ -66,6 +70,7 @@ class Decode() extends Module {
     is(ADD.U) {
       d.func := add
       d.ena := true.B
+      d.isRegOpd := true.B
     }
     is(ADDI.U) {
       d.func := add
@@ -75,6 +80,7 @@ class Decode() extends Module {
     is(SUB.U) {
       d.func := sub
       d.ena := true.B
+      d.isRegOpd := true.B
     }
     is(SUBI.U) {
       d.func := sub
@@ -88,6 +94,7 @@ class Decode() extends Module {
     is(LD.U) {
       d.func := ld
       d.ena := true.B
+      d.isRegOpd := true.B
     }
     is(LDI.U) {
       d.func := ld
@@ -97,6 +104,7 @@ class Decode() extends Module {
     is(AND.U) {
       d.func := and
       d.ena := true.B
+      d.isRegOpd := true.B
     }
     is(ANDI.U) {
       d.func := and
@@ -107,6 +115,7 @@ class Decode() extends Module {
     is(OR.U) {
       d.func := or
       d.ena := true.B
+      d.isRegOpd := true.B
     }
     is(ORI.U) {
       d.func := or
@@ -117,6 +126,7 @@ class Decode() extends Module {
     is(XOR.U) {
       d.func := xor
       d.ena := true.B
+      d.isRegOpd := true.B
     }
     is(XORI.U) {
       d.func := xor
@@ -142,6 +152,9 @@ class Decode() extends Module {
       d.imm := true.B
       d.ena := true.B
       d.enah3i := true.B
+    }
+    is (ST.U) {
+      d.isStore := true.B
     }
     is(SCALL.U) {
       d.exit := true.B

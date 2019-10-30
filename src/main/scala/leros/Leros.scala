@@ -75,10 +75,21 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
 
   val pcNext = WireDefault(pcReg + 1.U)
 
-  // Instruction memory
+  // Instruction memory with an address register that is reset to 0
   val mem = Module(new InstrMem(memSize, prog))
   mem.io.addr := pcNext
   val instr = mem.io.instr
+
+
+  // Register file (could share data memory)
+  val registerMem = SyncReadMem(256, UInt(32.W))
+  // read takes one clock cycle
+  val registerRead = registerMem.read(instr(15, 0))
+
+  when(true.B) {
+    registerMem.write(0.U, accuReg.asUInt())
+  }
+
 
   // Decode
   val dec = Module(new Decode())
@@ -113,24 +124,26 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
   }
 
 
-  // TODO: decide where the pipeline registers are placed
-  // now we have a mix between here for the decode and outside for operand
-  // For now do a sequential version of Leros
+  // For now do a sequential version of Leros.
+  // Later decide where the pipeline registers are placed.
 
   val alu = Module(new Alu(size))
 
   alu.io.op := decReg.func
   alu.io.a := accuReg
-  alu.io.b := opdReg
+  alu.io.b := Mux(decReg.isRegOpd, registerRead.asSInt, opdReg)
 
   when (stateReg === exe) {
     pcReg := pcNext
     when (decReg.ena) {
       accuReg := alu.io.result
     }
+    when (decReg.isStore) {
+      registerMem.write(opdReg(15, 0).asUInt, accuReg.asUInt)
+    }
   }
 
-  printf("accu in: %x, accuReg: %x\n", alu.io.result, accuReg)
+  // printf("accu in: %x, accuReg: %x\n", alu.io.result, accuReg)
 
   val exit = RegInit(false.B)
   exit := RegNext(decReg.exit)

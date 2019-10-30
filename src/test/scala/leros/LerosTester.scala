@@ -26,7 +26,8 @@ class LerosTester(dut: Leros) extends PeekPokeTester(dut) {
     // poke(dut.io.din, maxInstructions)
   }
   val res = expect(dut.io.dbg.acc, 0, "Accu shall be zero at the end of a test case.\n")
-  if (!res) System.exit(-1)
+  // exit(-1) does not dump the waveform
+  // if (!res) System.exit(-1)
 }
 
 object LerosTester extends App {
