@@ -41,7 +41,7 @@ class LerosSim(prog: String) {
     }
 
     def sext12(v: Int) = {
-      (v << 20) >> 2
+      (v << 20) >> 20
     }
 
     // mask out 4 bits on a branch for matching the opcode
@@ -99,13 +99,13 @@ class LerosSim(prog: String) {
     }
 
     if (doBranch) {
-      pc = pc + sext12(opd12) // TODO: or is it (as usual form the next instruction) PC + 1 + offset
+      pc = pc + sext12(opd12)
     } else if (doJal) {
       pc = accu
     } else {
       pc += 1
     }
-    run = pc < code.length
+    run = run && pc < code.length
   }
 }
 

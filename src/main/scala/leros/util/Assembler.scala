@@ -50,9 +50,9 @@ object Assembler {
 
     def toInt(s: String): Int = {
       if (s.startsWith("0x")) {
-        Integer.parseInt(s.substring(2), 16)
+        Integer.parseInt(s.substring(2), 16) & 0xff
       } else {
-        Integer.parseInt(s)
+        Integer.parseInt(s) & 0xff
       }
     }
 
@@ -64,6 +64,9 @@ object Assembler {
     for (line <- source.getLines()) {
       if (!pass2) println(line)
       val tokens = line.trim.split(" ")
+
+      def brOff= if (pass2) symbols(tokens(1))-pc else 0
+
       // println(s"length: ${tokens.length}")
       // tokens.foreach(println)
       val Pattern = "(.*:)".r
@@ -92,11 +95,11 @@ object Assembler {
         case "ldindbu" => (LDINDBU << 8) + toInt(tokens(1))
         case "stind" => (STIND << 8) + toInt(tokens(1))
         case "stindb" => (STINDB << 8) + toInt(tokens(1))
-        case "br" => (BR << 8) + (if (pass2) symbols(tokens(1)) else 0)
-        case "brz" => (BRZ << 8) + (if (pass2) symbols(tokens(1)) else 0)
-        case "brnz" => (BRNZ << 8) + (if (pass2) symbols(tokens(1)) else 0)
-        case "brp" => (BRP << 8) + (if (pass2) symbols(tokens(1)) else 0)
-        case "brn" => (BRN << 8) + (if (pass2) symbols(tokens(1)) else 0)
+        case "br" => (BR << 8) + brOff
+        case "brz" => (BRZ << 8) + brOff
+        case "brnz" => (BRNZ << 8) + brOff
+        case "brp" => (BRP << 8) + brOff
+        case "brn" => (BRN << 8) + brOff
         case "in" => (IN << 8) + toInt(tokens(1))
         case "out" => (OUT << 8) + toInt(tokens(1))
         case "scall" => (SCALL << 8) + toInt(tokens(1))
@@ -114,7 +117,7 @@ object Assembler {
       }
     }
     val finalProg = program.reverse.toArray
-    if (!pass2) {
+    if (pass2) {
       println(s"The program:")
       finalProg.foreach(printf("0x%02x ", _))
       println()

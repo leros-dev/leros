@@ -1,31 +1,33 @@
 //
-// test of branch conditions - should never loop
+// test of branch conditions - should never branch to error
 //
-start:
 	loadi 1
 	loadi 0
 	loadi 7 // branch condition
-	loadi 0
-	brnzi brnzok
-	branchi start
+	brnz brnzok
+	br error
 brnzok:
-	load 127
-	load 0
+	loadi 127
+	loadi 0
 	brz brzok
-	branch start
+	br error
 brzok:
-	load 0
-	load -1
+	loadi 0
+	loadi -1
 	brn brnok
-	branch start
+	br error
 brnok:
-	load -1
-	load 5
+	loadi -1
+	loadi 5
 	brp brpok
-	branch start
+	br error
 brpok:
-	branch brok
-	branch start
+	br brok
+	br error
 brok:
+    loadi 0
+    scall 0
+error:
+    loadi 1
     scall 0
 
