@@ -3,10 +3,10 @@ APP=base
 TESTS=base lhi lhi2 lognosign reg imm
 
 hwsim:
-	sbt "test:runMain leros.LerosTester asm/$(APP).s"
+	sbt -Dprogram=asm/$(APP).s "testOnly leros.LerosSpec"
 
 swsim:
-	sbt "runMain leros.sim.LerosSim asm/$(APP).s"
+	sbt -Dprogram=asm/$(APP).s "testOnly leros.sim.LerosSimSpec"
 
 hw:
 	sbt "runMain leros.Leros asm/$(APP).s"

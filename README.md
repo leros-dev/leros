@@ -3,8 +3,15 @@
 An FPGA optimized tiny processor core for embedded systems.
 See more documentation on the github.io website for [Leros](https://leros-dev.github.io/).
 
+This repository contains two versions of Leros: the initial 16-bit version in VHDL and
+the redesign of 16/32/64-bit version in Chisel. The two versions are in the same spirit,
+but not compatible. The initial version exposes the pipeline to the programmer.
+The initial version is supported by a small Java runtime (muvium).
 
-## Implementation Notes
+The new version is pipeline agnostic and also has a slight different ISA. The new
+version is supported by a C compiler (LLVM port.)
+
+## Implementation Notes (Leros 16)
 
 Pipeline discussion:
 
@@ -17,5 +24,5 @@ Pipeline discussion:
 We target a very high fmax in an FPGA to compensate for the more instructions
 execute.
 
-Inital measurement on DE2-115 with almost no function and debug output (e.g., accu)
+Initial measurement on DE2-115 with almost no function and debug output (e.g., accu)
 in registers: 184 MHz. Could be better.

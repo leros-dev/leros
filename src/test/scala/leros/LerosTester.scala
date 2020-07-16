@@ -7,8 +7,8 @@
 
 package leros
 
-import chisel3._
 import chisel3.iotesters.PeekPokeTester
+import org.scalatest._
 
 class LerosTester(dut: Leros) extends PeekPokeTester(dut) {
 
@@ -30,9 +30,13 @@ class LerosTester(dut: Leros) extends PeekPokeTester(dut) {
   // if (!res) System.exit(-1)
 }
 
-object LerosTester extends App {
-  println("Testing Leros")
-  iotesters.Driver.execute(Array("--target-dir", "generated", "--generate-vcd-output", "on"), () => new Leros(32, 10, args(0), false)) {
-    c => new LerosTester(c)
+class LerosSpec extends FlatSpec with Matchers {
+
+  "Leros" should "pass" in {
+    val program = sys.props.getOrElse("program", "asm/base.s")
+    println("Testing: " + program)
+    chisel3.iotesters.Driver(() => new Leros(32, 10, program, false)) { c =>
+      new LerosTester(c)
+    } should be (true)
   }
 }
