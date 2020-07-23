@@ -32,13 +32,13 @@ class Debug extends Bundle {
   *
   * FIXME: Verilog generation from Chisel results in logic, not in a ROM.
   */
-class InstrMem(memSize: Int, prog: String) extends Module {
+class InstrMem(memAddrWidth: Int, prog: String) extends Module {
   val io = IO(new Bundle {
-    val addr = Input(UInt(memSize.W))
+    val addr = Input(UInt(memAddrWidth.W))
     val instr = Output(UInt(16.W))
   })
   val progMem = VecInit(Assembler.getProgram(prog).map(_.asUInt(16.W)))
-  val memReg = RegInit(0.U(memSize.W))
+  val memReg = RegInit(0.U(memAddrWidth.W))
   memReg := io.addr
   io.instr := progMem(memReg)
 }
@@ -80,16 +80,19 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
   mem.io.addr := pcNext
   val instr = mem.io.instr
 
+  val decReg = RegInit(DecodeOut.default)
+  val opdReg = RegInit(0.S(size.W))
+
 
   // Register file (could share data memory)
   val registerMem = SyncReadMem(256, UInt(32.W))
   // read takes one clock cycle
   val registerRead = registerMem.read(instr(15, 0))
 
-  when(true.B) {
-    registerMem.write(0.U, accuReg.asUInt())
-  }
-
+  // Data memory
+  // TODO: shall be byte write addressable
+  val dataMem = SyncReadMem(1 << memSize, UInt(32.W))
+  val dataRead = dataMem.read(Mux(decReg.isLoadAddr, accuReg.asUInt, addrReg))
 
   // Decode
   val dec = Module(new Decode())
@@ -114,16 +117,6 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
     operand := instr(7, 0).asSInt
   }
 
-
-  val decReg = RegInit(DecodeOut.default)
-  val opdReg = RegInit(0.S(size.W))
-
-  when (stateReg === feDec) {
-    decReg := decout
-    opdReg := operand
-  }
-
-
   // For now do a sequential version of Leros.
   // Later decide where the pipeline registers are placed.
 
@@ -131,19 +124,41 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
 
   alu.io.op := decReg.func
   alu.io.a := accuReg
-  alu.io.b := Mux(decReg.isRegOpd, registerRead.asSInt, opdReg)
+  // TODO: maybe the input should be unsigned?
+  // Probably the accu should be UInt
+  alu.io.b := Mux(decReg.isLoadInd, dataRead.asSInt, Mux(decReg.isRegOpd, registerRead.asSInt, opdReg))
 
-  when (stateReg === exe) {
-    pcReg := pcNext
-    when (decReg.ena) {
-      accuReg := alu.io.result
+  switch(stateReg) {
+    is (feDec) {
+      decReg := decout
+      opdReg := operand
     }
-    when (decReg.isStore) {
-      registerMem.write(opdReg(15, 0).asUInt, accuReg.asUInt)
+
+    is (exe) {
+      pcReg := pcNext
+      when (decReg.ena) {
+        accuReg := alu.io.result
+      }
+      when (decReg.isStore) {
+        registerMem.write(opdReg(15, 0).asUInt, accuReg.asUInt)
+      }
+      when (decReg.isLoadAddr) {
+        addrReg := accuReg.asUInt
+      }
+
+      // TODO
+      when (decReg.isLoadInd) {
+        // nothing to be done here
+      }
+      when (decReg.isStoreInd) {
+        dataMem.write(addrReg, accuReg.asUInt())
+      }
     }
+
   }
 
-  // printf("accu in: %x, accuReg: %x\n", alu.io.result, accuReg)
+  printf("accu in: %x, accuReg: %x\n", alu.io.result, accuReg)
+  printf("address register: %x\n", addrReg)
 
   val exit = RegInit(false.B)
   exit := RegNext(decReg.exit)

@@ -11,6 +11,9 @@ class DecodeOut extends Bundle {
   val func = UInt()
   val isRegOpd = Bool()
   val isStore = Bool()
+  val isStoreInd = Bool()
+  val isLoadInd = Bool()
+  val isLoadAddr = Bool()
   val imm = Bool()
   val enahi = Bool()
   val enah2i = Bool()
@@ -26,6 +29,9 @@ object DecodeOut {
     v.func := nop
     v.isRegOpd := false.B
     v.isStore := false.B
+    v.isStoreInd := false.B
+    v.isLoadInd := false.B
+    v.isLoadAddr := false.B
     v.imm := false.B
     v.enahi := false.B
     v.enah2i := false.B
@@ -155,6 +161,27 @@ class Decode() extends Module {
     }
     is (ST.U) {
       d.isStore := true.B
+    }
+    is (LDADDR.U) {
+      d.isLoadAddr := true.B
+    }
+    is (LDIND.U) {
+      d.isLoadInd := true.B
+      d.func := ld
+      d.ena := true.B
+    }
+    is (LDINDBU.U) {
+      // TODO byte enable
+      d.isLoadInd := true.B
+      d.func := ld
+      d.ena := true.B
+    }
+    is (STIND.U) {
+      d.isStoreInd := true.B
+    }
+    is (STINDB.U) {
+      // TODO byte enable
+      d.isStoreInd := true.B
     }
     is(SCALL.U) {
       d.exit := true.B

@@ -1,6 +1,6 @@
 
 APP=base
-TESTS=base lhi lhi2 lognosign reg imm
+TESTS=base lhi lhi2 lognosign reg imm mem
 
 hwsim:
 	sbt -Dprogram=asm/$(APP).s "testOnly leros.LerosSpec"
@@ -18,6 +18,11 @@ all:
 	for t in $(TESTS); do \
 		make hwsim APP=$$t; \
 		make swsim APP=$$t; \
+	done
+
+all-hwsim:
+	for t in $(TESTS); do \
+		make hwsim APP=$$t; \
 	done
 
 all-swsim:

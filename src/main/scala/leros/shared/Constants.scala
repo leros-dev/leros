@@ -26,10 +26,10 @@ package leros.shared
 |01000---| jal      |
 |01001---| -        |
 |01010---| ldaddr   |
-|01100--0| loadind  |
-|01100--1| loadindbu|
-|01110--0| storeind |
-|01110--1| storeindb|
+|01100--0| ldind    |
+|01100--1| ldindbu  |
+|01110--0| stind    |
+|01110--1| stindb   |
 |1000nnnn| br       |
 |1001nnnn| brz      |
 |1010nnnn| brnz     |

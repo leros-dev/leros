@@ -116,7 +116,7 @@ object LerosSim extends App {
   while (lsim.run) {
     printf("pc: 0x%04x instr: 0x%04x ", lsim.pc, lsim.code(lsim.pc))
     lsim.step
-    printf("accu: 0x%04x\n", lsim.accu)
+    printf("accu: 0x%08x\n", lsim.accu)
   }
   assert(lsim.accu == 0, "Accu shall be zero at the end of a test/program")
   println

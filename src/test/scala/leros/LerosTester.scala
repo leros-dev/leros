@@ -19,7 +19,10 @@ class LerosTester(dut: Leros) extends PeekPokeTester(dut) {
 //    peek(dut.pc)
 //    peek(dut.accuReg)
 //    peek(dut.instr)
-    println("pc: " + peek(dut.io.dbg.pc).toString(16) + " acc: " + peek(dut.io.dbg.acc).toString(16) + " instr: " + peek(dut.io.dbg.instr).toString(16))
+    val pc = peek(dut.io.dbg.pc)
+    val accu = peek(dut.io.dbg.acc).toInt
+    val instr = peek(dut.io.dbg.instr)
+    printf("pc: 0x%04x instr: 0x%04x accu: 0x%08x\n", pc, instr, accu)
     step(1)
     maxCycles -= 1
     run = peek(dut.io.dbg.exit) == 0 && maxCycles > 0

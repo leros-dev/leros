@@ -8,8 +8,29 @@ the redesign of 16/32/64-bit version in Chisel. The two versions are in the same
 but not compatible. The initial version exposes the pipeline to the programmer.
 The initial version is supported by a small Java runtime (muvium).
 
-The new version is pipeline agnostic and also has a slight different ISA. The new
+The new version is pipeline agnostic and also has a slightly different ISA. The new
 version is supported by a C compiler (LLVM port.)
+
+## Questions
+
+ * Is load immediate sign extending?
+ * What is sign extending?
+ * byte order:
+   * Morten's simulator (and presumable compiler) is little-endian
+   * Martin's ISA simulator is little-endian
+   * Patmos is probably big-endian
+   * Internet is big-endian
+   * RISC-V is little-endian
+ 
+## TODO
+
+ * Constraint random testing
+ * Shouldn't a cross compiler have a prefix? Such as leros-clang?
+ 
+### Minor List
+
+ * restructure ALU to be used for test project
+ * load/store byte indirect
 
 ## Implementation Notes (Leros 16)
 
