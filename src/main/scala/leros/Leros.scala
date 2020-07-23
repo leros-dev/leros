@@ -19,7 +19,7 @@ object Types {
 
 
 class Debug extends Bundle {
-  val acc = Output(SInt())
+  val acc = Output(UInt())
   val pc = Output(UInt())
   val instr = Output(UInt())
   val exit = Output(Bool())
@@ -62,7 +62,7 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
   import State._
 
   // The main architectural state
-  val accuReg = RegInit(0.S(size.W))
+  val accuReg = RegInit(0.U(size.W))
   val pcReg = RegInit(0.U(memSize.W))
   val addrReg = RegInit(0.U(memSize.W))
 
@@ -81,7 +81,7 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
   val instr = mem.io.instr
 
   val decReg = RegInit(DecodeOut.default)
-  val opdReg = RegInit(0.S(size.W))
+  val opdReg = RegInit(0.U(size.W))
 
 
   // Register file (could share data memory)
@@ -92,7 +92,7 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
   // Data memory
   // TODO: shall be byte write addressable
   val dataMem = SyncReadMem(1 << memSize, UInt(32.W))
-  val dataRead = dataMem.read(Mux(decReg.isLoadAddr, accuReg.asUInt, addrReg))
+  val dataRead = dataMem.read(Mux(decReg.isLoadAddr, accuReg, addrReg))
 
   // Decode
   val dec = Module(new Decode())
@@ -100,6 +100,7 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
   val decout = dec.io.dout
 
   // Operand
+  // TODO: shall we rewrite this to use UInt per default?
   val operand = Wire(SInt(size.W))
   val op16sex = Wire(SInt(16.W))
   op16sex := instr(7, 0).asSInt
@@ -126,12 +127,12 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
   alu.io.a := accuReg
   // TODO: maybe the input should be unsigned?
   // Probably the accu should be UInt
-  alu.io.b := Mux(decReg.isLoadInd, dataRead.asSInt, Mux(decReg.isRegOpd, registerRead.asSInt, opdReg))
+  alu.io.b := Mux(decReg.isLoadInd, dataRead, Mux(decReg.isRegOpd, registerRead, opdReg))
 
   switch(stateReg) {
     is (feDec) {
       decReg := decout
-      opdReg := operand
+      opdReg := operand.asUInt
     }
 
     is (exe) {
@@ -140,10 +141,10 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
         accuReg := alu.io.result
       }
       when (decReg.isStore) {
-        registerMem.write(opdReg(15, 0).asUInt, accuReg.asUInt)
+        registerMem.write(opdReg(15, 0), accuReg)
       }
       when (decReg.isLoadAddr) {
-        addrReg := accuReg.asUInt
+        addrReg := accuReg
       }
 
       // TODO
@@ -151,7 +152,7 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
         // nothing to be done here
       }
       when (decReg.isStoreInd) {
-        dataMem.write(addrReg, accuReg.asUInt())
+        dataMem.write(addrReg, accuReg)
       }
     }
 
