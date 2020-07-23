@@ -17,14 +17,14 @@ class AluTop(size: Int) extends Module {
   val b = RegNext(a)
   val op = RegNext(b)
 
-  val alu = Module(new Alu(size))
-  alu.io.a := a
-  alu.io.b := b
+  val alu = Module(new AluAccu(size))
+  alu.io.din := b
   alu.io.op := op
 
 
-  io.dout := RegNext(RegNext(alu.io.result))
+  io.dout := RegNext(RegNext(alu.io.accu))
 }
 object AluTop extends App {
+  throw new Exception("Adapt for new AluAccu")
   Driver.execute(Array("--target-dir", "generated"), () => new AluTop(32))
 }

@@ -5,7 +5,7 @@ import chisel3.iotesters._
 
 import leros.Types._
 
-class AluTester(dut: Alu) extends PeekPokeTester(dut) {
+class AluTester(dut: AluAccu) extends PeekPokeTester(dut) {
 
   // TODO: this is not the best way look at functions defined as Enum.
   // Workaround would be defining constants
@@ -37,10 +37,10 @@ class AluTester(dut: Alu) extends PeekPokeTester(dut) {
       for (a <- values) {
         for (b <- values) {
           poke(dut.io.op, fun)
-          poke(dut.io.a, a)
-          poke(dut.io.b, b)
+          // poke(dut.io.a, a)
+          poke(dut.io.din, b)
           step(1)
-          expect(dut.io.result, alu(a, b, fun.toInt))
+          expect(dut.io.accu, alu(a, b, fun.toInt))
         }
       }
     }
@@ -59,7 +59,8 @@ class AluTester(dut: Alu) extends PeekPokeTester(dut) {
 }
 
 object AluTester extends App {
-  iotesters.Driver(() => new Alu(32)) {
+  throw new Exception("Tester does not fit into the new ALU")
+  iotesters.Driver(() => new AluAccu(32)) {
     c => new AluTester(c)
   }
 }

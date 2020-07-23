@@ -29,7 +29,6 @@ version is supported by a C compiler (LLVM port.)
  
 ### Minor List
 
- * restructure ALU to be used for test project
  * load/store byte indirect
  * Run all asm tests in a single ScalaTest (instead of Makefile loop) to see a summary
 

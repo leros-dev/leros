@@ -8,7 +8,7 @@ import leros.Types._
 
 class DecodeOut extends Bundle {
   val ena = Bool()
-  val func = UInt()
+  val op = UInt()
   val isRegOpd = Bool()
   val isStore = Bool()
   val isStoreInd = Bool()
@@ -26,7 +26,7 @@ object DecodeOut {
   def default: DecodeOut = {
     val v = Wire(new DecodeOut)
     v.ena := false.B
-    v.func := nop
+    v.op := nop
     v.isRegOpd := false.B
     v.isStore := false.B
     v.isStoreInd := false.B
@@ -74,87 +74,87 @@ class Decode() extends Module {
 
   switch(instr) {
     is(ADD.U) {
-      d.func := add
+      d.op := add
       d.ena := true.B
       d.isRegOpd := true.B
     }
     is(ADDI.U) {
-      d.func := add
+      d.op := add
       d.imm := true.B
       d.ena := true.B
     }
     is(SUB.U) {
-      d.func := sub
+      d.op := sub
       d.ena := true.B
       d.isRegOpd := true.B
     }
     is(SUBI.U) {
-      d.func := sub
+      d.op := sub
       d.imm := true.B
       d.ena := true.B
     }
     is(SHR.U) {
-      d.func := shr
+      d.op := shr
       d.ena := true.B
     }
     is(LD.U) {
-      d.func := ld
+      d.op := ld
       d.ena := true.B
       d.isRegOpd := true.B
     }
     is(LDI.U) {
-      d.func := ld
+      d.op := ld
       d.imm := true.B
       d.ena := true.B
     }
     is(AND.U) {
-      d.func := and
+      d.op := and
       d.ena := true.B
       d.isRegOpd := true.B
     }
     is(ANDI.U) {
-      d.func := and
+      d.op := and
       d.imm := true.B
       d.ena := true.B
       d.nosext := true.B
     }
     is(OR.U) {
-      d.func := or
+      d.op := or
       d.ena := true.B
       d.isRegOpd := true.B
     }
     is(ORI.U) {
-      d.func := or
+      d.op := or
       d.imm := true.B
       d.ena := true.B
       d.nosext := true.B
     }
     is(XOR.U) {
-      d.func := xor
+      d.op := xor
       d.ena := true.B
       d.isRegOpd := true.B
     }
     is(XORI.U) {
-      d.func := xor
+      d.op := xor
       d.imm := true.B
       d.ena := true.B
       d.nosext := true.B
     }
     is(LDHI.U) {
-      d.func := ld
+      d.op := ld
       d.imm := true.B
       d.ena := true.B
       d.enahi := true.B
     }
     // Following only useful for 32-bit Leros
     is(LDH2I.U) {
-      d.func := ld
+      d.op := ld
       d.imm := true.B
       d.ena := true.B
       d.enah2i := true.B
     }
     is(LDH3I.U) {
-      d.func := ld
+      d.op := ld
       d.imm := true.B
       d.ena := true.B
       d.enah3i := true.B
@@ -167,13 +167,13 @@ class Decode() extends Module {
     }
     is (LDIND.U) {
       d.isLoadInd := true.B
-      d.func := ld
+      d.op := ld
       d.ena := true.B
     }
     is (LDINDBU.U) {
       // TODO byte enable
       d.isLoadInd := true.B
-      d.func := ld
+      d.op := ld
       d.ena := true.B
     }
     is (STIND.U) {

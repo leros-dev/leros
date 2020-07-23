@@ -8,8 +8,7 @@ package leros
 
 import chisel3._
 import chisel3.util._
-// Try our ChiselEnum
-import chisel3.experimental._
+import chisel3.experimental.ChiselEnum
 
 import leros.util._
 
@@ -61,8 +60,11 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
 
   import State._
 
+  val alu = Module(new AluAccu(size))
+
+  val accu = alu.io.accu
+
   // The main architectural state
-  val accuReg = RegInit(0.U(size.W))
   val pcReg = RegInit(0.U(memSize.W))
   val addrReg = RegInit(0.U(memSize.W))
 
@@ -92,7 +94,7 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
   // Data memory
   // TODO: shall be byte write addressable
   val dataMem = SyncReadMem(1 << memSize, UInt(32.W))
-  val dataRead = dataMem.read(Mux(decReg.isLoadAddr, accuReg, addrReg))
+  val dataRead = dataMem.read(Mux(decReg.isLoadAddr, accu, addrReg))
 
   // Decode
   val dec = Module(new Decode())
@@ -109,11 +111,11 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
   when(decout.nosext) {
     operand := (0.U(24.W) ## instr(7, 0)).asSInt // no sign extension
   } .elsewhen(decout.enahi) {
-    operand := (op24sex.asUInt ## accuReg(7, 0)).asSInt
+    operand := (op24sex.asUInt ## accu(7, 0)).asSInt
   } .elsewhen(decout.enah2i) {
-    operand := (op16sex.asUInt ## accuReg(15, 0)).asSInt
+    operand := (op16sex.asUInt ## accu(15, 0)).asSInt
   } .elsewhen(decout.enah3i) {
-    operand := (instr(7, 0) ## accuReg(23, 0)).asSInt
+    operand := (instr(7, 0) ## accu(23, 0)).asSInt
   } .otherwise {
     operand := instr(7, 0).asSInt
   }
@@ -121,13 +123,9 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
   // For now do a sequential version of Leros.
   // Later decide where the pipeline registers are placed.
 
-  val alu = Module(new Alu(size))
-
-  alu.io.op := decReg.func
-  alu.io.a := accuReg
-  // TODO: maybe the input should be unsigned?
-  // Probably the accu should be UInt
-  alu.io.b := Mux(decReg.isLoadInd, dataRead, Mux(decReg.isRegOpd, registerRead, opdReg))
+  alu.io.op := decReg.op
+  alu.io.ena := decReg.ena & (stateReg === exe)
+  alu.io.din := Mux(decReg.isLoadInd, dataRead, Mux(decReg.isRegOpd, registerRead, opdReg))
 
   switch(stateReg) {
     is (feDec) {
@@ -137,29 +135,23 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
 
     is (exe) {
       pcReg := pcNext
-      when (decReg.ena) {
-        accuReg := alu.io.result
-      }
       when (decReg.isStore) {
-        registerMem.write(opdReg(15, 0), accuReg)
+        registerMem.write(opdReg(15, 0), accu)
       }
       when (decReg.isLoadAddr) {
-        addrReg := accuReg
+        addrReg := accu
       }
-
-      // TODO
       when (decReg.isLoadInd) {
         // nothing to be done here
       }
       when (decReg.isStoreInd) {
-        dataMem.write(addrReg, accuReg)
+        dataMem.write(addrReg, accu)
       }
     }
 
   }
 
-  printf("accu in: %x, accuReg: %x\n", alu.io.result, accuReg)
-  printf("address register: %x\n", addrReg)
+  printf("accu: %x address register: %x\n", accu, addrReg)
 
   val exit = RegInit(false.B)
   exit := RegNext(decReg.exit)
@@ -168,12 +160,12 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
   io.dout := 42.U
 
   if (fmaxReg) {
-    io.dbg.acc := RegNext(RegNext((accuReg)))
+    io.dbg.acc := RegNext(RegNext((accu)))
     io.dbg.pc := RegNext(RegNext((pcReg)))
     io.dbg.instr := RegNext(RegNext((instr)))
     io.dbg.exit := RegNext(RegNext((exit)))
   } else {
-    io.dbg.acc := ((accuReg))
+    io.dbg.acc := ((accu))
     io.dbg.pc := ((pcReg))
     io.dbg.instr := ((instr))
     io.dbg.exit := ((exit))
