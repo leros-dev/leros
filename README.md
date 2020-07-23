@@ -29,8 +29,8 @@ version is supported by a C compiler (LLVM port.)
  
 ### Minor List
 
+ * Do all asm test in SW simulation as in HW simulation
  * load/store byte indirect
- * Run all asm tests in a single ScalaTest (instead of Makefile loop) to see a summary
 
 ## Implementation Notes (Leros 16)
 

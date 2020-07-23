@@ -84,15 +84,13 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
   val opdReg = RegInit(0.U(size.W))
 
 
-  // Register file (could share data memory)
   val registerMem = SyncReadMem(256, UInt(32.W))
-  // read takes one clock cycle
   val registerRead = registerMem.read(instr(15, 0))
 
   // Data memory
   // TODO: shall be byte write addressable
   val dataMem = SyncReadMem(1 << memSize, UInt(32.W))
-  val dataRead = dataMem.read(Mux(decReg.isLoadAddr, accu, addrReg))
+  val dataRead = dataMem.read(Mux(decReg.isLoadAddr && stateReg === exe, accu, addrReg))
 
   // Decode
   val dec = Module(new Decode())

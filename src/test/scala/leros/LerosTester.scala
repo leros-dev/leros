@@ -36,10 +36,19 @@ class LerosTester(dut: Leros) extends PeekPokeTester(dut) {
 class LerosSpec extends FlatSpec with Matchers {
 
   "Leros" should "pass" in {
-    val program = sys.props.getOrElse("program", "asm/base.s")
-    println("Testing: " + program)
-    chisel3.iotesters.Driver(() => new Leros(32, 10, program, false)) { c =>
-      new LerosTester(c)
-    } should be (true)
+
+    val program = sys.props.getOrElse("program", "base")
+    val path = sys.props.getOrElse("testpath", "asm")
+    val tests = sys.props.getOrElse("tests", program)
+    val progs = tests.split(" ")
+    progs.foreach(p => {
+      val program = path + "/" + p + ".s"
+      println("Testing " + program)
+      chisel3.iotesters.Driver(() => new Leros(32, 10, program, false)) { c =>
+        new LerosTester(c)
+      } should be (true)
+    })
+
   }
 }
+

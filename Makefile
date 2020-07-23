@@ -1,9 +1,11 @@
 
 APP=base
-TESTS=base lhi lhi2 lognosign reg imm mem
+TESTS="base lhi lhi2 lognosign reg imm mem"
+TESTPATH=asm
 
 hwsim:
-	sbt -Dprogram=asm/$(APP).s "testOnly leros.LerosSpec"
+	sbt -Dprogram=$(APP) "testOnly leros.LerosSpec"
+
 
 swsim:
 	sbt -Dprogram=asm/$(APP).s "testOnly leros.sim.LerosSimSpec"
@@ -14,16 +16,10 @@ hw:
 test-alu:
 	sbt "test:runMain leros.AluTester"
 
-all:
-	for t in $(TESTS); do \
-		make hwsim APP=$$t; \
-		make swsim APP=$$t; \
-	done
+all: all-hwsim all-swsim
 
 all-hwsim:
-	for t in $(TESTS); do \
-		make hwsim APP=$$t; \
-	done
+	sbt -Dtestpath=$(TESTPATH) -Dtests=$(TESTS) "testOnly leros.LerosSpec"
 
 all-swsim:
 	for t in $(TESTS); do \
@@ -31,6 +27,5 @@ all-swsim:
 	done
 
 # clean everything (including IntelliJ project settings)
-
 clean:
 	git clean -fd
