@@ -12,9 +12,7 @@ import chisel3.experimental.ChiselEnum
 
 import leros.util._
 
-object Types {
-  val nop :: add :: sub :: and :: or :: xor :: ld :: shr :: Nil = Enum(8)
-}
+
 
 
 class Debug extends Bundle {

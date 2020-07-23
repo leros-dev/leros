@@ -5,6 +5,10 @@ import chisel3.util._
 
 import leros.Types._
 
+object Types {
+  val nop :: add :: sub :: and :: or :: xor :: ld :: shr :: Nil = Enum(8)
+}
+
 /**
   * Leros ALU including the accumulator register.
   *
