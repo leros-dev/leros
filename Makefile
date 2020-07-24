@@ -8,7 +8,7 @@ hwsim:
 
 
 swsim:
-	sbt -Dprogram=asm/$(APP).s "testOnly leros.sim.LerosSimSpec"
+	sbt -Dprogram=$(APP) "testOnly leros.sim.LerosSimSpec"
 
 hw:
 	sbt "runMain leros.Leros asm/$(APP).s"
@@ -22,9 +22,7 @@ all-hwsim:
 	sbt -Dtestpath=$(TESTPATH) -Dtests=$(TESTS) "testOnly leros.LerosSpec"
 
 all-swsim:
-	for t in $(TESTS); do \
-		make swsim APP=$$t; \
-	done
+	sbt -Dtestpath=$(TESTPATH) -Dtests=$(TESTS) "testOnly leros.sim.LerosSimSpec"
 
 # clean everything (including IntelliJ project settings)
 clean:
