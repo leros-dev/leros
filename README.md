@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/leros-dev/leros.svg?branch=master)](https://travis-ci.com/leros-dev/leros.svg)
+
 # Leros, a Tiny Processor Core
 
 An FPGA optimized tiny processor core for embedded systems.
