@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/leros-dev/leros.svg?branch=master)](https://travis-ci.com/leros-dev/leros.svg)
+[![Build Status](https://travis-ci.com/leros-dev/leros.svg?branch=master)](https://travis-ci.com/leros-dev/leros)
 
 # Leros, a Tiny Processor Core
 
