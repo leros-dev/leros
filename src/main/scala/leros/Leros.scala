@@ -169,5 +169,5 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
 }
 
 object Leros extends App {
-  Driver.execute(Array("--target-dir", "generated"), () => new Leros(32, 10, args(0), true))
+    (new chisel3.stage.ChiselStage).emitVerilog(new Leros(32, 10, args(0), true), Array("--target-dir", "generated"))
 }
