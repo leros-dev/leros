@@ -51,7 +51,7 @@ class AluAccuTester(dut: AluAccu) extends PeekPokeTester(dut) {
   val interesting = Array(1, 2, 4, 123, 0, -1, -2, 0x80000000, 0x7fffffff)
   test(interesting)
 
-  val randArgs = Seq.fill(100)(scala.util.Random.nextInt)
+  val randArgs = Seq.fill(10)(scala.util.Random.nextInt)
   test(randArgs)
 
 }
