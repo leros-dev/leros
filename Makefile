@@ -4,7 +4,7 @@ TESTS="base lhi lhi2 lognosign reg imm mem"
 TESTPATH=asm
 
 hwsim:
-	sbt -Dprogram=$(APP) "testOnly leros.LerosSpec"
+	sbt -Dprogram=$(APP) "testOnly leros.LerosTest"
 
 
 swsim:
@@ -19,7 +19,7 @@ test-alu:
 all: all-hwsim all-swsim
 
 all-hwsim:
-	sbt -Dtestpath=$(TESTPATH) -Dtests=$(TESTS) "testOnly leros.LerosSpec"
+	sbt -Dtestpath=$(TESTPATH) -Dtests=$(TESTS) "testOnly leros.LerosTest"
 
 all-swsim:
 	sbt -Dtestpath=$(TESTPATH) -Dtests=$(TESTS) "testOnly leros.sim.LerosSimSpec"
