@@ -7,6 +7,7 @@
    * Should find all tests by itself
  * Accu byte enables
  * load/store byte indirect
+ * Does subi sign extend? Do we need a subi? We could use addi with neg. values
  * Get a simple sequential version done
    * Pipelined version follows
  * Co-simulation setup (also against Morten's simulation)
