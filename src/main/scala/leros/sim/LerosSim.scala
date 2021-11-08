@@ -55,6 +55,7 @@ class LerosSim(prog: String) {
     }
 
     opcodeMask match {
+      case NOP =>
       case ADD => accu = accu + reg(opd)
       case ADDI => accu = accu + sext(opd)
       case SUB => accu = accu - reg(opd)

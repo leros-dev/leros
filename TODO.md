@@ -14,6 +14,10 @@
  * Constraint random testing (Tjark is working on it)
  * Shouldn't a cross compiler have a prefix? Such as leros-clang?
 
+## Documentation
+
+ * Get text from paper into handbook, including the instruction figure
+
 ## List of Instructions to be Tested
 
 ```aidl
@@ -54,3 +58,9 @@
 |11111111| scall    |
 +--------+----------+
 ```
+
+## Semantic Questions
+
+ * Load immediate does not sign extend. Is this a good idea?
+ * Do add/sub immediate sign extend? I guess so.
+ * Logic immediate operations shall not sign extend

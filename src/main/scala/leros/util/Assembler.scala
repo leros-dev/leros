@@ -73,6 +73,7 @@ object Assembler {
       val instr = tokens(0) match {
         case "//" => // comment
         case Pattern(l) => if (!pass2) symbols += (l.substring(0, l.length - 1) -> pc)
+        case "nop" => (NOP <<8) + 0
         case "add" => (ADD << 8) + regNumber(tokens(1))
         case "sub" => (SUB << 8) + regNumber(tokens(1))
         case "and" => (AND << 8) + regNumber(tokens(1))
