@@ -1,6 +1,6 @@
 // memory test
 
-    // r1 contains sum of individual tests (hopefully nor cancelling each other out)
+    // r1 contains sum of individual tests (hopefully not cancelling each other out)
     loadi 0x00
     store r1
 

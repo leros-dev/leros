@@ -23,16 +23,6 @@ version is supported by a C compiler (LLVM port.)
    * Patmos is probably big-endian
    * Internet is big-endian
    * RISC-V is little-endian
- 
-## TODO
-
- * Constraint random testing
- * Shouldn't a cross compiler have a prefix? Such as leros-clang?
- 
-### Minor List
-
- * Do all asm test in SW simulation as in HW simulation
- * load/store byte indirect
 
 ## Implementation Notes (Leros 16)
 
