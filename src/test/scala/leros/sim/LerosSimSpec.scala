@@ -7,10 +7,9 @@ class LerosSimSpec extends FlatSpec with Matchers {
 
   "Leros simulation" should "pass" in {
 
-    val path = sys.props.getOrElse("testpath", "asm")
     val progs = leros.shared.Util.getProgs()
     progs.foreach(p => {
-      val program = path + "/" + p + ".s"
+      val program = p + ".s"
       println()
       println()
       println("Testing " + program + " in SW simulation")

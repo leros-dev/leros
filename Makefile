@@ -1,4 +1,6 @@
 
+# A bit complicated handling of path and programs, a simple sbt test will run all available tests in SW and HW simulation
+
 APP=base
 TESTS="base lhi lhi2 lognosign reg imm mem"
 TESTPATH=asm/test
@@ -19,10 +21,10 @@ test-alu:
 all: all-hwsim all-swsim
 
 all-hwsim:
-	sbt -Dtestpath=$(TESTPATH) -Dtests=$(TESTS) "testOnly leros.LerosTest"
+	sbt -Dtestpath=$(TESTPATH) -Dprogram=$(TESTS) "testOnly leros.LerosTest"
 
 all-swsim:
-	sbt -Dtestpath=$(TESTPATH) -Dtests=$(TESTS) "testOnly leros.sim.LerosSimSpec"
+	sbt -Dtestpath=$(TESTPATH) -Dprogram=$(TESTS) "testOnly leros.sim.LerosSimSpec"
 
 # clean everything (including IntelliJ project settings)
 clean:

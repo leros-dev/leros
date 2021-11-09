@@ -1,12 +1,18 @@
 package leros.shared
 
-object Util {
+import java.io.File
+
+object Util extends App{
 
   def getProgs() = {
-    val program = sys.props.getOrElse("program", "base")
-    val path = sys.props.getOrElse("testpath", "asm")
-    val tests = sys.props.getOrElse("tests", program)
-    tests.split(" ")
+    val path = sys.props.getOrElse("testpath", "asm/test")
+    if (sys.props.contains("program")) {
+      sys.props.getOrElse("program", "").split(" ").map(path + "/" + _)
+    } else {
+      new File(path).listFiles().filter(_.isFile).map(_.toString.replaceAll("\\.s$", ""))
+    }
   }
 
+  // just test the static function
+  Util.getProgs().foreach(println)
 }

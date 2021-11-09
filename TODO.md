@@ -2,10 +2,6 @@
 
  * Assemler test for each instruction
    * Get an overview of what is implemented (and add to TODO)
- * Do all asm test in SW simulation as in HW simulation
-   * Depending on TEST parameter: if empty, just do al in that folder 
- * Nicer testing environment
-   * Should find all tests by itself
  * Accu byte enables
  * load/store byte indirect
  * Does subi sign extend? Do we need a subi? We could use addi with neg. values

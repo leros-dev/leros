@@ -14,10 +14,9 @@ import org.scalatest._
 
 class LerosTest extends FlatSpec with ChiselScalatestTester {
   "Leros" should "pass" in {
-    val path = sys.props.getOrElse("testpath", "asm")
     val progs = leros.shared.Util.getProgs()
     progs.foreach(p => {
-      val program = path + "/" + p + ".s"
+      val program = p + ".s"
       println()
       println()
       println("Testing " + program + " in HW simulation")
