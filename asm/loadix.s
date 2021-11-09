@@ -1,4 +1,4 @@
-// Test various load immediate
+// Test various load immediate instructions
 // Collect result in r2
 
     loadi 0
@@ -65,6 +65,61 @@
     shr
     shr
     subi 0x12
+    add r2
+    store r2
+
+    // 3rd byte sign extension
+    loadh2i 0xff
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    andi 0x80
+    shr
+    subi 0x40
+    add r2
+    store r2
+
+    // 4th byte
+    loadh3i 0x34
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    subi 0x34
     add r2
     store r2
 
