@@ -3,6 +3,7 @@
  * Assemler test for each instruction
    * Get an overview of what is implemented (and add to TODO)
  * Do all asm test in SW simulation as in HW simulation
+   * Depending on TEST parameter: if empty, just do al in that folder 
  * Nicer testing environment
    * Should find all tests by itself
  * Accu byte enables
@@ -13,6 +14,7 @@
  * Co-simulation setup (also against Morten's simulation)
  * Run Morten's C test programs
  * Constraint random testing (Tjark is working on it)
+ * gcc test suit as in Patmos
  * Shouldn't a cross compiler have a prefix? Such as leros-clang?
 
 ## Documentation
@@ -23,7 +25,6 @@
 
 ```aidl
 +--------+----------+
-|00000---| nop      |
 |000010-0| add      |
 |000010-1| addi     |
 |000011-0| sub      |
@@ -31,16 +32,12 @@
 |00010---| shr      |
 |00011---| -        |
 |00100000| load     |
-|00100000| load i   |
 |00100010| and      |
 |00100011| andi     |
 |00100100| or       |
 |00100101| ori      |
 |00100110| xor      |
 |00100111| xori     |
-|00101001| loadhi   |
-|00101010| loadh2i  |
-|00101011| loadh3i  |
 |00110---| store    |
 |001110-?| out      |
 |000001-?| in       |
@@ -60,6 +57,17 @@
 +--------+----------+
 ```
 
+## Tested Instructions
+
+```aidl
++--------+----------+
+|00000---| nop      |
+|00100000| loadi    |
+|00101001| loadhi   |
+|00101010| loadh2i  |
+|00101011| loadh3i  |
++--------+----------+
+```
 ## Semantic Questions
 
  * Load immediate does not sign extend. Is this a good idea?

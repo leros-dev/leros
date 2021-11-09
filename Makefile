@@ -1,7 +1,7 @@
 
 APP=base
 TESTS="base lhi lhi2 lognosign reg imm mem"
-TESTPATH=asm
+TESTPATH=asm/test
 
 hwsim:
 	sbt -Dprogram=$(APP) "testOnly leros.LerosTest"
