@@ -23,7 +23,7 @@ class LerosTest extends FlatSpec with ChiselScalatestTester {
       println("Testing " + program + " in HW simulation")
       test(new Leros(32, 10, program, false)) { dut =>
         var run = true
-        var maxCycles = 100
+        var maxCycles = 10000
         while(run) {
           // Looks like peeking elements is gone in Chisel 3, maybe back in ChiselTest?
           //    peek(dut.pc)
@@ -41,6 +41,7 @@ class LerosTest extends FlatSpec with ChiselScalatestTester {
           // run = dut.io.dbg.exit.peek() == 0.U && maxCycles > 0
           // run = dut.io.dbg.exit.peek().litValue() === 0 && true
           run = dut.io.dbg.exit.peek().litValue() == 0 && maxCycles > 0
+          assert(maxCycles > 0, "Running out of cycles")
           // poke(dut.io.din, maxInstructions)
         }
         val res = dut.io.dbg.acc.expect(0.U, "Accu shall be zero at the end of a test case.\n")

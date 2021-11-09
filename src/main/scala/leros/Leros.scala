@@ -34,7 +34,9 @@ class InstrMem(memAddrWidth: Int, prog: String) extends Module {
     val addr = Input(UInt(memAddrWidth.W))
     val instr = Output(UInt(16.W))
   })
-  val progMem = VecInit(Assembler.getProgram(prog).map(_.asUInt(16.W)))
+  val code = Assembler.getProgram(prog)
+  assert(scala.math.pow(2, memAddrWidth) >= code.length, "Program too large")
+  val progMem = VecInit(code.map(_.asUInt(16.W)))
   val memReg = RegInit(0.U(memAddrWidth.W))
   memReg := io.addr
   io.instr := progMem(memReg)
