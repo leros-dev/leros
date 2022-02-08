@@ -8,4 +8,4 @@ my_flash: my_flash.c serial.h utils.h
 	gcc -g -Wall -o my_flash my_flash.c serial.h utils.h
 
 clean:
-		rm -f *~ my_flash test
+		rm -rf my_flash test
