@@ -1,12 +1,18 @@
 [![Build Status](https://travis-ci.com/leros-dev/leros.svg?branch=master)](https://travis-ci.com/leros-dev/leros)
 
 # My work on Leros
-## Add a FLASH programmer and a loader
-  * Compiled program is stored in FLASH and loaded to DM
+## Load program to Leros from FLASH
+  * DM and IM are replaced by SRAM (Synthesizable and PnR on ASIC):
+    * DM: 1 read + 1 write port, 16-bit width, 8-bit depth (256B)
+    * IM: 1 read/write port, 16-bit width, 9-bit depth (512B)
+  * The FLASH programmer:
+    * Using 8-MB FLASH on DE2-115 (if using different FLASH, modify this programmer)
+    * A LOADER is implemented to read from FLASH (after programmed), then write to IM.
+    * FLASH programmer and LOADER's reset is separated from Leros reset.
 
 ## TODO:
   * Add SPI peripheral to control LoRa Module
-  * Synthesis and PnR in ASIC
+  * Synthesis and PnR everything in ASIC
 
 # Leros, a Tiny Processor Core
 
