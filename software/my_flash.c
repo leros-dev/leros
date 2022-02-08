@@ -374,6 +374,9 @@ int main(int argc, char *argv[]){
       verifyFile(fileName);
       printf("Verify from file successful!\n");
       break;
+    case CMD_HELP:
+      usage("my_flash");
+      break;
   }
 
   if (sfd != 0) {
