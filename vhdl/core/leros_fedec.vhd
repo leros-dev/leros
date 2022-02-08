@@ -42,7 +42,9 @@ entity leros_fedec is
 		clk : in std_logic;
 		reset : in std_logic;
 		din : in fedec_in_type;
-		dout : out fedec_out_type
+		dout : out fedec_out_type;
+		wrsram: in im_in_type
+		
 	);
 end leros_fedec;
 
@@ -63,7 +65,7 @@ begin
 	imin.rdaddr <= std_logic_vector(pc_next);
 	
 	im: entity work.leros_im port map(
-		clk, reset, imin, imout
+		clk, reset, imin, imout, wrsram
 	);
 
 	dec: entity work.leros_decode port map(

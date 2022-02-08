@@ -1,0 +1,265 @@
+WARNING: file globals.py: line 182: Failed to find coverage installation. This can be installed with pip3 install coverage
+
+|==============================================================================|
+|=========                      OpenRAM v1.1.18                       =========|
+|=========                                                            =========|
+|=========               VLSI Design and Automation Lab               =========|
+|=========        Computer Science and Engineering Department         =========|
+|=========            University of California Santa Cruz             =========|
+|=========                                                            =========|
+|=========          Usage help: openram-user-group@ucsc.edu           =========|
+|=========        Development help: openram-dev-group@ucsc.edu        =========|
+|=========         Temp dir: /tmp/openram_tuankiet_7071_temp/         =========|
+|=========                See LICENSE for license info                =========|
+|==============================================================================|
+** Start: 01/13/2022 15:57:15
+Technology: lapis20
+Total size: 4096 bits
+Word size: 16
+Words: 256
+Banks: 1
+Write size: None
+RW ports: 0
+R-only ports: 1
+W-only ports: 1
+DRC/LVS/PEX is only run on the top-level design to save run-time (inline_lvsdrc=True to do inline checking).
+Characterization is disabled (using analytical delay models) (analytical_delay=False to simulate).
+WARNING: file vlsiLayout.py: line 643: More than one or no boundaries found in cell: cell_2rw
+
+Words per row: 4
+Output files are: 
+/ldisk/home/etc/tuankiet/Documents/teehw-vlsi-master/tech/lapis200/lib/OpenRAM/build/macro/sram_0rw1r1w_16_256_lapis20/sram_0rw1r1w_16_256_lapis20.lvs
+/ldisk/home/etc/tuankiet/Documents/teehw-vlsi-master/tech/lapis200/lib/OpenRAM/build/macro/sram_0rw1r1w_16_256_lapis20/sram_0rw1r1w_16_256_lapis20.sp
+/ldisk/home/etc/tuankiet/Documents/teehw-vlsi-master/tech/lapis200/lib/OpenRAM/build/macro/sram_0rw1r1w_16_256_lapis20/sram_0rw1r1w_16_256_lapis20.v
+/ldisk/home/etc/tuankiet/Documents/teehw-vlsi-master/tech/lapis200/lib/OpenRAM/build/macro/sram_0rw1r1w_16_256_lapis20/sram_0rw1r1w_16_256_lapis20.lib
+/ldisk/home/etc/tuankiet/Documents/teehw-vlsi-master/tech/lapis200/lib/OpenRAM/build/macro/sram_0rw1r1w_16_256_lapis20/sram_0rw1r1w_16_256_lapis20.py
+/ldisk/home/etc/tuankiet/Documents/teehw-vlsi-master/tech/lapis200/lib/OpenRAM/build/macro/sram_0rw1r1w_16_256_lapis20/sram_0rw1r1w_16_256_lapis20.html
+/ldisk/home/etc/tuankiet/Documents/teehw-vlsi-master/tech/lapis200/lib/OpenRAM/build/macro/sram_0rw1r1w_16_256_lapis20/sram_0rw1r1w_16_256_lapis20.log
+/ldisk/home/etc/tuankiet/Documents/teehw-vlsi-master/tech/lapis200/lib/OpenRAM/build/macro/sram_0rw1r1w_16_256_lapis20/sram_0rw1r1w_16_256_lapis20.lef
+/ldisk/home/etc/tuankiet/Documents/teehw-vlsi-master/tech/lapis200/lib/OpenRAM/build/macro/sram_0rw1r1w_16_256_lapis20/sram_0rw1r1w_16_256_lapis20.gds
+** Submodules: 9.0 seconds
+** Placement: 0.0 seconds
+**** Retrieving pins: 0.0 seconds
+**** Analyzing pins: 0.0 seconds
+**** Finding blockages: 8.5 seconds
+**** Converting blockages: 1.6 seconds
+**** Converting pins: 0.3 seconds
+**** Separating adjacent pins: 0.0 seconds
+**** Enclosing pins: 0.1 seconds
+*** Finding pins and blockages: 71.0 seconds
+*** Maze routing pins: 141.6 seconds
+*** Init supply router: 0.0 seconds
+**** Retrieving pins: 0.2 seconds
+**** Analyzing pins: 5.3 seconds
+**** Finding blockages: 160.5 seconds
+**** Converting blockages: 1.7 seconds
+WARNING: file pin_group.py: line 666:   Expanding conversion (vdd layer=m3 ll=v[674.19,914.3000000000001] ur=v[674.75,914.86])
+
+WARNING: file pin_group.py: line 666:   Expanding conversion (vdd layer=m3 ll=v[683.6,914.3000000000001] ur=v[684.16,914.86])
+
+WARNING: file pin_group.py: line 666:   Expanding conversion (gnd layer=m3 ll=v[674.19,905.94] ur=v[674.75,906.5])
+
+WARNING: file pin_group.py: line 666:   Expanding conversion (gnd layer=m3 ll=v[683.6,905.94] ur=v[684.16,906.5])
+
+**** Converting pins: 9.2 seconds
+**** Separating adjacent pins: 19.6 seconds
+**** Enclosing pins: 18.5 seconds
+*** Finding pins and blockages: 303.2 seconds
+*** Routing supply rails: 576.6 seconds
+*** Simple overlap routing: 0.0 seconds
+*** 1 step routing: 0.0 seconds
+*** Maze routing supplies: 0.0 seconds
+** Routing: 1274.3 seconds
+WARNING: file calibre.py: line 297: sram_0rw1r1w_16_256_lapis20	Geometries: 4630246	Checks: 490	Errors: 4103165
+
+ERROR: file calibre.py: line 334:   Error:    Different numbers of nets.
+
+ERROR: file calibre.py: line 334:   Error:    Different numbers of instances.
+
+ERROR: file calibre.py: line 334:   Error:    Connectivity errors.
+
+ERROR: file calibre.py: line 334:   Error:    Property errors.
+
+ERROR: file calibre.py: line 334:   Error:    Different numbers of nets (see below).
+
+ERROR: file calibre.py: line 334:   Error:    Different numbers of instances (see below).
+
+ERROR: file calibre.py: line 334:   Error:    Connectivity errors.
+
+ERROR: file calibre.py: line 334:   Error:    Property errors.
+
+WARNING: file calibre.py: line 351: WARNING:  Open circuit - Same name on different nets:
+
+WARNING: file calibre.py: line 351: WARNING:  Open circuit - Same name on different nets:
+
+WARNING: file calibre.py: line 351: WARNING:  Open circuit - Same name on different nets:
+
+WARNING: file calibre.py: line 351: WARNING:  Open circuit - Same name on different nets:
+
+WARNING: file calibre.py: line 351: WARNING:  Open circuit - Same name on different nets:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Open circuit - Same name on different nets:
+
+WARNING: file calibre.py: line 351: WARNING:  Open circuit - Same name on different nets:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 351: WARNING:  Short circuit - Different names on one net:
+
+WARNING: file calibre.py: line 378: sram_0rw1r1w_16_256_lapis20	Summary: 10	Output: 0	Extraction: 0
+
+** Verification: 51.2 seconds
+** SRAM creation: 1350.0 seconds
+SP: Writing to /ldisk/home/etc/tuankiet/Documents/teehw-vlsi-master/tech/lapis200/lib/OpenRAM/build/macro/sram_0rw1r1w_16_256_lapis20/sram_0rw1r1w_16_256_lapis20.sp
+** Spice writing: 19.7 seconds
+GDS: Writing to /ldisk/home/etc/tuankiet/Documents/teehw-vlsi-master/tech/lapis200/lib/OpenRAM/build/macro/sram_0rw1r1w_16_256_lapis20/sram_0rw1r1w_16_256_lapis20.gds
+** GDS: 11.4 seconds
+LEF: Writing to /ldisk/home/etc/tuankiet/Documents/teehw-vlsi-master/tech/lapis200/lib/OpenRAM/build/macro/sram_0rw1r1w_16_256_lapis20/sram_0rw1r1w_16_256_lapis20.lef
+** LEF: 9.3 seconds
+LVS: Writing to /ldisk/home/etc/tuankiet/Documents/teehw-vlsi-master/tech/lapis200/lib/OpenRAM/build/macro/sram_0rw1r1w_16_256_lapis20/sram_0rw1r1w_16_256_lapis20.lvs.sp
+** LVS writing: 6.3 seconds
+LIB: Characterizing... 
+WARNING: file elmore.py: line 45: In analytical mode, all ports have the timing of the first read port.
+
+WARNING: file lib.py: line 776: Failed to retrieve git id
+
+WARNING: file elmore.py: line 45: In analytical mode, all ports have the timing of the first read port.
+
+WARNING: file lib.py: line 776: Failed to retrieve git id
+
+WARNING: file elmore.py: line 45: In analytical mode, all ports have the timing of the first read port.
+
+WARNING: file lib.py: line 776: Failed to retrieve git id
+
+** Characterization: 53.6 seconds
+Config: Writing to /ldisk/home/etc/tuankiet/Documents/teehw-vlsi-master/tech/lapis200/lib/OpenRAM/build/macro/sram_0rw1r1w_16_256_lapis20/sram_0rw1r1w_16_256_lapis20.py
+** Config: 0.0 seconds
+Datasheet: Writing to /ldisk/home/etc/tuankiet/Documents/teehw-vlsi-master/tech/lapis200/lib/OpenRAM/build/macro/sram_0rw1r1w_16_256_lapis20/sram_0rw1r1w_16_256_lapis20.html
+** Datasheet: 0.0 seconds
+Verilog: Writing to /ldisk/home/etc/tuankiet/Documents/teehw-vlsi-master/tech/lapis200/lib/OpenRAM/build/macro/sram_0rw1r1w_16_256_lapis20/sram_0rw1r1w_16_256_lapis20.v
+** Verilog: 0.0 seconds
+** End: 1450.4 seconds

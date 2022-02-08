@@ -70,12 +70,12 @@ architecture rtl of leros_ex is
 	signal log, arith, a_mux : unsigned (15 downto 0);
 	
 	-- the data ram
-	constant nwords : integer := 2 ** DM_BITS;
-	type ram_type is array(0 to nwords-1) of std_logic_vector(15 downto 0);
+--	constant nwords : integer := 2 ** DM_BITS;
+--	type ram_type is array(0 to nwords-1) of std_logic_vector(15 downto 0);
 
 	-- 0 initialization is for simulation only
 	-- Xilinx and Altera FPGA initialize memory blocks to 0
-	signal dm : ram_type := (others => (others => '0'));
+--	signal dm : ram_type := (others => (others => '0'));
 	
 	signal wrdata, rddata : std_logic_vector(15 downto 0);
 	signal wraddr, rdaddr : std_logic_vector(DM_BITS-1 downto 0);
@@ -177,18 +177,28 @@ end process;
 -- the data memory (DM)
 -- read during write is usually undefined in an FPGA,
 -- but that is not modelled
-process (clk)
-begin
-	if rising_edge(clk) then
-		-- is store overloaded?
-		-- now we have only 'register' read and write
-		if din.dec.store='1' then
-			dm(to_integer(unsigned(wraddr))) <= wrdata;
-		end if;
-		rddata <= dm(to_integer(unsigned(rdaddr)));
-		
-	end if;
-end process;
+--process (clk)
+--begin
+--	if rising_edge(clk) then
+--		-- is store overloaded?
+--		-- now we have only 'register' read and write
+--		if din.dec.store='1' then
+--			dm(to_integer(unsigned(wraddr))) <= wrdata;
+--		end if;
+--		rddata <= dm(to_integer(unsigned(rdaddr)));
+--		
+--	end if;
+--end process;
+
+dm: entity work.sram_1r1w_16_256 
+	port map(
+	clk => clk,
+	w_en_n => NOT din.dec.store, --TODO: negate this signal
+	waddr => wraddr,
+	rdaddr => rdaddr,
+	wdata => wrdata,
+	rddata => rddata
+	);
 
 	
 end rtl;

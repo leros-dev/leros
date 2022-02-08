@@ -1,0 +1,10 @@
+*cmnFDILayerMapFile: /ldisk/home/etc/tuankiet/Documents/teehw-vlsi-master/tech/lapis200/lib/OpenRAM/lapis20/layers.map
+*cmnFDIUseLayerMap: 1
+*drcLayoutPaths: sram_1rw0r0w_16_512_lapis20.gds
+*drcLayoutPrimary: sram_1rw0r0w_16_512_lapis20
+*drcLayoutSystem: GDSII
+*drcResultsFile: sram_1rw0r0w_16_512_lapis20.drc.results
+*drcResultsformat: ASCII
+*drcRulesFile: /cad/lapis/file/lib/020soi_for_KEK_calibre_drc_5m_r31_1.rule
+*drcRunDir: /ldisk/home/etc/tuankiet/Documents/teehw-vlsi-master/tech/lapis200/lib/OpenRAM/build/macro/sram_1rw0r0w_16_512_lapis20/
+*drcSummaryFile: sram_1rw0r0w_16_512_lapis20.drc.summary
