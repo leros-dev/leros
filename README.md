@@ -1,5 +1,13 @@
 [![Build Status](https://travis-ci.com/leros-dev/leros.svg?branch=master)](https://travis-ci.com/leros-dev/leros)
 
+# My work on Leros
+## Add a FLASH programmer and a loader
+  * Compiled program is stored in FLASH and loaded to DM
+
+## TODO:
+  * Add SPI peripheral to control LoRa Module
+  * Synthesis and PnR in ASIC
+
 # Leros, a Tiny Processor Core
 
 An FPGA optimized tiny processor core for embedded systems.
