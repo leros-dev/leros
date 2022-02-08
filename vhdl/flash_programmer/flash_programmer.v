@@ -1,4 +1,4 @@
-module my_boot_flash(
+module flash_programmer(
 input i_clk,
 input i_rst_n,
 output prog_done,
@@ -361,11 +361,12 @@ always @(*) begin
 	endcase
 end
 assign w_fl_ready = fl_ry;
+
 assign w_tx_data = (r_tx_mux)? { 7'b0, w_fl_ready } : w_fl_o_data[7:0]; //mux output data for flash data and ready
 assign w_fl_o_data = fl_dq; //flash data output mode
+assign fl_dq   = (~r_fl_ctrl[3] & ~r_fl_ctrl[2] & r_fl_ctrl[1]) ? 8'hzz : r_fl_data; // if flash is in output mode, put data path to tri-state
 
 assign fl_addr = r_fl_addr;
-assign fl_dq   = (~r_fl_ctrl[3] & ~r_fl_ctrl[2]) ? 8'hzz : r_fl_data; // if flash is in output mode, put data path to tri-state
 assign fl_ce_n = r_fl_ctrl[3];
 assign fl_oe_n = r_fl_ctrl[2];
 assign fl_we_n = r_fl_ctrl[1];
@@ -382,9 +383,9 @@ wire [3:0] aux_addr;
 
 
 assign led_r[17:7] = 14'h0000;
-assign led_r[5] = 1'b0;
+assign led_r[5] = w_fl_ready;
 assign led_r[6] = r_prog_done;
-assign led_r[4] = w_fl_ready; 
+assign led_r[4] = 1'b0; 
 assign led_r[3:0] = r_fl_ctrl[3:0];
 assign aux_addr[3:0] = { 1'b0, r_fl_addr[22:20] };
 
