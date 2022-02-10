@@ -42,6 +42,7 @@
 #define CMD_CHECK_1KB     4
 #define CMD_PROGRAM_FILE  5
 #define CMD_VERIFY_FILE   6
+#define CMD_HELP          7
 
 
 //store input
@@ -69,6 +70,7 @@ unsigned char lastCtrl   = 0x0F;
 void usage(char *myself) {
   printf("Usage: %s <serial port> <command> ...\n", myself);
   printf("valid commands are:\n");
+  printf("    --h           help\n");
   printf("    --id          identify flash\n");
   printf("    --pr <a> <n>  program flash\n");
   printf("    --rd <a>      read from flash\n");
@@ -82,6 +84,12 @@ void usage(char *myself) {
  //parsing argument
 void parsing_argument(int argc, char *argv[]) {
   
+  if(strcmp(cmdName, "--h") == 0){
+    if(argc != 3){
+      usage(argv[0]);
+    }
+    cmd = CMD_HELP;
+  } else
   if(strcmp(cmdName, "--id") == 0){
     if(argc != 3){
       usage(argv[0]);
