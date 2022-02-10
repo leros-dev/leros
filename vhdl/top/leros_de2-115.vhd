@@ -57,10 +57,10 @@ port (
 	--new signal--
 	cpu_rst_n: in std_logic; --reset only the CPU, program in SRAM remains
 	sys_rst_n: in std_logic; --reset everything, start to load from FLASH into SRAM again
-	sram_write: out std_logic;
-	sram_addr: out std_logic_vector(8 downto 0);
-	sram_data: out std_logic_vector(15 downto 0);
-	
+--	sram_write: out std_logic;
+--	sram_addr: out std_logic_vector(8 downto 0);
+--	sram_data: out std_logic_vector(15 downto 0);
+
 	--To outside world--
 	--Serial communication
 	rs232_rxd: in std_logic;
@@ -94,7 +94,7 @@ end leros_top_de2;
 architecture rtl of leros_top_de2 is
 
 	--Connect to external FLASH, create rs232 interface to program the FLASH
-	component my_boot_flash is
+	component flash_programmer is
 	port(
 	i_clk: in std_logic;
 	i_rst_n: in std_logic;
@@ -122,10 +122,10 @@ architecture rtl of leros_top_de2 is
 	hex1_n: out std_logic_vector(6 downto 0);
 	hex0_n: out std_logic_vector(6 downto 0)
 	);
-	end component my_boot_flash;
+	end component flash_programmer;
 
 	--After the FLASH is programmed, read from the FLASH and write to internal SRAM
-	component prog_controller is
+	component loader is
 	port (
 	--system
 	i_clk: in std_logic;
@@ -146,7 +146,7 @@ architecture rtl of leros_top_de2 is
 	--to GPIO - indicator loaded to SRAM
 	finished: out std_logic
 	);
-	end component prog_controller;
+	end component loader;
 
 	
 	signal clk_int			: std_logic;
@@ -173,14 +173,6 @@ architecture rtl of leros_top_de2 is
 	signal b_rst_n: std_logic;
 	signal b_ry: std_logic;
 	signal FLASH_loaded: std_logic;
-	
-	-- alias b_addr is fl_addr;
-	-- alias b_data is fl_dq;
-	-- alias b_ce_n is fl_ce_n;
-	-- alias b_oe_n is fl_oe_n;
-	-- alias b_we_n is fl_we_n;
-	-- alias b_rst_n is fl_rst_n;
-	-- alias b_ry is fl_ry;
 	
 	--controller to flash connection
 	signal c_addr: std_logic_vector(22 downto 0);
@@ -209,7 +201,7 @@ begin
 
 
 -- TODO: boot flash and flash to sram controller
-boot_flash: my_boot_flash port map(
+programmer: flash_programmer port map(
 i_clk => clk_int,
 i_rst_n => sys_rst_n,
 prog_done => FLASH_loaded,
@@ -237,7 +229,7 @@ hex1_n => hex1_n,
 hex0_n => hex0_n
 );
 
-controller: prog_controller port map(
+boot_loader: loader port map(
 --system--
 i_clk => clk_int,
 i_rst_n => sys_rst_n,
@@ -261,13 +253,12 @@ finished => c_sram_loaded --active High
 --Assignment from external to internal
 --==============================================================--
 
-sram_write <= wrsram.wren;
-sram_addr <= wrsram.wraddr;
-sram_data <= wrsram.wrdata;
+--sram_write <= wrsram.wren;
+--sram_addr <= wrsram.wraddr;
+--sram_data <= wrsram.wrdata;
 
 b_ry <= fl_ry;
 SRAM_loaded <= c_sram_loaded;
--- end process;
 
 --Switch between boot loader and controller to interact with FLASH
 --If FLASH is loaded or the cpu is not reseting, the controller takes the bus

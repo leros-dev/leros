@@ -1,4 +1,4 @@
-module prog_controller(
+module loader(
 //system
 input i_clk,
 input i_rst_n,
