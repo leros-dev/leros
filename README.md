@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.com/leros-dev/leros.svg?branch=master)](https://travis-ci.com/leros-dev/leros)
+
+![CI](https://github.com/leros-dev/leros/actions/workflows/scala.yml/badge.svg)
 
 # Leros, a Tiny Processor Core
 
