@@ -62,7 +62,7 @@ object Assembler {
     }
 
     for (line <- source.getLines()) {
-      if (!pass2) println(line)
+      // if (!pass2) println(line)
       val tokens = line.trim.split(" ")
 
       def brOff= if (pass2) symbols(tokens(1))-pc else 0
@@ -118,11 +118,14 @@ object Assembler {
       }
     }
     val finalProg = program.reverse.toArray
+    /*
     if (pass2) {
       println(s"The program:")
       finalProg.foreach(printf("0x%02x ", _))
       println()
     }
+
+     */
     finalProg
   }
 

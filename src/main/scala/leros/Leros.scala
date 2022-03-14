@@ -12,9 +12,6 @@ import chisel3.experimental.ChiselEnum
 
 import leros.util._
 
-
-
-
 class Debug extends Bundle {
   val acc = Output(UInt())
   val pc = Output(UInt())
@@ -149,12 +146,11 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
 
   }
 
-  printf("accu: %x address register: %x\n", accu, addrReg)
+  // printf("accu: %x address register: %x\n", accu, addrReg)
 
   val exit = RegInit(false.B)
   exit := RegNext(decReg.exit)
 
-  println("Generating Leros")
   io.dout := 42.U
 
   if (fmaxReg) {
