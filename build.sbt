@@ -5,18 +5,20 @@ scalacOptions ++= Seq(
   "-feature",
   "-unchecked",
   "-Xfatal-warnings",
-  "-Xsource:2.11",
   "-language:reflectiveCalls",
-  // Enables autoclonetype2
-  "-P:chiselplugin:useBundlePlugin"
 )
+
+// Suppress "there were X feature warnings; re-run with -feature for details".
+// These appear because chisel use a language feature that's not available in
+// all scala implementations.
+scalacOptions += "-language:reflectiveCalls"
 
 resolvers ++= Seq(
   Resolver.sonatypeRepo("snapshots"),
   Resolver.sonatypeRepo("releases")
 )
 
-// Chisel 3.4
-addCompilerPlugin("edu.berkeley.cs" % "chisel3-plugin" % "3.4.3" cross CrossVersion.full)
-libraryDependencies += "edu.berkeley.cs" %% "chisel-iotesters" % "1.5.3"
-libraryDependencies += "edu.berkeley.cs" %% "chiseltest" % "0.3.3"
+// Chisel 3.5
+addCompilerPlugin("edu.berkeley.cs" % "chisel3-plugin" % "3.5.1" cross CrossVersion.full)
+libraryDependencies += "edu.berkeley.cs" %% "chisel3" % "3.5.1"
+libraryDependencies += "edu.berkeley.cs" %% "chiseltest" % "0.5.1"
