@@ -1,8 +1,9 @@
 package leros.sim
 
-import org.scalatest._
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
 
-class LerosSimSpec extends FlatSpec with Matchers {
+class LerosSimSpec extends AnyFlatSpec with Matchers {
 
 
   "Leros simulation" should "pass" in {
