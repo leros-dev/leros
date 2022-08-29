@@ -85,7 +85,7 @@ class LerosSim(prog: String) {
       case BRP => if (accu >= 0) doBranch = true
       case BRN => if (accu < 0) doBranch = true
       case LDADDR => ar = accu
-      case LDIND => accu = mem(ar / 4 + opd) // TODO: semantics changed to have opd in words, but address in bytes
+      case LDIND => accu = mem(ar / 4 + opd) // TODO: semantic changed to have opd in words, but address in bytes
       case LDINDBU => accu = (mem((ar + opd) / 4) >> ((ar + opd) & 0x03) * 8) & 0xff // TODO: decide on big or little ending
       case STIND => mem(ar / 4 + opd) = accu
       case STINDB => {

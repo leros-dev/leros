@@ -14,6 +14,15 @@ The initial version is supported by a small Java runtime (muvium).
 The new version is pipeline agnostic and also has a slightly different ISA. The new
 version is supported by a C compiler (LLVM port.)
 
+## Next TODOs
+
+ * byte enable memory, accu (including more tests for accu?)
+ * Co-simulation, with waiting cycles
+ * Explore Tjark's test generation (with cosimulation)
+ * Check Morten's simulator (smae byte order?)
+ * Use the C compiler
+ * Run C compiler tests
+
 ## Questions
 
  * Is load immediate sign extending?
