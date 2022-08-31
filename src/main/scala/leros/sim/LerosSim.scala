@@ -85,16 +85,16 @@ class LerosSim(prog: String) {
       case BRP => if (accu >= 0) doBranch = true
       case BRN => if (accu < 0) doBranch = true
       case LDADDR => ar = accu
-      case LDIND => accu = mem(ar / 4 + opd) // TODO: semantic changed to have opd in words, but address in bytes
-      case LDINDBU => accu = (mem((ar + opd) / 4) >> ((ar + opd) & 0x03) * 8) & 0xff // TODO: decide on big or little ending
-      case STIND => mem(ar / 4 + opd) = accu
+      case LDIND => accu = mem(ar / 4 + sext(opd)) // TODO: semantic changed to have opd in words, but address in bytes
+      case LDINDBU => accu = (mem((ar + sext(opd)) / 4) >> ((ar + sext(opd)) & 0x03) * 8) & 0xff // TODO: decide on big or little ending
+      case STIND => mem(ar / 4 + sext(opd)) = accu
       case STINDB => {
-        var v = mem((ar + opd) / 4) // TODO: decide on big/little ending and test
-        val boff = (ar + opd) & 0x03
+        var v = mem((ar + sext(opd)) / 4) // TODO: decide on big/little ending and test
+        val boff = (ar + sext(opd)) & 0x03
         val mask = ~(0xff << boff * 8)
         v = v & mask
         v = v | (ar & 0xff) << boff * 8
-        mem((ar + opd) / 4) = v
+        mem((ar + sext(opd)) / 4) = v
       }
       case SCALL => if (opd == 0) run = false
     }

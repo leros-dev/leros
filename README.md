@@ -23,9 +23,32 @@ version is supported by a C compiler (LLVM port.)
  * Use the C compiler
  * Run C compiler tests
 
+## Missing Instructions (tests and/or implementation)
+
+add (test)
+sub (test)
+and (test)
+or (test)
+xor (test)
+xori (test)
+loadi (design and test for sign extension)
+out
+in
+jal
+ldind (offset broken now, as it counts for ldindb, test missing)
+ldindh
+stind (offset broken now, as it counts for ldindb, test missing)
+stindb
+stindh
+br
+brz
+brnz
+brp
+brn
+
 ## Questions
 
- * Is load immediate sign extending?
+ * Is load immediate sign extending? Is the high form sign extending?
  * What is sign extending?
  * byte order:
    * Morten's simulator (and presumable compiler) is little-endian

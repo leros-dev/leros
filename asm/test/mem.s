@@ -1,4 +1,4 @@
-// memory test
+// memory test: byte loads
 
     // r1 contains sum of individual tests (hopefully not cancelling each other out)
     loadi 0x00
