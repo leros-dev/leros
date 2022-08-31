@@ -67,11 +67,6 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
   val registerMem = SyncReadMem(256, UInt(32.W))
   val registerRead = registerMem.read(instr(15, 0))
 
-  // Data memory
-  // TODO: shall be byte write addressable
-  val dataMem = SyncReadMem(1 << memSize, UInt(32.W))
-  val dataRead = dataMem.read(Mux(decReg.isLoadAddr && stateReg === exe, accu, addrReg))
-
   // Decode
   val dec = Module(new Decode())
   dec.io.din := instr(15, 8)
@@ -96,11 +91,21 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
     operand := instr(7, 0).asSInt
   }
 
-  // For now do a sequential version of Leros.
-  // Later decide where the pipeline registers are placed.
+  val effAddr = (addrReg.asSInt + op16sex).asUInt
+  val effAddrWord = (effAddr >> 2).asUInt
+
+  // Data memory
+  // TODO: shall be byte write addressable
+  val dataMem = SyncReadMem(1 << memSize, UInt(32.W))
+  // TODO: what is accu as address? probably register file, but we have a dedicated register file
+  val address = Mux(decReg.isLoadAddr && stateReg === exe, accu, effAddrWord)
+  val dataRead = dataMem.read(address)
 
   alu.io.op := decReg.op
   alu.io.ena := decReg.ena & (stateReg === exe)
+  alu.io.enaByte := decReg.isLoadIndB
+  alu.io.enaHalf := false.B
+  alu.io.off := RegNext(effAddr(1, 0))
   alu.io.din := Mux(decReg.isLoadInd, dataRead, Mux(decReg.isRegOpd, registerRead, opdReg))
 
   switch(stateReg) {
@@ -121,7 +126,7 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
         // nothing to be done here
       }
       when (decReg.isStoreInd) {
-        dataMem.write(addrReg, accu)
+        dataMem.write(effAddrWord, accu)
       }
     }
 

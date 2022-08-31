@@ -19,6 +19,9 @@ class AluAccu(size: Int) extends Module {
     val op = Input(UInt(3.W))
     val din = Input(UInt(size.W))
     val ena = Input(Bool())
+    val enaByte = Input(Bool())
+    val enaHalf = Input(Bool())
+    val off = Input(UInt(2.W))
     val accu = Output(UInt(size.W))
   })
 
@@ -56,8 +59,24 @@ class AluAccu(size: Int) extends Module {
     }
   }
 
+  val byte = WireDefault(res(7, 0))
+  when (io.off === 1.U) {
+    byte := res(15, 8)
+  } .elsewhen(io.off === 2.U) {
+    byte := res(23, 16)
+  } .elsewhen(io.off === 3.U) {
+    byte := res(31, 24)
+  }
+  // printf("%d\n", io.off)
+
   when (io.ena) {
-    accuReg := res
+    when (io.enaByte) {
+      accuReg := 0.U ## byte
+    } .elsewhen (io.enaHalf) {
+      accuReg := 0.U ## res(15, 0)
+    } .otherwise {
+      accuReg := res
+    }
   }
 
   io.accu := accuReg

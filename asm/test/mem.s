@@ -8,6 +8,8 @@
 	ldaddr
 	loadi 0x12
 	loadhi 0x34
+	loadh2i 0x56
+	loadh3i 0x78
 	stind 0
 	loadi 0x01
 	ldind 0
@@ -20,20 +22,52 @@
 	shr
 	shr
 	subi 0x34
+	andi 0xff
 	add r1
 	store r1
 
-    // TODO: byte enable in hardware (memory and accumulator)
-	// ldindbu 0
-	// subi 0x12
-	// add r1
-	// store r1
+	ldindbu 0
+	subi 0x12
+	add r1
+	store r1
 
-	// ldindbu 1
-	// subi 0x34
-	// add r1
-	// store r1
+	ldindbu 1
+	subi 0x34
+	add r1
+	store r1
 
+	ldindbu 2
+	subi 0x56
+	add r1
+	store r1
+
+	ldindbu 3
+	subi 0x78
+	add r1
+	store r1
+
+	loadi 0x12
+	ldaddr
+
+	ldindbu 0
+	subi 0x56
+	add r1
+	store r1
+
+	ldindbu 1
+	subi 0x78
+	add r1
+	store r1
+
+	ldindbu -1
+	subi 0x34
+	add r1
+	store r1
+
+	ldindbu -2
+	subi 0x12
+	add r1
+	store r1
 
 	load r1
 	scall 0

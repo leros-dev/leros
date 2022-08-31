@@ -31,7 +31,7 @@ class LerosTest extends AnyFlatSpec with ChiselScalatestTester {
           val accu = dut.io.dbg.acc.peek.litValue.toInt
           val instr = dut.io.dbg.instr.peek().litValue.toInt
           // It is probably NOT a good idea that Predef printf is overloaded in this context
-          // Predef.printf("pc: 0x%04x instr: 0x%04x accu: 0x%08x\n", pc, instr, accu)
+          Predef.printf("pc: 0x%04x instr: 0x%04x accu: 0x%08x\n", pc, instr, accu)
           dut.clock.step(1)
           maxCycles -= 1
           // The following line does not what one expects as peek() == 0.U does not the right thing

@@ -16,10 +16,10 @@ version is supported by a C compiler (LLVM port.)
 
 ## Next TODOs
 
- * byte enable memory, accu (including more tests for accu?)
+ * byte enable memory
  * Co-simulation, with waiting cycles
  * Explore Tjark's test generation (with cosimulation)
- * Check Morten's simulator (smae byte order?)
+ * Check Morten's simulator (same byte order?)
  * Use the C compiler
  * Run C compiler tests
 

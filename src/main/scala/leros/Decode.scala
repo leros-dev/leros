@@ -13,6 +13,8 @@ class DecodeOut extends Bundle {
   val isStore = Bool()
   val isStoreInd = Bool()
   val isLoadInd = Bool()
+  val isLoadIndB = Bool()
+  val isLoadIndH = Bool()
   val isLoadAddr = Bool()
   val imm = Bool()
   val enahi = Bool()
@@ -31,6 +33,8 @@ object DecodeOut {
     v.isStore := false.B
     v.isStoreInd := false.B
     v.isLoadInd := false.B
+    v.isLoadIndB := false.B
+    v.isLoadIndH := false.B
     v.isLoadAddr := false.B
     v.imm := false.B
     v.enahi := false.B
@@ -171,11 +175,12 @@ class Decode() extends Module {
       d.ena := true.B
     }
     is (LDINDBU.U) {
-      // TODO byte enable
       d.isLoadInd := true.B
+      d.isLoadIndB := true.B
       d.op := ld
       d.ena := true.B
     }
+    // TODO halfword
     is (STIND.U) {
       d.isStoreInd := true.B
     }
