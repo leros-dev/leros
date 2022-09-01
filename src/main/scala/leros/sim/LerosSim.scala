@@ -14,6 +14,7 @@ class LerosSim(prog: String) {
 
   val code = Assembler.getProgram(prog)
 
+  val UseRegMem = false
   // The complete processor state.
   // We ignore for now which size we are working with (16, 32, or even 64 bits).
   // We will mask out the bits later when it matters.
@@ -54,29 +55,31 @@ class LerosSim(prog: String) {
       case _ => opcode
     }
 
+    val regVal = if (UseRegMem) reg(opd) else mem(opd)
+
     opcodeMask match {
       case NOP =>
-      case ADD => accu = accu + reg(opd)
+      case ADD => accu = accu + regVal
       case ADDI => accu = accu + sext(opd)
-      case SUB => accu = accu - reg(opd)
+      case SUB => accu = accu - regVal
       case SUBI => accu = accu - sext(opd)
       case SHR => accu = accu >>> 1
-      case LD => accu = reg(opd)
+      case LD => accu = regVal
       case LDI => accu = sext(opd)
       case LDHI => accu = (accu & 0xff) + ((opd << 24) >> 16)
       case LDH2I => accu = (accu & 0xffff) + ((opd << 24) >> 8)
       case LDH3I => accu = (accu & 0xffffff) + (opd << 24)
-      case AND => accu = accu & reg(opd)
+      case AND => accu = accu & regVal
       case ANDI => accu = accu & opd
-      case OR => accu = accu | reg(opd)
+      case OR => accu = accu | regVal
       case ORI => accu = accu | opd
-      case XOR => accu = accu ^ reg(opd)
+      case XOR => accu = accu ^ regVal
       case XORI => accu = accu ^ opd
-      case ST => reg(opd) = accu
+      case ST => if (UseRegMem) reg(opd) = accu else mem(opd) = accu
       case OUT => // TODO: define a device that maps to stdout
       case IN => // TODO: a device for reading from stdin
       case JAL => {
-        reg(opd) = pc + 1;
+        if (UseRegMem) reg(opd) = pc + 1 else mem(opd) = pc + 1
         doJal = true
       }
       case BR => doBranch = true

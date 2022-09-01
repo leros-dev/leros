@@ -23,7 +23,6 @@ class LerosTwoStates(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) ex
     is (exe) { stateReg := feDec }
   }
 
-
   val decReg = RegInit(DecodeOut.default)
 
   // Decode

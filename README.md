@@ -49,8 +49,8 @@ version is supported by a C compiler (LLVM port.)
 ## Questions
 
  * Is load immediate sign extending? Is the high form sign extending?
-   * probably yes, makes sense, is in Morten's VHDL version so
- * What is sign extending?
+   * Yes, it is. Needs tests and documentation.
+ * What else is sign extending?
  * byte order:
    * Morten's simulator (and presumable compiler) is little-endian
    * Martin's ISA simulator is little-endian
