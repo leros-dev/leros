@@ -145,10 +145,10 @@ class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Mod
     io.dbg.instr := RegNext(RegNext((instr)))
     io.dbg.exit := RegNext(RegNext((exit)))
   } else {
-    io.dbg.acc := ((accu))
-    io.dbg.pc := ((pcReg))
-    io.dbg.instr := ((instr))
-    io.dbg.exit := ((exit))
+    io.dbg.acc := accu
+    io.dbg.pc := pcReg
+    io.dbg.instr := instr
+    io.dbg.exit := exit
   }
 }
 
