@@ -52,11 +52,7 @@ class LerosTwoStates(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) ex
   val effAddr = (addrReg.asSInt + op16sex).asUInt
   val effAddrWord = (effAddr >> 2).asUInt
 
-  // Data memory
-  // TODO: shall be byte write addressable
-  val dataMem = SyncReadMem(1 << memSize, UInt(32.W))
-  // TODO: what is accu as address? probably register file, but we have a dedicated register file
-  val address = Mux(decReg.isLoadAddr && stateReg === exe, accu, effAddrWord)
+  val address = Mux(decout.isLoadInd, effAddrWord, instr(7, 0))
   val dataRead = dataMem.read(address)
 
   alu.io.op := decReg.op
@@ -64,7 +60,7 @@ class LerosTwoStates(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) ex
   alu.io.enaByte := decReg.isLoadIndB
   alu.io.enaHalf := false.B
   alu.io.off := RegNext(effAddr(1, 0))
-  alu.io.din := Mux(decReg.isLoadInd, dataRead, Mux(decReg.isRegOpd, registerRead, opdReg))
+  alu.io.din := Mux(decReg.isLoadInd || decReg.isRegOpd, dataRead, opdReg)
 
   switch(stateReg) {
     is (feDec) {
@@ -74,17 +70,15 @@ class LerosTwoStates(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) ex
 
     is (exe) {
       pcReg := pcNext
-      when (decReg.isStore) {
-        registerMem.write(opdReg(15, 0), accu)
-      }
       when (decReg.isLoadAddr) {
         addrReg := accu
       }
       when (decReg.isLoadInd) {
         // nothing to be done here
       }
-      when (decReg.isStoreInd) {
-        dataMem.write(effAddrWord, accu)
+      when (decReg.isStore || decReg.isStoreInd) {
+        val writeAddress = Mux(decReg.isStoreInd, effAddrWord, instrLowReg)
+        dataMem.write(writeAddress, accu)
       }
     }
 

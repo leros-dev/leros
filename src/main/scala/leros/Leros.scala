@@ -41,12 +41,13 @@ abstract class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) ex
   val mem = Module(new InstrMem(memSize, prog))
   mem.io.addr := pcNext
   val instr = mem.io.instr
+  val instrLowReg = RegNext(instr(7, 0))
 
   val opdReg = RegInit(0.U(size.W))
 
-
-  val registerMem = SyncReadMem(256, UInt(32.W))
-  val registerRead = registerMem.read(instr(15, 0))
+  // Data memory
+  // TODO: shall be byte write addressable
+  val dataMem = SyncReadMem(1 << memSize, UInt(32.W))
 
   // printf("accu: %x address register: %x\n", accu, addrReg)
 
