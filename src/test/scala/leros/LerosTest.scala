@@ -48,6 +48,12 @@ class LerosTest extends AnyFlatSpec with ChiselScalatestTester {
         testFun(dut)
       }
     }
+
+    "LerosFsmd HW " should s"pass $program" in {
+      test(new LerosFsmd(32, 10, program, false)) { dut =>
+        testFun(dut)
+      }
+    }
   }
   )
 }

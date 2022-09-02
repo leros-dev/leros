@@ -1,34 +1,33 @@
 package leros
 
 import chisel3._
-import chisel3.util._
 import chisel3.experimental.ChiselEnum
+import chisel3.util._
+
+import StateFsmd._
 
 /**
  * Leros top level.
  *
  * Sequential implementation with two states.
  */
-class LerosTwoStates(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Leros(size, memSize, prog, fmaxReg) {
+class LerosFsmd(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Leros(size, memSize, prog, fmaxReg) {
 
-  object State extends ChiselEnum {
-    val feDec, exe = Value
-  }
-  import State._
 
   val stateReg = RegInit(feDec)
+
+
+  val decReg = RegInit(DecodeFsmdOut.default)
+
+  // Decode
+  val dec = Module(new DecodeFsmd())
+  dec.io.din := instr(15, 8)
+  val decout = dec.io.dout
 
   switch (stateReg) {
     is (feDec) { stateReg := exe }
     is (exe) { stateReg := feDec }
   }
-
-  val decReg = RegInit(DecodeOut.default)
-
-  // Decode
-  val dec = Module(new Decode())
-  dec.io.din := instr(15, 8)
-  val decout = dec.io.dout
 
   // Operand
   when(decout.nosext) {
@@ -81,6 +80,3 @@ class LerosTwoStates(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) ex
   exit := RegNext(decReg.exit)
 }
 
-object LerosTwoStates extends App {
-  (new chisel3.stage.ChiselStage).emitVerilog(new LerosTwoStates(32, 10, args(0), true), Array("--target-dir", "generated"))
-}
