@@ -25,7 +25,7 @@ class LerosFsmd(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends
   val decout = dec.io.dout
 
   switch (stateReg) {
-    is (feDec) { stateReg := exe }
+    is (feDec) { stateReg := decout.next }
     is (exe) { stateReg := feDec }
   }
 
@@ -59,6 +59,21 @@ class LerosFsmd(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends
     is (feDec) {
       decReg := decout
       opdReg := operand
+    }
+
+    is (sAlu) {
+      pcReg := pcNext
+      alu.io.ena := true.B
+      alu.io.din := dataRead
+      stateReg := feDec
+    }
+
+    is (sAluI) {
+      pcReg := pcNext
+      alu.io.ena := true.B
+      alu.io.din := opdReg
+      stateReg := feDec
+      operand := instr(7, 0)
     }
 
     is (exe) {

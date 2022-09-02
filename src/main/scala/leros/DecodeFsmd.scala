@@ -7,13 +7,13 @@ import leros.Types._
 import leros.shared.Constants._
 
 object StateFsmd extends ChiselEnum {
-  val feDec, exe = Value
+  val feDec, exe, sAlu, sAluI = Value
 }
 
 import StateFsmd._
 
 class DecodeFsmdOut extends Bundle {
-  val nextStat = StateFsmd()
+  val next = StateFsmd()
 
   val ena = Bool()
   val op = UInt()
@@ -35,7 +35,7 @@ class DecodeFsmdOut extends Bundle {
 object DecodeFsmdOut {
   def default: DecodeFsmdOut = {
     val v = Wire(new DecodeFsmdOut)
-    v.nextStat := exe
+    v.next := exe
 
     v.ena := false.B
     v.op := nop
@@ -88,22 +88,29 @@ class DecodeFsmd() extends Module {
 
   switch(instr) {
     is(ADD.U) {
+      d.next := sAlu
       d.op := add
+
       d.ena := true.B
       d.isRegOpd := true.B
     }
     is(ADDI.U) {
+      d.next := sAluI
       d.op := add
+
       d.imm := true.B
       d.ena := true.B
     }
     is(SUB.U) {
+      d.next := sAlu
       d.op := sub
       d.ena := true.B
       d.isRegOpd := true.B
     }
     is(SUBI.U) {
+      d.next := sAluI
       d.op := sub
+
       d.imm := true.B
       d.ena := true.B
     }
@@ -112,44 +119,56 @@ class DecodeFsmd() extends Module {
       d.ena := true.B
     }
     is(LD.U) {
+      d.next := sAlu
       d.op := ld
       d.ena := true.B
       d.isRegOpd := true.B
     }
     is(LDI.U) {
+      d.next := sAluI
       d.op := ld
+
       d.imm := true.B
       d.ena := true.B
     }
     is(AND.U) {
+      d.next := sAlu
       d.op := and
       d.ena := true.B
       d.isRegOpd := true.B
     }
     is(ANDI.U) {
+      d.next := sAluI
       d.op := and
+
       d.imm := true.B
       d.ena := true.B
       d.nosext := true.B
     }
     is(OR.U) {
+      d.next := sAlu
       d.op := or
       d.ena := true.B
       d.isRegOpd := true.B
     }
     is(ORI.U) {
       d.op := or
+      d.next := sAluI
+
       d.imm := true.B
       d.ena := true.B
       d.nosext := true.B
     }
     is(XOR.U) {
+      d.next := sAlu
       d.op := xor
       d.ena := true.B
       d.isRegOpd := true.B
     }
     is(XORI.U) {
       d.op := xor
+      d.next := sAluI
+
       d.imm := true.B
       d.ena := true.B
       d.nosext := true.B
