@@ -31,25 +31,22 @@ class LerosTwoStates(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) ex
   val decout = dec.io.dout
 
   // Operand
-  // TODO: shall we rewrite this to use UInt per default?
-  val operand = Wire(SInt(size.W))
-  val op16sex = Wire(SInt(16.W))
-  op16sex := instr(7, 0).asSInt
-  val op24sex = Wire(SInt(24.W))
-  op24sex := instr(7, 0).asSInt
+  val operand = Wire(UInt(size.W))
+  val instrSignExt = Wire(SInt(32.W))
+  instrSignExt := instr(7, 0).asSInt
   when(decout.nosext) {
-    operand := (0.U(24.W) ## instr(7, 0)).asSInt // no sign extension
+    operand := instr(7, 0)
   } .elsewhen(decout.enahi) {
-    operand := (op24sex.asUInt ## accu(7, 0)).asSInt
+    operand := instrSignExt(23, 0).asUInt ## accu(7, 0)
   } .elsewhen(decout.enah2i) {
-    operand := (op16sex.asUInt ## accu(15, 0)).asSInt
+    operand := instrSignExt(15, 0).asUInt ## accu(15, 0)
   } .elsewhen(decout.enah3i) {
-    operand := (instr(7, 0) ## accu(23, 0)).asSInt
+    operand := instr(7, 0) ## accu(23, 0)
   } .otherwise {
-    operand := instr(7, 0).asSInt
+    operand := instrSignExt.asUInt
   }
 
-  val effAddr = (addrReg.asSInt + op16sex).asUInt
+  val effAddr = (addrReg.asSInt + instrSignExt).asUInt
   val effAddrWord = (effAddr >> 2).asUInt
 
   val address = Mux(decout.isLoadInd, effAddrWord, instr(7, 0))
@@ -65,7 +62,7 @@ class LerosTwoStates(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) ex
   switch(stateReg) {
     is (feDec) {
       decReg := decout
-      opdReg := operand.asUInt
+      opdReg := operand
     }
 
     is (exe) {
