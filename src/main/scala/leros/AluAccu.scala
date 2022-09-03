@@ -10,18 +10,16 @@ object Types {
 }
 
 /**
-  * Leros ALU including the accumulator register.
-  *
-  * @param size
-  */
+ * Leros ALU including the accumulator register.
+ *
+ * @param size
+ */
 class AluAccu(size: Int) extends Module {
   val io = IO(new Bundle {
     val op = Input(UInt(3.W))
     val din = Input(UInt(size.W))
     val enaMask = Input(UInt(4.W))
-    val ena = Input(Bool())
     val enaByte = Input(Bool())
-    val enaHalf = Input(Bool())
     val off = Input(UInt(2.W))
     val accu = Output(UInt(size.W))
   })
@@ -52,7 +50,7 @@ class AluAccu(size: Int) extends Module {
     is(xor) {
       res := a ^ b
     }
-    is (shr) {
+    is(shr) {
       res := a >> 1
     }
     is(ld) {
@@ -61,39 +59,34 @@ class AluAccu(size: Int) extends Module {
   }
 
   val byte = WireDefault(res(7, 0))
-  when (io.off === 1.U) {
+  when(io.off === 1.U) {
     byte := res(15, 8)
-  } .elsewhen(io.off === 2.U) {
+  }.elsewhen(io.off === 2.U) {
     byte := res(23, 16)
-  } .elsewhen(io.off === 3.U) {
+  }.elsewhen(io.off === 3.U) {
     byte := res(31, 24)
   }
   // printf("%d\n", io.off)
 
   // TODO: find the conversion in Chisel and document it also in the Chisel book
   val mask = Wire(Vec(4, Bool()))
-  for (i <- 0 until 4)  mask(i) := io.enaMask(i)
+  for (i <- 0 until 4) mask(i) := io.enaMask(i)
 
   // Workaround for missing subword assignments
   class Split extends Bundle {
     val bytes = Vec(4, UInt(8.W))
   }
+
   val split = Wire(new Split())
   for (i <- 0 until 4) {
     split.bytes(i) := Mux(mask(i), res(8 * i + 7, 8 * i), accuReg(8 * i + 7, 8 * i))
   }
 
-  // Should just use the mask
-  when (io.ena) {
-    when (io.enaByte) {
-      // should use byte mask
-      accuReg := 0.U ## byte
-      // not yet used
-//    } .elsewhen (io.enaHalf) {
-//      accuReg := 0.U ## res(15, 0)
-    } .otherwise {
-      accuReg := split.asUInt
-    }
+  when(io.enaByte & io.enaMask.andR) {
+    // should be constructed out of the ALU
+    accuReg := 0.U ## byte
+  }.otherwise {
+    accuReg := split.asUInt
   }
 
   io.accu := accuReg

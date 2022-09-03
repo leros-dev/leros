@@ -26,7 +26,7 @@ class AluAccuTest extends AnyFlatSpec with ChiselScalatestTester {
       }
       def testOne(a: Int, b: Int, fun: Int): Unit = {
         dut.io.op.poke(ld)
-        dut.io.ena.poke(true.B)
+        dut.io.enaMask.poke("b1111".U)
         dut.io.din.poke((a.toLong & 0x00ffffffffL).U)
         dut.clock.step(1)
         dut.io.op.poke(fun.U)

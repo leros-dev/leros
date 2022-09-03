@@ -43,16 +43,10 @@ class LerosFsmd(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends
   val dataRead = dataMem.read(address)
 
   // defaults should be:
-  alu.io.ena := false.B
   alu.io.enaMask := 0.U
   alu.io.enaByte := false.B
-  alu.io.enaHalf := false.B
 
   alu.io.op := decReg.op
-  // should go into states
-  alu.io.ena := decReg.ena & (stateReg === exe)
-  // should use a mask, should use that mask in the FSM, not here. Default should be disabled (e.g., during fetch/decode)
-  alu.io.enaMask := decReg.enaMask
   alu.io.enaByte := decReg.isLoadIndB
   alu.io.off := RegNext(effAddr(1, 0))
   alu.io.din := Mux(decReg.isLoadInd || decReg.isRegOpd, dataRead, opdReg)
@@ -68,7 +62,6 @@ class LerosFsmd(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends
 
     is (sAlu) {
       pcReg := pcNext
-      alu.io.ena := true.B
       alu.io.enaMask := decReg.enaMask
       alu.io.din := dataRead
       stateReg := sFeDec
@@ -76,7 +69,6 @@ class LerosFsmd(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends
 
     is (sAluI) {
       pcReg := pcNext
-      alu.io.ena := true.B
       alu.io.enaMask := decReg.enaMask
       alu.io.din := opdReg
       stateReg := sFeDec
@@ -84,8 +76,10 @@ class LerosFsmd(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends
 
     is (exe) {
       pcReg := pcNext
+      alu.io.enaMask := decReg.enaMask
       when (decReg.isLoadAddr) {
         addrReg := accu
+        alu.io.enaMask := 0.U
       }
       when (decReg.isLoadInd) {
         // nothing to be done here
@@ -93,6 +87,7 @@ class LerosFsmd(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends
       when (decReg.isStore || decReg.isStoreInd) {
         val writeAddress = Mux(decReg.isStoreInd, effAddrWord, instrLowReg)
         dataMem.write(writeAddress, accu)
+        alu.io.enaMask := 0.U
       }
       stateReg := sFeDec
     }
