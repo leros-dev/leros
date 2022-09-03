@@ -7,13 +7,14 @@ import leros.Types._
 import leros.shared.Constants._
 
 object StateFsmd extends ChiselEnum {
-  val feDec, exe, sAlu, sAluI = Value
+  val sFeDec, exe, sAlu, sAluI, sLoadi = Value
 }
 
 import StateFsmd._
 
 class DecodeFsmdOut extends Bundle {
   val next = StateFsmd()
+  val operand = UInt(32.W)
 
   val ena = Bool()
   val op = UInt()
@@ -24,7 +25,6 @@ class DecodeFsmdOut extends Bundle {
   val isLoadIndB = Bool()
   val isLoadIndH = Bool()
   val isLoadAddr = Bool()
-  val imm = Bool()
   val enahi = Bool()
   val enah2i = Bool()
   val enah3i = Bool()
@@ -36,6 +36,7 @@ object DecodeFsmdOut {
   def default: DecodeFsmdOut = {
     val v = Wire(new DecodeFsmdOut)
     v.next := exe
+    v.operand := 0.U
 
     v.ena := false.B
     v.op := nop
@@ -46,7 +47,6 @@ object DecodeFsmdOut {
     v.isLoadIndB := false.B
     v.isLoadIndH := false.B
     v.isLoadAddr := false.B
-    v.imm := false.B
     v.enahi := false.B
     v.enah2i := false.B
     v.enah3i := false.B
@@ -86,6 +86,13 @@ class DecodeFsmd() extends Module {
 
   val instr = Mux(isBranch, io.din & BRANCH_MASK.U, io.din)
 
+
+  val noSext = WireDefault(false.B)
+  val sigExt = Wire(SInt(32.W))
+  sigExt := instr(7, 0).asSInt
+  d.operand := sigExt.asUInt
+  when (noSext) { d.operand := instr(7, 0) }
+
   switch(instr) {
     is(ADD.U) {
       d.next := sAlu
@@ -98,7 +105,6 @@ class DecodeFsmd() extends Module {
       d.next := sAluI
       d.op := add
 
-      d.imm := true.B
       d.ena := true.B
     }
     is(SUB.U) {
@@ -111,7 +117,6 @@ class DecodeFsmd() extends Module {
       d.next := sAluI
       d.op := sub
 
-      d.imm := true.B
       d.ena := true.B
     }
     is(SHR.U) {
@@ -128,7 +133,6 @@ class DecodeFsmd() extends Module {
       d.next := sAluI
       d.op := ld
 
-      d.imm := true.B
       d.ena := true.B
     }
     is(AND.U) {
@@ -140,8 +144,8 @@ class DecodeFsmd() extends Module {
     is(ANDI.U) {
       d.next := sAluI
       d.op := and
+      noSext := true.B
 
-      d.imm := true.B
       d.ena := true.B
       d.nosext := true.B
     }
@@ -154,8 +158,9 @@ class DecodeFsmd() extends Module {
     is(ORI.U) {
       d.op := or
       d.next := sAluI
+      noSext := true.B
 
-      d.imm := true.B
+
       d.ena := true.B
       d.nosext := true.B
     }
@@ -168,27 +173,28 @@ class DecodeFsmd() extends Module {
     is(XORI.U) {
       d.op := xor
       d.next := sAluI
+      noSext := true.B
 
-      d.imm := true.B
+
       d.ena := true.B
       d.nosext := true.B
     }
     is(LDHI.U) {
       d.op := ld
-      d.imm := true.B
+      d.next :=sAluI
+
+
       d.ena := true.B
       d.enahi := true.B
     }
     // Following only useful for 32-bit Leros
     is(LDH2I.U) {
       d.op := ld
-      d.imm := true.B
       d.ena := true.B
       d.enah2i := true.B
     }
     is(LDH3I.U) {
       d.op := ld
-      d.imm := true.B
       d.ena := true.B
       d.enah3i := true.B
     }

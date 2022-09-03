@@ -41,6 +41,7 @@ abstract class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) ex
   val mem = Module(new InstrMem(memSize, prog))
   mem.io.addr := pcNext
   val instr = mem.io.instr
+  // the following three should go into Decode
   val operand = Wire(UInt(size.W))
   val instrSignExt = Wire(SInt(32.W))
   instrSignExt := instr(7, 0).asSInt

@@ -14,8 +14,7 @@ import StateFsmd._
 class LerosFsmd(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Leros(size, memSize, prog, fmaxReg) {
 
 
-  val stateReg = RegInit(feDec)
-
+  val stateReg = RegInit(sFeDec)
 
   val decReg = RegInit(DecodeFsmdOut.default)
 
@@ -24,12 +23,7 @@ class LerosFsmd(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends
   dec.io.din := instr(15, 8)
   val decout = dec.io.dout
 
-  switch (stateReg) {
-    is (feDec) { stateReg := decout.next }
-    is (exe) { stateReg := feDec }
-  }
-
-  // Operand
+  // Operand - should move into decode
   when(decout.nosext) {
     operand := instr(7, 0)
   } .elsewhen(decout.enahi) {
@@ -49,30 +43,35 @@ class LerosFsmd(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends
   val dataRead = dataMem.read(address)
 
   alu.io.op := decReg.op
+  // should go then
   alu.io.ena := decReg.ena & (stateReg === exe)
+  // should use a mask
   alu.io.enaByte := decReg.isLoadIndB
   alu.io.enaHalf := false.B
   alu.io.off := RegNext(effAddr(1, 0))
   alu.io.din := Mux(decReg.isLoadInd || decReg.isRegOpd, dataRead, opdReg)
 
   switch(stateReg) {
-    is (feDec) {
+    is (sFeDec) {
       decReg := decout
       opdReg := operand
+      // move to decout when load high part is in decode
+      // opdReg := decout.operand
+      stateReg := decout.next
     }
 
     is (sAlu) {
       pcReg := pcNext
       alu.io.ena := true.B
       alu.io.din := dataRead
-      stateReg := feDec
+      stateReg := sFeDec
     }
 
     is (sAluI) {
       pcReg := pcNext
       alu.io.ena := true.B
       alu.io.din := opdReg
-      stateReg := feDec
+      stateReg := sFeDec
       operand := instr(7, 0)
     }
 
@@ -88,6 +87,7 @@ class LerosFsmd(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends
         val writeAddress = Mux(decReg.isStoreInd, effAddrWord, instrLowReg)
         dataMem.write(writeAddress, accu)
       }
+      stateReg := sFeDec
     }
 
   }

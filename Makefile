@@ -30,9 +30,16 @@ test-alu:
 all: all-hwsim all-swsim
 
 all-hwsim:
+	sbt "testOnly leros.LerosTest"
+
+list-hwsim:
 	sbt -Dtestpath=$(TESTPATH) -Dprogram=$(TESTS) "testOnly leros.LerosTest"
 
 all-swsim:
+	sbt "testOnly leros.sim.LerosSimTest"
+
+
+list-swsim:
 	sbt -Dtestpath=$(TESTPATH) -Dprogram=$(TESTS) "testOnly leros.sim.LerosSimTest"
 
 # clean everything (including IntelliJ project settings)
