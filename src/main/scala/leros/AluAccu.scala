@@ -18,6 +18,7 @@ class AluAccu(size: Int) extends Module {
   val io = IO(new Bundle {
     val op = Input(UInt(3.W))
     val din = Input(UInt(size.W))
+    val enaMask = Input(UInt(4.W))
     val ena = Input(Bool())
     val enaByte = Input(Bool())
     val enaHalf = Input(Bool())
@@ -69,13 +70,29 @@ class AluAccu(size: Int) extends Module {
   }
   // printf("%d\n", io.off)
 
+  // TODO: find the conversion in Chisel and document it also in the Chisel book
+  val mask = Wire(Vec(4, Bool()))
+  for (i <- 0 until 4)  mask(i) := io.enaMask(i)
+
+  // Workaround for missing subword assignments
+  class Split extends Bundle {
+    val bytes = Vec(4, UInt(8.W))
+  }
+  val split = Wire(new Split())
+  for (i <- 0 until 4) {
+    split.bytes(i) := Mux(mask(i), res(8 * i + 7, 8 * i), accuReg(8 * i + 7, 8 * i))
+  }
+
+  // Should just use the mask
   when (io.ena) {
     when (io.enaByte) {
+      // should use byte mask
       accuReg := 0.U ## byte
-    } .elsewhen (io.enaHalf) {
-      accuReg := 0.U ## res(15, 0)
+      // not yet used
+//    } .elsewhen (io.enaHalf) {
+//      accuReg := 0.U ## res(15, 0)
     } .otherwise {
-      accuReg := res
+      accuReg := split.asUInt
     }
   }
 

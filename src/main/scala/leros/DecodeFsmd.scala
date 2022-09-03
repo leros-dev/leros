@@ -7,7 +7,7 @@ import leros.Types._
 import leros.shared.Constants._
 
 object StateFsmd extends ChiselEnum {
-  val sFeDec, exe, sAlu, sAluI, sLoadi = Value
+  val sFeDec, exe, sAlu, sAluI, sLdhi, sLdh2i, sLdh3i = Value
 }
 
 import StateFsmd._
@@ -15,6 +15,7 @@ import StateFsmd._
 class DecodeFsmdOut extends Bundle {
   val next = StateFsmd()
   val operand = UInt(32.W)
+  val enaMask = UInt(4.W) // should replace ena
 
   val ena = Bool()
   val op = UInt()
@@ -37,6 +38,7 @@ object DecodeFsmdOut {
     val v = Wire(new DecodeFsmdOut)
     v.next := exe
     v.operand := 0.U
+    v.enaMask := "b1111".U
 
     v.ena := false.B
     v.op := nop

@@ -16,7 +16,6 @@ class DecodeOut extends Bundle {
   val isLoadIndB = Bool()
   val isLoadIndH = Bool()
   val isLoadAddr = Bool()
-  val imm = Bool()
   val enahi = Bool()
   val enah2i = Bool()
   val enah3i = Bool()
@@ -36,7 +35,6 @@ object DecodeOut {
     v.isLoadIndB := false.B
     v.isLoadIndH := false.B
     v.isLoadAddr := false.B
-    v.imm := false.B
     v.enahi := false.B
     v.enah2i := false.B
     v.enah3i := false.B
@@ -84,7 +82,6 @@ class Decode() extends Module {
     }
     is(ADDI.U) {
       d.op := add
-      d.imm := true.B
       d.ena := true.B
     }
     is(SUB.U) {
@@ -94,7 +91,6 @@ class Decode() extends Module {
     }
     is(SUBI.U) {
       d.op := sub
-      d.imm := true.B
       d.ena := true.B
     }
     is(SHR.U) {
@@ -108,7 +104,6 @@ class Decode() extends Module {
     }
     is(LDI.U) {
       d.op := ld
-      d.imm := true.B
       d.ena := true.B
     }
     is(AND.U) {
@@ -118,7 +113,6 @@ class Decode() extends Module {
     }
     is(ANDI.U) {
       d.op := and
-      d.imm := true.B
       d.ena := true.B
       d.nosext := true.B
     }
@@ -129,7 +123,6 @@ class Decode() extends Module {
     }
     is(ORI.U) {
       d.op := or
-      d.imm := true.B
       d.ena := true.B
       d.nosext := true.B
     }
@@ -140,26 +133,22 @@ class Decode() extends Module {
     }
     is(XORI.U) {
       d.op := xor
-      d.imm := true.B
       d.ena := true.B
       d.nosext := true.B
     }
     is(LDHI.U) {
       d.op := ld
-      d.imm := true.B
       d.ena := true.B
       d.enahi := true.B
     }
     // Following only useful for 32-bit Leros
     is(LDH2I.U) {
       d.op := ld
-      d.imm := true.B
       d.ena := true.B
       d.enah2i := true.B
     }
     is(LDH3I.U) {
       d.op := ld
-      d.imm := true.B
       d.ena := true.B
       d.enah3i := true.B
     }

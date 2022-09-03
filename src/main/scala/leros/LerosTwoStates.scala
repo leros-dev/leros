@@ -51,6 +51,7 @@ class LerosTwoStates(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) ex
 
   alu.io.op := decReg.op
   alu.io.ena := decReg.ena & (stateReg === exe)
+  alu.io.enaMask := 0xf.U //decReg.enaMask
   alu.io.enaByte := decReg.isLoadIndB
   alu.io.enaHalf := false.B
   alu.io.off := RegNext(effAddr(1, 0))
