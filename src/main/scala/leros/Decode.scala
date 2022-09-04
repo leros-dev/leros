@@ -7,6 +7,7 @@ import leros.shared.Constants._
 import leros.Types._
 
 class DecodeOut extends Bundle {
+  val operand = UInt(32.W)
   val enaMask = UInt(4.W)
   val op = UInt()
   val isRegOpd = Bool()
@@ -16,10 +17,6 @@ class DecodeOut extends Bundle {
   val isLoadIndB = Bool()
   val isLoadIndH = Bool()
   val isLoadAddr = Bool()
-  val enahi = Bool()
-  val enah2i = Bool()
-  val enah3i = Bool()
-  val nosext = Bool()
   val exit = Bool()
 }
 
@@ -30,6 +27,7 @@ object DecodeOut {
 
   def default: DecodeOut = {
     val v = Wire(new DecodeOut)
+    v.operand := 0.U
     v.enaMask := MaskNone
     v.op := nop
     v.isRegOpd := false.B
@@ -39,10 +37,6 @@ object DecodeOut {
     v.isLoadIndB := false.B
     v.isLoadIndH := false.B
     v.isLoadAddr := false.B
-    v.enahi := false.B
-    v.enah2i := false.B
-    v.enah3i := false.B
-    v.nosext := false.B
     v.exit := false.B
     v
   }
@@ -50,7 +44,7 @@ object DecodeOut {
 
 class Decode() extends Module {
   val io = IO(new Bundle {
-    val din = Input(UInt(8.W))
+    val din = Input(UInt(16.W))
     val dout = Output(new DecodeOut)
   })
 
@@ -71,16 +65,22 @@ class Decode() extends Module {
    */
   def mask(i: Int) = ((i >> 4) & 0x0f).asUInt
 
-  val field = io.din(7, 4)
+  val field = io.din(15, 12)
   when (field === mask(BR)) { isBranch := true.B }
   when (field === mask(BRZ)) { isBranch := true.B }
   when (field === mask(BRNZ)) { isBranch := true.B }
   when (field === mask(BRP)) { isBranch := true.B }
   when (field === mask(BRN)) { isBranch := true.B }
 
-  val instr = Mux(isBranch, io.din & BRANCH_MASK.U, io.din)
+  val instr = Mux(isBranch, io.din & (BRANCH_MASK.U << 8), io.din)
 
-  switch(instr) {
+  val noSext = WireDefault(false.B)
+  val sigExt = Wire(SInt(32.W))
+  sigExt := instr(7, 0).asSInt
+  d.operand := sigExt.asUInt
+  when (noSext) { d.operand := instr(7, 0) }
+
+  switch(instr(15, 8)) {
     is(ADD.U) {
       d.op := add
       d.enaMask := MaskAll
@@ -120,7 +120,7 @@ class Decode() extends Module {
     is(ANDI.U) {
       d.op := and
       d.enaMask := MaskAll
-      d.nosext := true.B
+      noSext := true.B
     }
     is(OR.U) {
       d.op := or
@@ -130,7 +130,7 @@ class Decode() extends Module {
     is(ORI.U) {
       d.op := or
       d.enaMask := MaskAll
-      d.nosext := true.B
+      noSext := true.B
     }
     is(XOR.U) {
       d.op := xor
@@ -140,23 +140,23 @@ class Decode() extends Module {
     is(XORI.U) {
       d.op := xor
       d.enaMask := MaskAll
-      d.nosext := true.B
+      noSext := true.B
     }
     is(LDHI.U) {
       d.op := ld
-      d.enaMask := MaskAll
-      d.enahi := true.B
+      d.enaMask := "b1110".U
+      d.operand := sigExt(23, 0).asUInt ## 0.U(8.W)
     }
     // Following only useful for 32-bit Leros
     is(LDH2I.U) {
       d.op := ld
-      d.enaMask := MaskAll
-      d.enah2i := true.B
+      d.enaMask := "b1100".U
+      d.operand := sigExt(15, 0).asUInt ## 0.U(16.W)
     }
     is(LDH3I.U) {
       d.op := ld
-      d.enaMask := MaskAll
-      d.enah3i := true.B
+      d.enaMask := "b1000".U
+      d.operand := instr(7, 0) ## 0.U(24.W)
     }
     is (ST.U) {
       d.isStore := true.B

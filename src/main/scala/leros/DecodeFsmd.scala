@@ -173,7 +173,7 @@ class DecodeFsmd() extends Module {
     }
     is(LDHI.U) {
       d.op := ld
-      d.next :=sAluI
+      d.next := sAluI
       d.enaMask := "b1110".U
       d.operand := sigExt(23, 0).asUInt ## 0.U(8.W)
     }

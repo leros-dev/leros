@@ -27,21 +27,8 @@ class LerosTwoStates(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) ex
 
   // Decode
   val dec = Module(new Decode())
-  dec.io.din := instr(15, 8)
+  dec.io.din := instr
   val decout = dec.io.dout
-
-  // Operand
-  when(decout.nosext) {
-    operand := instr(7, 0)
-  } .elsewhen(decout.enahi) {
-    operand := instrSignExt(23, 0).asUInt ## accu(7, 0)
-  } .elsewhen(decout.enah2i) {
-    operand := instrSignExt(15, 0).asUInt ## accu(15, 0)
-  } .elsewhen(decout.enah3i) {
-    operand := instr(7, 0) ## accu(23, 0)
-  } .otherwise {
-    operand := instrSignExt.asUInt
-  }
 
   val effAddr = (addrReg.asSInt + instrSignExt).asUInt
   val effAddrWord = (effAddr >> 2).asUInt
@@ -53,12 +40,12 @@ class LerosTwoStates(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) ex
   alu.io.enaMask := 0.U
   alu.io.enaByte := decReg.isLoadIndB
   alu.io.off := RegNext(effAddr(1, 0))
-  alu.io.din := Mux(decReg.isLoadInd || decReg.isRegOpd, dataRead, opdReg)
+  // this should be a single signal from decode
+  alu.io.din := Mux(decReg.isLoadInd || decReg.isRegOpd, dataRead, decReg.operand)
 
   switch(stateReg) {
     is (feDec) {
       decReg := decout
-      opdReg := operand
     }
 
     is (exe) {

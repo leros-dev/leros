@@ -1,7 +1,6 @@
 package leros
 
 import chisel3._
-import chisel3.experimental.ChiselEnum
 import chisel3.util._
 
 import StateFsmd._
@@ -35,7 +34,8 @@ class LerosFsmd(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends
   alu.io.op := decReg.op
   alu.io.enaByte := decReg.isLoadIndB
   alu.io.off := RegNext(effAddr(1, 0))
-  // Maybe this should be a singel signal from decode
+  // Maybe this should be a single signal from decode, or driven in the states
+  // Now it is duplicated
   alu.io.din := Mux(decReg.isLoadInd || decReg.isRegOpd, dataRead, decReg.operand)
 
   switch(stateReg) {
