@@ -15,7 +15,7 @@ import StateFsmd._
 class DecodeFsmdOut extends Bundle {
   val next = StateFsmd()
   val operand = UInt(32.W)
-  val enaMask = UInt(4.W) // should replace ena
+  val enaMask = UInt(4.W)
 
   val op = UInt()
   val isRegOpd = Bool()

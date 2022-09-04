@@ -7,7 +7,7 @@ import leros.shared.Constants._
 import leros.Types._
 
 class DecodeOut extends Bundle {
-  val enaMask = UInt(4.W) // should replace ena
+  val enaMask = UInt(4.W)
   val op = UInt()
   val isRegOpd = Bool()
   val isStore = Bool()

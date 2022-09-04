@@ -22,7 +22,7 @@ class LerosFsmd(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends
   dec.io.din := instr
   val decout = dec.io.dout
 
-  val effAddr = (addrReg.asSInt + instrSignExt).asUInt
+  val effAddr = (addrReg.asSInt + decout.operand.asSInt).asUInt
   val effAddrWord = (effAddr >> 2).asUInt
 
   val address = Mux(decout.isLoadInd, effAddrWord, instr(7, 0))
@@ -35,12 +35,12 @@ class LerosFsmd(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends
   alu.io.op := decReg.op
   alu.io.enaByte := decReg.isLoadIndB
   alu.io.off := RegNext(effAddr(1, 0))
-  alu.io.din := Mux(decReg.isLoadInd || decReg.isRegOpd, dataRead, opdReg)
+  // Maybe this should be a singel signal from decode
+  alu.io.din := Mux(decReg.isLoadInd || decReg.isRegOpd, dataRead, decReg.operand)
 
   switch(stateReg) {
     is (sFeDec) {
       decReg := decout
-      opdReg := decout.operand
       stateReg := decout.next
     }
 
@@ -54,7 +54,7 @@ class LerosFsmd(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends
     is (sAluI) {
       pcReg := pcNext
       alu.io.enaMask := decReg.enaMask
-      alu.io.din := opdReg
+      alu.io.din := decReg.operand
       stateReg := sFeDec
     }
 
