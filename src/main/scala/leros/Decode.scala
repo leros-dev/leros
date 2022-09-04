@@ -24,9 +24,13 @@ class DecodeOut extends Bundle {
 }
 
 object DecodeOut {
+
+  val MaskNone = "b0000".U
+  val MaskAll = "b1111".U
+
   def default: DecodeOut = {
     val v = Wire(new DecodeOut)
-    v.enaMask := "b0000".U
+    v.enaMask := MaskNone
     v.op := nop
     v.isRegOpd := false.B
     v.isStore := false.B
@@ -49,6 +53,8 @@ class Decode() extends Module {
     val din = Input(UInt(8.W))
     val dout = Output(new DecodeOut)
   })
+
+  import DecodeOut._
 
   val d = DecodeOut.default
 
@@ -77,79 +83,79 @@ class Decode() extends Module {
   switch(instr) {
     is(ADD.U) {
       d.op := add
-      d.enaMask := "b1111".U
+      d.enaMask := MaskAll
       d.isRegOpd := true.B
     }
     is(ADDI.U) {
       d.op := add
-      d.enaMask := "b1111".U
+      d.enaMask := MaskAll
     }
     is(SUB.U) {
       d.op := sub
-      d.enaMask := "b1111".U
+      d.enaMask := MaskAll
       d.isRegOpd := true.B
     }
     is(SUBI.U) {
       d.op := sub
-      d.enaMask := "b1111".U
+      d.enaMask := MaskAll
     }
     is(SHR.U) {
       d.op := shr
-      d.enaMask := "b1111".U
+      d.enaMask := MaskAll
     }
     is(LD.U) {
       d.op := ld
-      d.enaMask := "b1111".U
+      d.enaMask := MaskAll
       d.isRegOpd := true.B
     }
     is(LDI.U) {
       d.op := ld
-      d.enaMask := "b1111".U
+      d.enaMask := MaskAll
     }
     is(AND.U) {
       d.op := and
-      d.enaMask := "b1111".U
+      d.enaMask := MaskAll
       d.isRegOpd := true.B
     }
     is(ANDI.U) {
       d.op := and
-      d.enaMask := "b1111".U
+      d.enaMask := MaskAll
       d.nosext := true.B
     }
     is(OR.U) {
       d.op := or
-      d.enaMask := "b1111".U
+      d.enaMask := MaskAll
       d.isRegOpd := true.B
     }
     is(ORI.U) {
       d.op := or
-      d.enaMask := "b1111".U
+      d.enaMask := MaskAll
       d.nosext := true.B
     }
     is(XOR.U) {
       d.op := xor
-      d.enaMask := "b1111".U
+      d.enaMask := MaskAll
       d.isRegOpd := true.B
     }
     is(XORI.U) {
       d.op := xor
-      d.enaMask := "b1111".U
+      d.enaMask := MaskAll
       d.nosext := true.B
     }
     is(LDHI.U) {
       d.op := ld
-      d.enaMask := "b1111".U
+      d.enaMask := MaskAll
       d.enahi := true.B
     }
     // Following only useful for 32-bit Leros
     is(LDH2I.U) {
       d.op := ld
-      d.enaMask := "b1111".U
+      d.enaMask := MaskAll
       d.enah2i := true.B
     }
     is(LDH3I.U) {
       d.op := ld
-      d.enaMask := "b1111".U
+      d.enaMask := MaskAll
       d.enah3i := true.B
     }
     is (ST.U) {
@@ -161,13 +167,13 @@ class Decode() extends Module {
     is (LDIND.U) {
       d.isLoadInd := true.B
       d.op := ld
-      d.enaMask := "b1111".U
+      d.enaMask := MaskAll
     }
     is (LDINDBU.U) {
       d.isLoadInd := true.B
       d.isLoadIndB := true.B
       d.op := ld
-      d.enaMask := "b1111".U
+      d.enaMask := MaskAll
     }
     // TODO halfword
     is (STIND.U) {
