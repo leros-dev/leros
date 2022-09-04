@@ -13,28 +13,14 @@ import StateFsmd._
  */
 class LerosFsmd(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Leros(size, memSize, prog, fmaxReg) {
 
-
   val stateReg = RegInit(sFeDec)
 
   val decReg = RegInit(DecodeFsmdOut.default)
 
   // Decode
   val dec = Module(new DecodeFsmd())
-  dec.io.din := instr(15, 8)
+  dec.io.din := instr
   val decout = dec.io.dout
-
-  // Operand - should move into decode
-  when(decout.nosext) {
-    operand := instr(7, 0)
-  } .elsewhen(decout.enahi) {
-    operand := instrSignExt(23, 0).asUInt ## accu(7, 0)
-  } .elsewhen(decout.enah2i) {
-    operand := instrSignExt(15, 0).asUInt ## accu(15, 0)
-  } .elsewhen(decout.enah3i) {
-    operand := instr(7, 0) ## accu(23, 0)
-  } .otherwise {
-    operand := instrSignExt.asUInt
-  }
 
   val effAddr = (addrReg.asSInt + instrSignExt).asUInt
   val effAddrWord = (effAddr >> 2).asUInt
@@ -54,9 +40,7 @@ class LerosFsmd(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends
   switch(stateReg) {
     is (sFeDec) {
       decReg := decout
-      opdReg := operand
-      // move to decout when load high part is in decode
-      // opdReg := decout.operand
+      opdReg := decout.operand
       stateReg := decout.next
     }
 

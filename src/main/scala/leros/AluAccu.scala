@@ -66,7 +66,6 @@ class AluAccu(size: Int) extends Module {
   }.elsewhen(io.off === 3.U) {
     byte := res(31, 24)
   }
-  // printf("%d\n", io.off)
 
   // TODO: find the conversion in Chisel and document it also in the Chisel book
   val mask = Wire(Vec(4, Bool()))
@@ -85,7 +84,7 @@ class AluAccu(size: Int) extends Module {
   when(io.enaByte & io.enaMask.andR) {
     // should be constructed out of the ALU
     accuReg := 0.U ## byte
-  }.otherwise {
+  } .otherwise {
     accuReg := split.asUInt
   }
 

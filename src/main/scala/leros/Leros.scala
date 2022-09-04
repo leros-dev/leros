@@ -42,7 +42,9 @@ abstract class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) ex
   mem.io.addr := pcNext
   val instr = mem.io.instr
   // the following three should go into Decode
+  // is not used any more in FSMD version
   val operand = Wire(UInt(size.W))
+  operand := 0.U
   val instrSignExt = Wire(SInt(32.W))
   instrSignExt := instr(7, 0).asSInt
   val instrLowReg = RegNext(instr(7, 0))
