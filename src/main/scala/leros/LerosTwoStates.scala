@@ -41,7 +41,7 @@ class LerosTwoStates(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) ex
   alu.io.enaByte := decReg.isLoadIndB
   alu.io.off := RegNext(effAddr(1, 0))
   // this should be a single signal from decode
-  alu.io.din := Mux(decReg.isLoadInd || decReg.isRegOpd, dataRead, decReg.operand)
+  alu.io.din := Mux(decReg.useDecOpd, decReg.operand, dataRead)
 
   switch(stateReg) {
     is (feDec) {

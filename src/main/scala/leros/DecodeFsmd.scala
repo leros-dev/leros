@@ -18,7 +18,6 @@ class DecodeFsmdOut extends Bundle {
   val enaMask = UInt(4.W)
 
   val op = UInt()
-  val isRegOpd = Bool()
   val isStore = Bool()
   val isStoreInd = Bool()
   val isLoadInd = Bool()
@@ -38,9 +37,8 @@ object DecodeFsmdOut {
     v.next := exe
     v.operand := 0.U
     v.enaMask := MaskNone
-
     v.op := nop
-    v.isRegOpd := false.B
+
     v.isStore := false.B
     v.isStoreInd := false.B
     v.isLoadInd := false.B
@@ -96,8 +94,6 @@ class DecodeFsmd() extends Module {
       d.next := sAlu
       d.op := add
       d.enaMask := MaskAll
-
-      d.isRegOpd := true.B
     }
     is(ADDI.U) {
       d.next := sAluI
@@ -108,8 +104,6 @@ class DecodeFsmd() extends Module {
       d.next := sAlu
       d.op := sub
       d.enaMask := MaskAll
-
-      d.isRegOpd := true.B
     }
     is(SUBI.U) {
       d.next := sAluI
@@ -124,8 +118,6 @@ class DecodeFsmd() extends Module {
       d.next := sAlu
       d.op := ld
       d.enaMask := MaskAll
-
-      d.isRegOpd := true.B
     }
     is(LDI.U) {
       d.next := sAluI
@@ -136,8 +128,6 @@ class DecodeFsmd() extends Module {
       d.next := sAlu
       d.op := and
       d.enaMask := MaskAll
-
-      d.isRegOpd := true.B
     }
     is(ANDI.U) {
       d.next := sAluI
@@ -149,8 +139,6 @@ class DecodeFsmd() extends Module {
       d.next := sAlu
       d.op := or
       d.enaMask := MaskAll
-
-      d.isRegOpd := true.B
     }
     is(ORI.U) {
       d.op := or
@@ -162,8 +150,6 @@ class DecodeFsmd() extends Module {
       d.next := sAlu
       d.op := xor
       d.enaMask := MaskAll
-
-      d.isRegOpd := true.B
     }
     is(XORI.U) {
       d.op := xor

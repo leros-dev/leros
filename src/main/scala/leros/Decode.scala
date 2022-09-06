@@ -11,6 +11,7 @@ class DecodeOut extends Bundle {
   val enaMask = UInt(4.W)
   val op = UInt()
   val isRegOpd = Bool()
+  val useDecOpd = Bool()
   val isStore = Bool()
   val isStoreInd = Bool()
   val isLoadInd = Bool()
@@ -31,6 +32,7 @@ object DecodeOut {
     v.enaMask := MaskNone
     v.op := nop
     v.isRegOpd := false.B
+    v.useDecOpd := false.B
     v.isStore := false.B
     v.isStoreInd := false.B
     v.isLoadInd := false.B
@@ -89,6 +91,7 @@ class Decode() extends Module {
     is(ADDI.U) {
       d.op := add
       d.enaMask := MaskAll
+      d.useDecOpd := true.B
     }
     is(SUB.U) {
       d.op := sub
@@ -98,6 +101,7 @@ class Decode() extends Module {
     is(SUBI.U) {
       d.op := sub
       d.enaMask := MaskAll
+      d.useDecOpd := true.B
     }
     is(SHR.U) {
       d.op := shr
@@ -111,6 +115,7 @@ class Decode() extends Module {
     is(LDI.U) {
       d.op := ld
       d.enaMask := MaskAll
+      d.useDecOpd := true.B
     }
     is(AND.U) {
       d.op := and
@@ -121,6 +126,7 @@ class Decode() extends Module {
       d.op := and
       d.enaMask := MaskAll
       noSext := true.B
+      d.useDecOpd := true.B
     }
     is(OR.U) {
       d.op := or
@@ -131,6 +137,7 @@ class Decode() extends Module {
       d.op := or
       d.enaMask := MaskAll
       noSext := true.B
+      d.useDecOpd := true.B
     }
     is(XOR.U) {
       d.op := xor
@@ -141,22 +148,26 @@ class Decode() extends Module {
       d.op := xor
       d.enaMask := MaskAll
       noSext := true.B
+      d.useDecOpd := true.B
     }
     is(LDHI.U) {
       d.op := ld
       d.enaMask := "b1110".U
       d.operand := sigExt(23, 0).asUInt ## 0.U(8.W)
+      d.useDecOpd := true.B
     }
     // Following only useful for 32-bit Leros
     is(LDH2I.U) {
       d.op := ld
       d.enaMask := "b1100".U
       d.operand := sigExt(15, 0).asUInt ## 0.U(16.W)
+      d.useDecOpd := true.B
     }
     is(LDH3I.U) {
       d.op := ld
       d.enaMask := "b1000".U
       d.operand := instr(7, 0) ## 0.U(24.W)
+      d.useDecOpd := true.B
     }
     is (ST.U) {
       d.isStore := true.B

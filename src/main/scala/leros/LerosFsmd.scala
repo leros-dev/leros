@@ -34,9 +34,8 @@ class LerosFsmd(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends
   alu.io.op := decReg.op
   alu.io.enaByte := decReg.isLoadIndB
   alu.io.off := RegNext(effAddr(1, 0))
-  // Maybe this should be a single signal from decode, or driven in the states
-  // Now it is duplicated
-  alu.io.din := Mux(decReg.isLoadInd || decReg.isRegOpd, dataRead, decReg.operand)
+  val useDecOpd = WireDefault(false.B)
+  alu.io.din := Mux(useDecOpd, decReg.operand, dataRead)
 
   switch(stateReg) {
     is (sFeDec) {
@@ -47,14 +46,13 @@ class LerosFsmd(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends
     is (sAlu) {
       pcReg := pcNext
       alu.io.enaMask := decReg.enaMask
-      alu.io.din := dataRead
       stateReg := sFeDec
     }
 
     is (sAluI) {
       pcReg := pcNext
       alu.io.enaMask := decReg.enaMask
-      alu.io.din := decReg.operand
+      useDecOpd := true.B
       stateReg := sFeDec
     }
 
