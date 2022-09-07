@@ -56,7 +56,8 @@ abstract class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) ex
 
   val exit = RegInit(false.B)
 
-  io.dout := 42.U
+  val outReg = RegInit(0.U(32.W))
+  io.dout := outReg
 
   if (fmaxReg) {
     io.dbg.acc := RegNext(RegNext((accu)))

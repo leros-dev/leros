@@ -56,6 +56,12 @@ class LerosFsmd(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends
       stateReg := sFeDec
     }
 
+    is (sOut) {
+      pcReg := pcNext // this duplication is redundent and can lead to errors
+      outReg := accu
+      stateReg := sFeDec
+    }
+
     is (exe) {
       pcReg := pcNext
       alu.io.enaMask := decReg.enaMask

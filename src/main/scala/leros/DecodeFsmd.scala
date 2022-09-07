@@ -7,7 +7,7 @@ import leros.Types._
 import leros.shared.Constants._
 
 object StateFsmd extends ChiselEnum {
-  val sFeDec, exe, sAlu, sAluI = Value
+  val sFeDec, exe, sAlu, sAluI, sOut = Value
 }
 
 import StateFsmd._
@@ -175,6 +175,10 @@ class DecodeFsmd() extends Module {
       d.next :=sAluI
       d.enaMask := "b1000".U
       d.operand := instr(7, 0) ## 0.U(24.W)
+    }
+    // TODO missing in other version
+    is(OUT.U) {
+      d.next := sOut
     }
     is (ST.U) {
       d.isStore := true.B
