@@ -22,7 +22,7 @@ swsim:
 	sbt -Dprogram=$(APP) "testOnly leros.sim.LerosSimTest"
 
 hw:
-	sbt "runMain leros.Leros asm/$(APP).s"
+	sbt "runMain leros.LerosFsmd asm/test/$(APP).s"
 
 test-alu:
 	sbt "test:runMain leros.AluTester"

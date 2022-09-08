@@ -71,5 +71,5 @@ class LerosTwoStates(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) ex
 }
 
 object LerosTwoStates extends App {
-  (new chisel3.stage.ChiselStage).emitVerilog(new LerosTwoStates(32, 10, args(0), true), Array("--target-dir", "generated"))
+  emitVerilog(new LerosTwoStates(32, 10, args(0), true), Array("--target-dir", "generated"))
 }

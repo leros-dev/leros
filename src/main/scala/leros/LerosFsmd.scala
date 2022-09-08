@@ -85,3 +85,6 @@ class LerosFsmd(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends
   exit := RegNext(decReg.exit)
 }
 
+object LerosFsmd extends App {
+  emitVerilog(new LerosFsmd(32, 10, args(0), true), Array("--target-dir", "generated"))
+}
