@@ -17,6 +17,7 @@ version is supported by a C compiler (LLVM port.)
 ## Next TODOs
 
  * byte enable memory
+ * Take a note on: semantic changed to have opd in words, but address in bytes
  * Co-simulation, with waiting cycles
  * Explore Tjark's test generation (with cosimulation)
  * Check Morten's simulator (same byte order?)
@@ -53,7 +54,7 @@ version is supported by a C compiler (LLVM port.)
  * What else is sign extending?
  * byte order:
    * Morten's simulator (and presumable compiler) is little-endian
-   * Martin's ISA simulator is little-endian
+   * Martin's ISA simulator is little-endian (not yet)
    * Patmos is probably big-endian
    * Internet is big-endian
    * RISC-V is little-endian
