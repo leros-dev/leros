@@ -180,7 +180,7 @@ class Decode() extends Module {
       d.op := ld
       d.enaMask := MaskAll
     }
-    is (LDINDBU.U) {
+    is (LDINDB.U) {
       d.isLoadInd := true.B
       d.isLoadIndB := true.B
       d.op := ld
@@ -194,6 +194,7 @@ class Decode() extends Module {
       // TODO byte enable
       d.isStoreInd := true.B
     }
+    // TODO halfword
     is(SCALL.U) {
       d.exit := true.B
     }

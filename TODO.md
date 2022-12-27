@@ -2,6 +2,7 @@
 
  * Assemler test for each instruction
    * Get an overview of what is implemented (and add to TODO)
+ * There is a difference between the instructions here and in the docue (e.g., half word load and store indirect). What is used in the C compiler?
  * Accu byte enables
  * load/store byte indirect
  * Does subi sign extend? Do we need a subi? We could use addi with neg. values
@@ -13,9 +14,43 @@
  * gcc test suit as in Patmos
  * Shouldn't a cross compiler have a prefix? Such as leros-clang?
 
+## Next TODOs
+
+ * byte enable memory
+ * Take a note on: semantic changed to have opd in words, but address in bytes
+ * Co-simulation, with waiting cycles
+ * Explore Tjark's test generation (with cosimulation)
+ * Check Morten's simulator (same byte order?)
+   * Generate binary files from my assembler for the simulator (byte order?)
+ * Use the C compiler
+ * Run C compiler tests
+
 ## Documentation
 
  * Get text from paper into handbook, including the instruction figure
+
+## Missing Instructions (tests and/or implementation)
+
+* add (test)
+* sub (test)
+* and (test)
+* or (test)
+* xor (test)
+* xori (test)
+* loadi (test for sign extension, also high versions)
+* out
+* in
+* jal
+* ldind (offset broken now, as it counts for ldindb, test missing)
+* ldindh
+* stind (offset broken now, as it counts for ldindb, test missing)
+* stindb
+* stindh
+* br
+* brz
+* brnz
+* brp
+* brn
 
 ## List of Instructions to be Tested
 
@@ -27,23 +62,23 @@
 |000011-1| subi     |
 |00010---| shr      |
 |00011---| -        |
-|00100000| load     |
 |00100010| and      |
 |00100011| andi     |
 |00100100| or       |
 |00100101| ori      |
 |00100110| xor      |
 |00100111| xori     |
-|00110---| store    |
 |001110-?| out      |
 |000001-?| in       |
 |01000---| jal      |
 |01001---| -        |
 |01010---| ldaddr   |
-|01100--0| loadind  |
-|01100--1| loadindbu|
-|01110--0| storeind |
-|01110--1| storeindb|
+|01100-00| ldind    |
+|01100-01| ldindb   |
+|01100-10| ldindh   |
+|01110-00| stind    |
+|01110-01| stindb   |
+|01110-10| stindh   |
 |1000nnnn| br       |
 |1001nnnn| brz      |
 |1010nnnn| brnz     |
@@ -58,10 +93,12 @@
 ```aidl
 +--------+----------+
 |00000---| nop      |
-|00100000| loadi    |
+|00100000| load     |
+|00100001| loadi    |
 |00101001| loadhi   |
 |00101010| loadh2i  |
 |00101011| loadh3i  |
+|00110---| store    |
 +--------+----------+
 ```
 ## Semantic Questions

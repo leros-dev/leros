@@ -100,11 +100,12 @@ class LerosSim(prog: String) {
       case BRN => if (accu < 0) doBranch = true
       case LDADDR => ar = accu
       case LDIND => accu = mem(ar / 4 + sext(opd))
-      case LDINDBU => {
+      case LDINDB => {
         val addr = ar + sext(opd)
         accu = (mem(addr / 4) >> (addr & 0x03) * 8) & 0xff
         // dumpMem()
       }
+      case LDINDH => ???
       case STIND => {
         mem(ar / 4 + sext(opd)) = accu
         // dumpMem()
@@ -119,6 +120,7 @@ class LerosSim(prog: String) {
         mem(addr / 4 ) = v
         // dumpMem()
       }
+      case STINDH => ???
       case SCALL => if (opd == 0) run = false
     }
 

@@ -191,7 +191,7 @@ class DecodeFsmd() extends Module {
       d.op := ld
       d.enaMask := MaskAll
     }
-    is (LDINDBU.U) {
+    is (LDINDB.U) {
       d.isLoadInd := true.B
       d.isLoadIndB := true.B
       d.op := ld

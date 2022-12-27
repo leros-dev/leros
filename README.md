@@ -14,39 +14,6 @@ The initial version is supported by a small Java runtime (muvium).
 The new version is pipeline agnostic and also has a slightly different ISA. The new
 version is supported by a C compiler (LLVM port.)
 
-## Next TODOs
-
- * byte enable memory
- * Take a note on: semantic changed to have opd in words, but address in bytes
- * Co-simulation, with waiting cycles
- * Explore Tjark's test generation (with cosimulation)
- * Check Morten's simulator (same byte order?)
- * Use the C compiler
- * Run C compiler tests
-
-## Missing Instructions (tests and/or implementation)
-
- * add (test)
- * sub (test)
- * and (test)
- * or (test)
- * xor (test)
- * xori (test)
- * loadi (test for sign extension, also high versions)
- * out
- * in
- * jal
- * ldind (offset broken now, as it counts for ldindb, test missing)
- * ldindh
- * stind (offset broken now, as it counts for ldindb, test missing)
- * stindb
- * stindh
- * br
- * brz
- * brnz
- * brp
- * brn
-
 ## Questions
 
  * Is load immediate sign extending? Is the high form sign extending?
