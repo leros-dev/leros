@@ -2,7 +2,7 @@ package leros.shared
 
 import java.io.File
 
-object Util extends App{
+object Util extends App {
 
   def getProgs() = {
     val path = sys.props.getOrElse("testpath", "asm/test")

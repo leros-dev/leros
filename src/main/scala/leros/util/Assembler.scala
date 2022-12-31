@@ -7,7 +7,7 @@ object Assembler {
 
   val prog = Array[Int](
     0x0903, // addi 0x3
-    0x09ff, // -1
+    0x09ff, // addi -1
     0x0d02, // subi 2
     0x21ab, // ldi 0xab
     0x230f, // and 0x0f
@@ -128,5 +128,4 @@ object Assembler {
      */
     finalProg
   }
-
 }

@@ -1,29 +1,26 @@
 # TODO
 
- * Assemler test for each instruction
+* Assemler test for each instruction
    * Get an overview of what is implemented (and add to TODO)
- * There is a difference between the instructions here and in the docue (e.g., half word load and store indirect). What is used in the C compiler?
+ * byte enable memory
+ * Take a note on: semantic changed to have opd in words, but address in bytes
+ * Co-simulation, with waiting cycles
+   * Also against Morten's simulation
+ * Looks like Morten's simulator/compiler sign extends ldindb/h, Check it
+   * and document it
+ * Explore Tjark's test generation (with cosimulation)
+ * Use the C compiler
+ * Run C compiler tests
+ * Are half word load stores used in the compiler?
+   * Any instruction not used by theb compiler 
  * Accu byte enables
  * load/store byte indirect
  * Does subi sign extend? Do we need a subi? We could use addi with neg. values
  * Get a simple sequential version done
    * Pipelined version follows
- * Co-simulation setup (also against Morten's simulation)
  * Run Morten's C test programs
- * Constraint random testing (Tjark is working on it)
  * gcc test suit as in Patmos
  * Shouldn't a cross compiler have a prefix? Such as leros-clang?
-
-## Next TODOs
-
- * byte enable memory
- * Take a note on: semantic changed to have opd in words, but address in bytes
- * Co-simulation, with waiting cycles
- * Explore Tjark's test generation (with cosimulation)
- * Check Morten's simulator (same byte order?)
-   * Generate binary files from my assembler for the simulator (byte order?)
- * Use the C compiler
- * Run C compiler tests
 
 ## Documentation
 
@@ -104,5 +101,8 @@
 ## Semantic Questions
 
  * Load immediate does not sign extend. Is this a good idea?
+   * Check with compiler/simulator
+   * Document
+   * I think it does in Morten's and my implementation
  * Do add/sub immediate sign extend? I guess so.
  * Logic immediate operations shall not sign extend
