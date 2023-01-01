@@ -42,10 +42,14 @@ all-swsim:
 list-swsim:
 	sbt -Dtestpath=$(TESTPATH) -Dprogram=$(TESTS) "testOnly leros.sim.LerosSimTest"
 
+# not so useful anumor, is run with cosim
 explore:
 	sbt "runMain leros.util.DumpProgram asm/test/base.s"
 	../leros-sim/build-leros-sim/leros-sim -d -f out.bin > dump.txt
 	cat dump.txt
+	sbt "testOnly leros.CompareTest"
+
+cosim:
 	sbt "testOnly leros.CompareTest"
 
 # clean everything (including IntelliJ project settings)
