@@ -62,7 +62,7 @@ class CompareTest extends AnyFlatSpec with ChiselScalatestTester {
         }
       }
 
-      "Cosimulation " should s"pass $program" in {
+      "Cosimulation with Morten's simulator" should s"pass $program" in {
         test(new LerosTwoStates(32, 10, program, false)) { dut =>
           testFun(dut)
         }
