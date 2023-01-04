@@ -21,7 +21,12 @@
     add r1
     store r1
 
-// TODO: load form 2nd byte will fail
+// TODO: load from 2nd byte will fail
+
+    // ldindbu 1
+    // subi 0x34
+    // add r1
+    // store r1
 
 
 	load r1

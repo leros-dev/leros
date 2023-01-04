@@ -1,5 +1,7 @@
 
-# A bit complicated handling of path and programs, a simple sbt test will run all available tests in SW and HW simulation
+# A bit complicated handling of path and programs.
+# A simple sbt test will run all available tests in SW and HW simulation,
+# including cosimulation and check against Morten's simulator
 # TODO: cleanup
 
 # runs all tests
@@ -22,7 +24,7 @@ swsim:
 	sbt -Dprogram=$(APP) "testOnly leros.sim.LerosSimTest"
 
 hw:
-	sbt "runMain leros.LerosFsmd asm/test/$(APP).s"
+	sbt "runMain leros.LerosTwoStates asm/test/$(APP).s"
 
 test-alu:
 	sbt "test:runMain leros.AluTester"
@@ -38,11 +40,11 @@ list-hwsim:
 all-swsim:
 	sbt "testOnly leros.sim.LerosSimTest"
 
-
 list-swsim:
 	sbt -Dtestpath=$(TESTPATH) -Dprogram=$(TESTS) "testOnly leros.sim.LerosSimTest"
 
-# not so useful anumor, is run with cosim
+# not so useful anymore, is run with cosim, but have a target to show how to run
+# the other simulator
 explore:
 	sbt "runMain leros.util.DumpProgram asm/test/base.s"
 	../leros-sim/build-leros-sim/leros-sim -d -f out.bin > dump.txt
