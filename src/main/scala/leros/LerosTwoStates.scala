@@ -33,15 +33,24 @@ class LerosTwoStates(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) ex
   val effAddr = (addrReg.asSInt + instrSignExt).asUInt
   val effAddrWord = (effAddr >> 2).asUInt
 
-  val address = Mux(decout.isLoadInd, effAddrWord, instr(7, 0))
-  val dataRead = dataMem.read(address)
+  dataMem.io.rdAddr := effAddrWord
+  val dataRead = dataMem.io.rdData
+  dataMem.io.wrAddr := effAddrWord
+  dataMem.io.wrData := accu
+  dataMem.io.wr := false.B
+  // TODO: use mask
+  dataMem.io.wrMask := "b1111".U
+
+  val regRead = registerMem.read(instr(7, 0))
+  val data = Mux(decReg.isLoadInd, dataRead, regRead)
+  // printf("ar = %x address = %x data = %x\n", addrReg, address, dataRead)
 
   alu.io.op := decReg.op
   alu.io.enaMask := 0.U
   alu.io.enaByte := decReg.isLoadIndB
   alu.io.off := RegNext(effAddr(1, 0))
-  // this should be a single signal from decode
-  alu.io.din := Mux(decReg.useDecOpd, decReg.operand, dataRead)
+  // this should be a single signal from decode (what did I mean?)
+  alu.io.din := Mux(decReg.useDecOpd, decReg.operand, data)
 
   switch(stateReg) {
     is (feDec) {
@@ -58,9 +67,12 @@ class LerosTwoStates(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) ex
       when (decReg.isLoadInd) {
         // nothing to be done here
       }
-      when (decReg.isStore || decReg.isStoreInd) {
-        val writeAddress = Mux(decReg.isStoreInd, effAddrWord, instrLowReg)
-        dataMem.write(writeAddress, accu)
+      when (decReg.isStore) {
+        registerMem.write(instrLowReg, accu)
+        alu.io.enaMask := 0.U
+      }
+      when(decReg.isStoreInd) {
+        dataMem.io.wr := true.B
         alu.io.enaMask := 0.U
       }
     }

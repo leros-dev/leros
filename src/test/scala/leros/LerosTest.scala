@@ -25,7 +25,7 @@ class LerosTest extends AnyFlatSpec with ChiselScalatestTester {
         val accu = dut.io.dbg.acc.peekInt
         val instr = dut.io.dbg.instr.peekInt
         // It is probably NOT a good idea that Predef printf is overloaded in this context
-        Predef.printf("pc: 0x%04x instr: 0x%04x accu: 0x%08x\n", pc, instr, accu)
+        // Predef.printf("pc: 0x%04x instr: 0x%04x accu: 0x%08x\n", pc, instr, accu)
         dut.clock.step(1)
         maxCycles -= 1
         run = dut.io.dbg.exit.peekInt == 0 && maxCycles > 0
@@ -35,7 +35,8 @@ class LerosTest extends AnyFlatSpec with ChiselScalatestTester {
     }
 
     "LerosTwoStates HW " should s"pass $program" in {
-      test(new LerosTwoStates(32, 10, program, false)) { dut =>
+      test(new LerosTwoStates(32, 10, program, false))
+        .withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
         testFun(dut)
       }
     }

@@ -21,7 +21,7 @@ class Debug extends Bundle {
   * Leros top level as abstract class.
   * Base class with base state for several different implementations (different pipelines).
   */
-abstract class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) extends Module {
+abstract class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extends Module {
   val io = IO(new Bundle {
     val dout = Output(UInt(32.W))
     val dbg = new Debug
@@ -32,13 +32,13 @@ abstract class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) ex
   val accu = alu.io.accu
 
   // The main architectural state
-  val pcReg = RegInit(0.U(memSize.W))
-  val addrReg = RegInit(0.U(memSize.W))
+  val pcReg = RegInit(0.U(memAddrWidth.W))
+  val addrReg = RegInit(0.U(memAddrWidth.W))
 
   val pcNext = WireDefault(pcReg + 1.U)
 
   // Instruction memory with an address register that is reset to 0
-  val mem = Module(new InstrMem(memSize, prog))
+  val mem = Module(new InstrMem(memAddrWidth, prog))
   mem.io.addr := pcNext
   val instr = mem.io.instr
   // the following should go into Decode
@@ -50,9 +50,12 @@ abstract class Leros(size: Int, memSize: Int, prog: String, fmaxReg: Boolean) ex
 
   // Data memory
   // TODO: shall be byte write addressable
-  val dataMem = SyncReadMem(1 << memSize, UInt(32.W))
+  val dataMem = Module(new DataMem((memAddrWidth)))
 
   // printf("accu: %x address register: %x\n", accu, addrReg)
+
+  // Register file memory
+  val registerMem = SyncReadMem(256, UInt(32.W))
 
   val exit = RegInit(false.B)
 
