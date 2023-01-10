@@ -17,7 +17,7 @@ class LerosTest extends AnyFlatSpec with ChiselScalatestTester {
   progs.foreach(p => {
     val program = p + ".s"
 
-    def testFun(dut: Leros): Unit = {
+    def testFun(dut: LerosBase): Unit = {
       var run = true
       var maxCycles = 10000
       while (run) {
@@ -35,7 +35,7 @@ class LerosTest extends AnyFlatSpec with ChiselScalatestTester {
     }
 
     "LerosTwoStates HW " should s"pass $program" in {
-      test(new LerosTwoStates(32, 10, program, false))
+      test(new Leros(32, 10, program, false))
         .withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
         testFun(dut)
       }

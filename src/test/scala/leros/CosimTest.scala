@@ -22,7 +22,7 @@ class CosimTest extends AnyFlatSpec with ChiselScalatestTester {
     val program = p + ".s"
     val lsim = new LerosSim(program)
 
-    def testFun(dut: Leros): Unit = {
+    def testFun(dut: LerosBase): Unit = {
       var run = true
       var maxCycles = 10000
       var hwAccu = 0
@@ -46,7 +46,7 @@ class CosimTest extends AnyFlatSpec with ChiselScalatestTester {
     }
 
     "Cosimulation " should s"pass $program" in {
-      test(new LerosTwoStates(32, 10, program, false)) { dut =>
+      test(new Leros(32, 10, program, false)) { dut =>
         testFun(dut)
       }
     }
