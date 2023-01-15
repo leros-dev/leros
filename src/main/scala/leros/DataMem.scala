@@ -17,20 +17,18 @@ class DataMem(memAddrWidth: Int) extends Module {
     val wrMask = Input(UInt(4.W))
   })
 
-  // TODO: use enable mask
-  val mem = SyncReadMem(1 << memAddrWidth, UInt(32.W))
-  io.rdData := mem.read(io.rdAddr)
-  when (io.wr) {
-    mem.write(io.wrAddr, io.wrData)
-  }
-  /*
-  // for debugging
-  val mem = Reg(Vec(4, UInt(32.W)))
-  io.rdData := mem(RegNext(io.rdAddr))
-  when(io.wr) {
-    mem(io.wrAddr) := io.wrData
-  }
-  printf("DataMem: %x %x %x %x %x\n", io.wrAddr, io.wrData, io.wr, io.rdAddr, io.rdData)
+  val mem = SyncReadMem(1 << memAddrWidth, Vec(4, UInt(8.W)))
 
-   */
+  val rdVec = mem.read(io.rdAddr)
+  io.rdData := rdVec(3) ## rdVec(2) ## rdVec(1) ## rdVec(0)
+  val wrVec = Wire(Vec(4, UInt(8.W)))
+  val wrMask = Wire(Vec(4, Bool()))
+  for (i <- 0 until 4) {
+    wrVec(i) := io.wrData(i * 8 + 7, i * 8)
+    wrMask(i) := io.wrMask(i)
+  }
+  when (io.wr) {
+    mem.write(io.wrAddr, wrVec, wrMask)
+    printf("write into mem %x %x mask: %x %x %x %x\n", io.wrAddr, wrVec(0), wrMask(3), wrMask(2), wrMask(1), wrMask(0))
+  }
 }

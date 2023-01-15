@@ -51,8 +51,11 @@ explore:
 	cat dump.txt
 	sbt "testOnly leros.CompareTest"
 
-cosim:
+cosim-morten:
 	sbt "testOnly leros.CompareTest"
+
+cosim:
+	sbt -Dprogram=mem "testOnly leros.CosimTest"
 
 # clean everything (including IntelliJ project settings)
 clean:

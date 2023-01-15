@@ -83,7 +83,9 @@ class AluAccu(size: Int) extends Module {
 
   when(io.enaByte & io.enaMask.andR) {
     // should be constructed out of the ALU
+    // According to Morten it should be sign extended
     accuReg := 0.U ## byte
+    // printf("accu byte %x io.off: %x\n", byte, io.off)
   } .otherwise {
     accuReg := split.asUInt
   }

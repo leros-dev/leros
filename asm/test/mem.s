@@ -1,5 +1,5 @@
 // memory test: byte loads
-// This memory test writes into the register file area, maybe OK just for the test
+// This memory test writes into the register file area (if it is mapped to memory), maybe OK just for the test
 
     // r1 contains sum of individual tests (hopefully not cancelling each other out)
     loadi 0x00
