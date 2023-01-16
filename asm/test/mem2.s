@@ -23,7 +23,7 @@
     // check it
 
     loadi 0x01
-    ldindbu 0
+    ldindb 0
     subi 0x1a
     add r1
     store r1
@@ -47,7 +47,7 @@
 
 // TODO: load from 2nd byte will fail
 
-    // ldindbu 1
+    // ldindb 1
     // subi 0x34
     // add r1
     // store r1

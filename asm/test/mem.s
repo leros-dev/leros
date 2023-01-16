@@ -27,22 +27,22 @@
 	add r1
 	store r1
 
-	ldindbu 0
+	ldindb 0
 	subi 0x12
 	add r1
 	store r1
 
-	ldindbu 1
+	ldindb 1
 	subi 0x34
 	add r1
 	store r1
 
-	ldindbu 2
+	ldindb 2
 	subi 0x56
 	add r1
 	store r1
 
-	ldindbu 3
+	ldindb 3
 	subi 0x78
 	add r1
 	store r1
@@ -50,22 +50,22 @@
 	loadi 0x12
 	ldaddr
 
-	ldindbu 0
+	ldindb 0
 	subi 0x56
 	add r1
 	store r1
 
-	ldindbu 1
+	ldindb 1
 	subi 0x78
 	add r1
 	store r1
 
-	ldindbu -1
+	ldindb -1
 	subi 0x34
 	add r1
 	store r1
 
-	ldindbu -2
+	ldindb -2
 	subi 0x12
 	add r1
 	store r1

@@ -81,10 +81,12 @@ class AluAccu(size: Int) extends Module {
     split.bytes(i) := Mux(mask(i), res(8 * i + 7, 8 * i), accuReg(8 * i + 7, 8 * i))
   }
 
+  val signExt = Wire(SInt(32.W))
+  signExt := byte.asSInt
   when(io.enaByte & io.enaMask.andR) {
     // should be constructed out of the ALU
     // According to Morten it should be sign extended
-    accuReg := 0.U ## byte
+    accuReg := signExt.asUInt
     // printf("accu byte %x io.off: %x\n", byte, io.off)
   } .otherwise {
     accuReg := split.asUInt
