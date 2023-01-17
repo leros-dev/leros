@@ -42,15 +42,29 @@
 	add r1
 	store r1
 
+    ldindb 1
+    subi 0x34
+    add r1
+    store r1
 
+    // TODO stindb not complete
+    loadi 0xcd
+    stindb 1
 
+    ldind 0
 
-// TODO: load from 2nd byte will fail
+    ldindb 0
+    subi 0x1a
+    add r1
+    store r1
 
-    // ldindb 1
-    // subi 0x34
+    ldindb 1
+    subi 0xcd
     // add r1
     // store r1
+
+    // TODO continue
+
 
 
 	load r1
