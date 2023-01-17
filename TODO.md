@@ -19,7 +19,7 @@
    * Pipelined version follows
  * Run Morten's C test programs
  * gcc test suit as in Patmos
- * Shouldn't a cross compiler have a prefix? Such as leros-clang?
+ * Shouldn't a cross-compiler have a prefix? Such as leros-clang?
 
 ## Documentation
 
@@ -99,9 +99,5 @@
 ```
 ## Semantic Questions
 
- * Load immediate does not sign extend. Is this a good idea?
-   * Check with compiler/simulator
-   * Document
-   * I think it does in Morten's and my implementation
  * Do add/sub immediate sign extend? I guess so.
  * Logic immediate operations shall not sign extend

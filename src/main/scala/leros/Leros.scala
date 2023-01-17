@@ -56,38 +56,32 @@ class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extend
   val effAddrWord = (effAddr >> 2).asUInt
   val effAddrOff = effAddr & 0x03.U
 
-  // Data memory
+  // Data memory, including the register memory
   // TODO: shall be byte write addressable
-  // TODO: merge again with register memory
+  // read in feDec, write in exe
   val dataMem = Module(new DataMem((memAddrWidth)))
 
-  // Register file memory
-  // TODO: merge with data memory
-  val registerMem = SyncReadMem(256, UInt(32.W))
-
-  val exit = RegInit(false.B)
-  val outReg = RegInit(0.U(32.W))
-  io.dout := outReg
-
-  // read in feDec, write in exe
-  dataMem.io.rdAddr := effAddrWord
+  val memAddr = Mux(decout.isDataAccess, effAddrWord, instr(7, 0))
+  dataMem.io.rdAddr := memAddr
   val dataRead = dataMem.io.rdData
-  dataMem.io.wrAddr := RegNext(effAddrWord)
+  dataMem.io.wrAddr := RegNext(memAddr)
   dataMem.io.wrData := accu
   dataMem.io.wr := false.B
   // TODO: use mask
   dataMem.io.wrMask := "b1111".U
 
-  val regRead = registerMem.read(instr(7, 0))
-  val data = Mux(decReg.isLoadInd || decReg.isLoadIndB || decReg.isStoreIndH, dataRead, regRead)
-  // printf("ar = %x address = %x data = %x\n", addrReg, effAddr, dataRead)
-
+  // ALU connection
   alu.io.op := decReg.op
   alu.io.enaMask := 0.U
   alu.io.enaByte := decReg.isLoadIndB
   alu.io.off := RegNext(effAddrOff)
   // this should be a single signal from decode (what did I mean?)
-  alu.io.din := Mux(decReg.useDecOpd, decReg.operand, data)
+  alu.io.din := Mux(decReg.useDecOpd, decReg.operand, dataRead)
+
+  // connection to the external world (test)
+  val exit = RegInit(false.B)
+  val outReg = RegInit(0.U(32.W))
+  io.dout := outReg
 
   switch(stateReg) {
     is (feDec) {
@@ -109,7 +103,7 @@ class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extend
         // probably sign extend then
       }
       when (decReg.isStore) {
-        registerMem.write(decReg.operand(7, 0), accu)
+        dataMem.io.wr := true.B
         alu.io.enaMask := 0.U
       }
       when(decReg.isStoreInd) {
