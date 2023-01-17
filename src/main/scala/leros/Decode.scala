@@ -10,6 +10,7 @@ class DecodeOut extends Bundle {
   val operand = UInt(32.W)
   val enaMask = UInt(4.W)
   val op = UInt()
+  val off = SInt(10.W)
   val isRegOpd = Bool()
   val useDecOpd = Bool()
   val isStore = Bool()
@@ -35,6 +36,7 @@ object DecodeOut {
     v.operand := 0.U
     v.enaMask := MaskNone
     v.op := nop
+    v.off := 0.S
     v.isRegOpd := false.B
     v.useDecOpd := false.B
     v.isStore := false.B
@@ -206,5 +208,17 @@ class Decode() extends Module {
       d.exit := true.B
     }
   }
+
+  val instrSignExt = Wire(SInt(32.W))
+  instrSignExt := instr(7, 0).asSInt
+  val off = Wire(SInt(10.W))
+  off := instrSignExt << 2 // default word
+  when(d.isHalfOff) {
+    off := instrSignExt << 1
+  }.elsewhen(d.isByteOff) {
+    off := instrSignExt
+  }
+  d.off := off
+
   io.dout := d
 }

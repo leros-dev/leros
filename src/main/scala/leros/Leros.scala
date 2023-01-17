@@ -2,7 +2,6 @@ package leros
 
 import chisel3._
 import chisel3.util._
-import chisel3.experimental.ChiselEnum
 
 /**
  * Leros top level.
@@ -10,6 +9,23 @@ import chisel3.experimental.ChiselEnum
  * Sequential implementation with two states.
  */
 class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extends LerosBase(size, memAddrWidth, prog, fmaxReg) {
+
+  object State extends ChiselEnum {
+    val feDec, exe = Value
+  }
+
+  import State._
+
+  val stateReg = RegInit(feDec)
+
+  switch(stateReg) {
+    is(feDec) {
+      stateReg := exe
+    }
+    is(exe) {
+      stateReg := feDec
+    }
+  }
 
   val alu = Module(new AluAccu(size))
 
@@ -21,65 +37,37 @@ class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extend
 
   val pcNext = WireDefault(pcReg + 1.U)
 
-  // Instruction memory with an address register that is reset to 0
+  // Fetch from instruction memory with an address register that is reset to 0
   val mem = Module(new InstrMem(memAddrWidth, prog))
   mem.io.addr := pcNext
   val instr = mem.io.instr
-  // the following should probably go into Decode
-  val instrSignExt = Wire(SInt(32.W))
-  instrSignExt := instr(7, 0).asSInt
-
-  val instrLowReg = RegNext(instr(7, 0))
-
-  // Data memory
-  // TODO: shall be byte write addressable
-  val dataMem = Module(new DataMem((memAddrWidth)))
-
-  // Register file memory
-  val registerMem = SyncReadMem(256, UInt(32.W))
-
-  val exit = RegInit(false.B)
-
-  val outReg = RegInit(0.U(32.W))
-  io.dout := outReg
-
-  object State extends ChiselEnum {
-    val feDec, exe = Value
-  }
-  import State._
-
-  val stateReg = RegInit(feDec)
-
-  switch (stateReg) {
-    is (feDec) { stateReg := exe }
-    is (exe) { stateReg := feDec }
-  }
-
-  val decReg = RegInit(DecodeOut.default)
 
   // Decode
   val dec = Module(new Decode())
   dec.io.din := instr
   val decout = dec.io.dout
 
-  // TODO: address computation (document it)
-  // AR points into byte addressable
-  // instruction offset depends on type
-  //   for byte ld and st it counts in bytes
-  //   for word ld and st is counts in words
-  // the memory as an address in words and byte masks
-  // we need to do the right routing
-  // We could hide this in the memory component...
-  val off = Wire(SInt(10.W))
-  off := instrSignExt << 2 // default word
-  when (decout.isHalfOff) {
-    off := instrSignExt << 1
-  } .elsewhen(decout.isByteOff) {
-    off := instrSignExt
+  val decReg = RegInit(DecodeOut.default)
+  when (stateReg === feDec) {
+    decReg := decout
   }
-  val effAddr = (addrReg.asSInt + off).asUInt
+
+  val effAddr = (addrReg.asSInt + decout.off).asUInt
   val effAddrWord = (effAddr >> 2).asUInt
   val effAddrOff = effAddr & 0x03.U
+
+  // Data memory
+  // TODO: shall be byte write addressable
+  // TODO: merge again with register memory
+  val dataMem = Module(new DataMem((memAddrWidth)))
+
+  // Register file memory
+  // TODO: merge with data memory
+  val registerMem = SyncReadMem(256, UInt(32.W))
+
+  val exit = RegInit(false.B)
+  val outReg = RegInit(0.U(32.W))
+  io.dout := outReg
 
   // read in feDec, write in exe
   dataMem.io.rdAddr := effAddrWord
@@ -103,7 +91,7 @@ class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extend
 
   switch(stateReg) {
     is (feDec) {
-      decReg := decout
+      // nothing here
     }
 
     is (exe) {
@@ -121,7 +109,7 @@ class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extend
         // probably sign extend then
       }
       when (decReg.isStore) {
-        registerMem.write(instrLowReg, accu)
+        registerMem.write(decReg.operand(7, 0), accu)
         alu.io.enaMask := 0.U
       }
       when(decReg.isStoreInd) {
