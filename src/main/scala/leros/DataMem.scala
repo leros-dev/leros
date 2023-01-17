@@ -29,6 +29,6 @@ class DataMem(memAddrWidth: Int) extends Module {
   }
   when (io.wr) {
     mem.write(io.wrAddr, wrVec, wrMask)
-    printf("write into mem %x %x mask: %x %x %x %x\n", io.wrAddr, wrVec(0), wrMask(3), wrMask(2), wrMask(1), wrMask(0))
+    // printf("write into mem %x %x mask: %x %x %x %x\n", io.wrAddr, wrVec(0), wrMask(3), wrMask(2), wrMask(1), wrMask(0))
   }
 }

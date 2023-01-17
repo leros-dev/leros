@@ -24,7 +24,7 @@ class LerosTest extends AnyFlatSpec with ChiselScalatestTester {
         val pc = dut.io.dbg.pc.peekInt
         val accu = dut.io.dbg.acc.peekInt
         val instr = dut.io.dbg.instr.peekInt
-        Predef.printf("pc: 0x%04x instr: 0x%04x accu: 0x%08x\n", pc, instr, accu)
+        // Predef.printf("pc: 0x%04x instr: 0x%04x accu: 0x%08x\n", pc, instr, accu)
         dut.clock.step(1)
         maxCycles -= 1
         run = dut.io.dbg.exit.peekInt == 0 && maxCycles > 0

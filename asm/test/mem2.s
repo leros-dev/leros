@@ -48,10 +48,10 @@
     store r1
 
     // TODO stindb not complete
-    loadi 0xcd
-    stindb 1
+    // loadi 0xcd
+    // stindb 1
 
-    ldind 0
+    // ldind 0
 
     ldindb 0
     subi 0x1a

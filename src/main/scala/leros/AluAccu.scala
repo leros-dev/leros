@@ -58,6 +58,7 @@ class AluAccu(size: Int) extends Module {
     }
   }
 
+  // TODO: halfword, sign extend
   val byte = WireDefault(res(7, 0))
   when(io.off === 1.U) {
     byte := res(15, 8)
@@ -66,23 +67,15 @@ class AluAccu(size: Int) extends Module {
   }.elsewhen(io.off === 3.U) {
     byte := res(31, 24)
   }
-
-  // TODO: find the conversion in Chisel and document it also in the Chisel book
-  val mask = Wire(Vec(4, Bool()))
-  for (i <- 0 until 4) mask(i) := io.enaMask(i)
-
-  // Workaround for missing subword assignments
-  class Split extends Bundle {
-    val bytes = Vec(4, UInt(8.W))
-  }
-
-  val split = Wire(new Split())
-  for (i <- 0 until 4) {
-    split.bytes(i) := Mux(mask(i), res(8 * i + 7, 8 * i), accuReg(8 * i + 7, 8 * i))
-  }
-
   val signExt = Wire(SInt(32.W))
   signExt := byte.asSInt
+
+  // Workaround for missing subword assignments
+  val split = Wire(Vec(4, UInt(8.W)))
+  for (i <- 0 until 4) {
+    split(i) := Mux(io.enaMask(i), res(8 * i + 7, 8 * i), accuReg(8 * i + 7, 8 * i))
+  }
+
   when(io.enaByte & io.enaMask.andR) {
     // should be constructed out of the ALU
     // According to Morten it should be sign extended

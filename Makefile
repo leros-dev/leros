@@ -55,7 +55,7 @@ cosim-morten:
 	sbt "testOnly leros.CompareTest"
 
 cosim:
-	sbt -Dprogram=mem3 "testOnly leros.CosimTest"
+	sbt -Dprogram=mem2 "testOnly leros.CosimTest"
 
 # clean everything (including IntelliJ project settings)
 clean:
