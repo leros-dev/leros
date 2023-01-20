@@ -4,7 +4,7 @@ import chisel3._
 import chiseltest._
 import org.scalatest.flatspec.AnyFlatSpec
 
-import leros.Types._
+import leros.shared.Constants._
 
 class AluAccuTest extends AnyFlatSpec with ChiselScalatestTester {
   "AluAccu" should "pass" in {
@@ -25,7 +25,7 @@ class AluAccuTest extends AnyFlatSpec with ChiselScalatestTester {
         }
       }
       def testOne(a: Int, b: Int, fun: Int): Unit = {
-        dut.io.op.poke(ld)
+        dut.io.op.poke(ld.U)
         dut.io.enaMask.poke("b1111".U)
         dut.io.din.poke((a.toLong & 0x00ffffffffL).U)
         dut.clock.step(1)

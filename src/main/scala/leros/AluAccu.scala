@@ -3,11 +3,7 @@ package leros
 import chisel3._
 import chisel3.util._
 
-import leros.Types._
-
-object Types {
-  val nop :: add :: sub :: and :: or :: xor :: ld :: shr :: Nil = Enum(8)
-}
+import leros.shared.Constants._
 
 /**
  * Leros ALU including the accumulator register.
@@ -32,28 +28,28 @@ class AluAccu(size: Int) extends Module {
   val res = WireDefault(a)
 
   switch(op) {
-    is(nop) {
+    is(nop.U) {
       res := a
     }
-    is(add) {
+    is(add.U) {
       res := a + b
     }
-    is(sub) {
+    is(sub.U) {
       res := a - b
     }
-    is(and) {
+    is(and.U) {
       res := a & b
     }
-    is(or) {
+    is(or.U) {
       res := a | b
     }
-    is(xor) {
+    is(xor.U) {
       res := a ^ b
     }
-    is(shr) {
+    is(shr.U) {
       res := a >> 1
     }
-    is(ld) {
+    is(ld.U) {
       res := b
     }
   }

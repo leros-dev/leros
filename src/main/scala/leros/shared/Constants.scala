@@ -82,4 +82,14 @@ object Constants {
   val SCALL = 0xff // 0 is simulator exit
 
   val BRANCH_MASK = 0xf0
+
+  // Alu ops
+  val nop = 0
+  val add = 1
+  val sub = 2
+  val and = 3
+  val or = 4
+  val xor = 5
+  val ld = 6
+  val shr = 7
 }
