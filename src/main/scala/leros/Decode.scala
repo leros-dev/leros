@@ -207,6 +207,7 @@ class Decode() extends Module {
     is (STINDB.U) {
       d.isDataAccess := true.B
       d.isStoreIndB := true.B
+      d.isByteOff := true.B
     }
     // TODO halfword
     is(SCALL.U) {

@@ -54,7 +54,9 @@ class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extend
 
   val effAddr = (addrReg.asSInt + decout.off).asUInt
   val effAddrWord = (effAddr >> 2).asUInt
-  val effAddrOff = effAddr & 0x03.U
+  val effAddrOff = Wire(UInt(2.W))
+  effAddrOff := effAddr & 0x03.U
+  // printf("%x %x %x %x\n", effAddr, effAddrWord, effAddrOff, decout.off)
 
   // Data memory, including the register memory
   // TODO: shall be byte write addressable
@@ -62,9 +64,11 @@ class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extend
   val dataMem = Module(new DataMem((memAddrWidth)))
 
   val memAddr = Mux(decout.isDataAccess, effAddrWord, instr(7, 0))
+  val memAddrReg = RegNext(memAddr)
+  val effAddrOffReg = RegNext(effAddrOff)
   dataMem.io.rdAddr := memAddr
   val dataRead = dataMem.io.rdData
-  dataMem.io.wrAddr := RegNext(memAddr)
+  dataMem.io.wrAddr := memAddrReg
   dataMem.io.wrData := accu
   dataMem.io.wr := false.B
   // TODO: use mask
@@ -74,7 +78,7 @@ class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extend
   alu.io.op := decReg.op
   alu.io.enaMask := 0.U
   alu.io.enaByte := decReg.isLoadIndB
-  alu.io.off := RegNext(effAddrOff)
+  alu.io.off := effAddrOffReg
   // this should be a single signal from decode (what did I mean?)
   alu.io.din := Mux(decReg.useDecOpd, decReg.operand, dataRead)
 
@@ -112,9 +116,9 @@ class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extend
       }
       when(decReg.isStoreIndB) {
         dataMem.io.wr := true.B
-        // TODO shift according to lower address bits
-        dataMem.io.wrMask := "b0001".U
+        dataMem.io.wrMask := "b0001".U << effAddrOffReg
         alu.io.enaMask := 0.U
+        dataMem.io.wrData := accu << (effAddrOffReg ## 0.U(3.W))
       }
     }
 

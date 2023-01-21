@@ -15,7 +15,6 @@
 	loadi 0xab
 	ldind 0
 	loadi 0x1a
-	// probably the enable signal is missing
 	stindb 0
 
 	// TODO check other store bytes with shifts
@@ -47,11 +46,8 @@
     add r1
     store r1
 
-    // TODO stindb not complete
-    // loadi 0xcd
-    // stindb 1
-
-    // ldind 0
+    loadi 0xcd
+    stindb 1
 
     ldindb 0
     subi 0x1a
@@ -60,8 +56,32 @@
 
     ldindb 1
     subi 0xcd
-    // add r1
-    // store r1
+    add r1
+    store r1
+
+    loadi 0x3e
+    stindb 2
+    ldind 0
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    shr
+    andi 0xff
+    subi 0x3e
+    add r1
+    store r1
 
     // TODO continue
 
