@@ -102,7 +102,7 @@ class LerosSim(prog: String) {
       case LDIND => accu = mem(ar / 4 + sext(opd))
       case LDINDB => {
         val addr = ar + sext(opd)
-        accu = sext((mem(addr / 4) >> (addr & 0x03) * 8) & 0xff)
+        accu = sext((mem(addr / 4) >> ((addr & 0x03) * 8)) & 0xff)
         // dumpMem()
       }
       case LDINDH => ???
@@ -113,10 +113,10 @@ class LerosSim(prog: String) {
       case STINDB => {
         val addr = ar + sext(opd)
         var v = mem(addr / 4)
-        val boff = (addr) & 0x03
+        val boff = addr & 0x03
         val mask = ~(0xff << boff * 8)
         v = v & mask
-        v = v | (((accu) << boff * 8) & 0xff)
+        v = v | ((accu & 0xff) << boff * 8)
         mem(addr / 4 ) = v
         // dumpMem()
       }
