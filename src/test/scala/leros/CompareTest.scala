@@ -55,7 +55,7 @@ class CompareTest extends AnyFlatSpec with ChiselScalatestTester {
           run = !dut.io.dbg.exit.peekBoolean() && maxCycles > 0
           assert(maxCycles > 0, "Running out of cycles")
         }
-        val hw = removeDuplicates(l)
+        val hw = removeDuplicates(l.toSeq)
         assert(swsim.length == hw.length)
         for (v <- swsim.zip(hw)) {
           assert(v._1 == v._2)

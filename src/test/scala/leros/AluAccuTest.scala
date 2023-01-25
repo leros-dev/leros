@@ -47,10 +47,10 @@ class AluAccuTest extends AnyFlatSpec with ChiselScalatestTester {
       }
 
       // Some interesting corner cases
-      val interesting = Array(1, 2, 4, 123, 0, -1, -2, 0x80000000, 0x7fffffff)
+      val interesting = Seq(1, 2, 4, 123, 0, -1, -2, 0x80000000, 0x7fffffff)
       test(interesting)
 
-      val randArgs = Seq.fill(10)(scala.util.Random.nextInt)
+      val randArgs = Seq.fill(10)(scala.util.Random.nextInt())
       test(randArgs)
     }
   }

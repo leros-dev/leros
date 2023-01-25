@@ -1,4 +1,4 @@
-scalaVersion := "2.12.13"
+scalaVersion := "2.13.8"
 
 scalacOptions ++= Seq(
   "-deprecation",
@@ -11,7 +11,6 @@ scalacOptions ++= Seq(
 // Suppress "there were X feature warnings; re-run with -feature for details".
 // These appear because chisel use a language feature that's not available in
 // all scala implementations.
-scalacOptions += "-language:reflectiveCalls"
 
 // Chisel 3.5
 addCompilerPlugin("edu.berkeley.cs" % "chisel3-plugin" % "3.5.6" cross CrossVersion.full)

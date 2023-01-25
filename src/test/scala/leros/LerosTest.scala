@@ -21,13 +21,13 @@ class LerosTest extends AnyFlatSpec with ChiselScalatestTester {
       var run = true
       var maxCycles = 10000
       while (run) {
-        val pc = dut.io.dbg.pc.peekInt
-        val accu = dut.io.dbg.acc.peekInt
-        val instr = dut.io.dbg.instr.peekInt
+        val pc = dut.io.dbg.pc.peekInt()
+        val accu = dut.io.dbg.acc.peekInt()
+        val instr = dut.io.dbg.instr.peekInt()
         // Predef.printf("pc: 0x%04x instr: 0x%04x accu: 0x%08x\n", pc, instr, accu)
         dut.clock.step(1)
         maxCycles -= 1
-        run = dut.io.dbg.exit.peekInt == 0 && maxCycles > 0
+        run = dut.io.dbg.exit.peekInt() == 0 && maxCycles > 0
         assert(maxCycles > 0, "Running out of cycles")
       }
       val res = dut.io.dbg.acc.expect(0.U, "Accu shall be zero at the end of a test case.\n")
