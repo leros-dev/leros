@@ -13,7 +13,6 @@ class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extend
   object State extends ChiselEnum {
     val feDec, exe = Value
   }
-
   import State._
 
   val stateReg = RegInit(feDec)
@@ -56,10 +55,13 @@ class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extend
   val effAddrWord = (effAddr >> 2).asUInt
   val effAddrOff = Wire(UInt(2.W))
   effAddrOff := effAddr & 0x03.U
+  val vecAccu = Wire(Vec(4, UInt(8.W)))
+  for (i <- 0 until 4) {
+    vecAccu(i) := accu(i*8 + 7, i*8)
+  }
   // printf("%x %x %x %x\n", effAddr, effAddrWord, effAddrOff, decout.off)
 
   // Data memory, including the register memory
-  // TODO: shall be byte write addressable
   // read in feDec, write in exe
   val dataMem = Module(new DataMem((memAddrWidth)))
 
@@ -71,7 +73,6 @@ class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extend
   dataMem.io.wrAddr := memAddrReg
   dataMem.io.wrData := accu
   dataMem.io.wr := false.B
-  // TODO: use mask
   dataMem.io.wrMask := "b1111".U
 
   // ALU connection
@@ -79,7 +80,7 @@ class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extend
   alu.io.enaMask := 0.U
   alu.io.enaByte := decReg.isLoadIndB
   alu.io.off := effAddrOffReg
-  // this should be a single signal from decode (what did I mean?)
+  // this should be a single signal from decode (what did I mean with this?)
   alu.io.din := Mux(decReg.useDecOpd, decReg.operand, dataRead)
 
   // connection to the external world (test)
@@ -118,7 +119,8 @@ class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extend
         dataMem.io.wr := true.B
         dataMem.io.wrMask := "b0001".U << effAddrOffReg
         alu.io.enaMask := 0.U
-        dataMem.io.wrData := accu << (effAddrOffReg ## 0.U(3.W))
+        vecAccu(effAddrOffReg) := accu(7, 0)
+        dataMem.io.wrData := vecAccu(3) ## vecAccu(2) ## vecAccu(1) ## vecAccu(0)
       }
     }
 

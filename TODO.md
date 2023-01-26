@@ -3,7 +3,6 @@
 * Assemler test for each instruction
    * Get an overview of what is implemented (and add to TODO)
  * Memory: read in first state, write in second. Is this how we want to do it?
- * byte enable memory
  * Take a note on: semantic changed to have opd in words, halfword, or bytes, but address in bytes
  * Looks like Morten's simulator/compiler sign extends ldindb/h, Check it
    * and document it
