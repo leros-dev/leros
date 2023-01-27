@@ -14,6 +14,7 @@ class AluAccuTest extends AnyFlatSpec with ChiselScalatestTester {
       def alu(a: Int, b: Int, op: Int): Int = {
 
         op match {
+          case 0 => a
           case 1 => a + b
           case 2 => a - b
           case 3 => a & b
@@ -37,7 +38,7 @@ class AluAccuTest extends AnyFlatSpec with ChiselScalatestTester {
 
       def test(values: Seq[Int]) = {
         // for (fun <- add to shr) {
-        for (fun <- 1 to 7) {
+        for (fun <- 0 to 7) {
           for (a <- values) {
             for (b <- values) {
               testOne(a, b, fun)

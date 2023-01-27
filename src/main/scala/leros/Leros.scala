@@ -11,18 +11,18 @@ import chisel3.util._
 class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extends LerosBase(size, memAddrWidth, prog, fmaxReg) {
 
   object State extends ChiselEnum {
-    val feDec, exe = Value
+    val fetch, execute = Value
   }
   import State._
 
-  val stateReg = RegInit(feDec)
+  val stateReg = RegInit(fetch)
 
   switch(stateReg) {
-    is(feDec) {
-      stateReg := exe
+    is(fetch) {
+      stateReg := execute
     }
-    is(exe) {
-      stateReg := feDec
+    is(execute) {
+      stateReg := fetch
     }
   }
 
@@ -47,7 +47,7 @@ class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extend
   val decout = dec.io.dout
 
   val decReg = RegInit(DecodeOut.default)
-  when (stateReg === feDec) {
+  when (stateReg === fetch) {
     decReg := decout
   }
 
@@ -89,11 +89,11 @@ class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extend
   io.dout := outReg
 
   switch(stateReg) {
-    is (feDec) {
+    is (fetch) {
       // nothing here
     }
 
-    is (exe) {
+    is (execute) {
       pcReg := pcNext
       alu.io.enaMask := decReg.enaMask
       when (decReg.isLoadAddr) {
