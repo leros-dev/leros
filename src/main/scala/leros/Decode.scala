@@ -20,8 +20,6 @@ class DecodeOut extends Bundle {
   val isLoadIndB = Bool()
   val isLoadIndH = Bool()
   val isDataAccess = Bool()
-  val isByteOff = Bool()
-  val isHalfOff = Bool()
   val isLoadAddr = Bool()
   val exit = Bool()
 }
@@ -47,8 +45,6 @@ object DecodeOut {
     v.isLoadIndB := false.B
     v.isLoadIndH := false.B
     v.isDataAccess := false.B
-    v.isByteOff := false.B
-    v.isHalfOff := false.B
     v.isLoadAddr := false.B
     v.exit := false.B
     v
@@ -167,7 +163,6 @@ class Decode() extends Module {
       d.operand := sigExt(23, 0).asUInt ## 0.U(8.W)
       d.useDecOpd := true.B
     }
-    // Following only useful for 32-bit Leros
     is(LDH2I.U) {
       d.op := ld.U
       d.enaMask := "b1100".U
@@ -195,11 +190,15 @@ class Decode() extends Module {
     is (LDINDB.U) {
       d.isDataAccess := true.B
       d.isLoadIndB := true.B
-      d.isByteOff := true.B
       d.op := ld.U
       d.enaMask := MaskAll
     }
-    // TODO halfword
+    is(LDINDH.U) {
+      d.isDataAccess := true.B
+      d.isLoadIndH := true.B
+      d.op := ld.U
+      d.enaMask := MaskAll
+    }
     is (STIND.U) {
       d.isDataAccess := true.B
       d.isStoreInd := true.B
@@ -207,9 +206,11 @@ class Decode() extends Module {
     is (STINDB.U) {
       d.isDataAccess := true.B
       d.isStoreIndB := true.B
-      d.isByteOff := true.B
     }
-    // TODO halfword
+    is(STINDH.U) {
+      d.isDataAccess := true.B
+      d.isStoreIndH := true.B
+    }
     is(SCALL.U) {
       d.exit := true.B
     }
@@ -219,9 +220,9 @@ class Decode() extends Module {
   instrSignExt := instr(7, 0).asSInt
   val off = Wire(SInt(10.W))
   off := instrSignExt << 2 // default word
-  when(d.isHalfOff) {
+  when(d.isLoadIndH || d.isStoreIndH) {
     off := instrSignExt << 1
-  }.elsewhen(d.isByteOff) {
+  }.elsewhen(d.isLoadIndB || d.isStoreIndB) {
     off := instrSignExt
   }
   d.off := off

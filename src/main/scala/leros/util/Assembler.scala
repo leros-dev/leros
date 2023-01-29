@@ -94,8 +94,10 @@ object Assembler {
         case "ldaddr" => (LDADDR << 8)
         case "ldind" => (LDIND << 8) + toInt(tokens(1))
         case "ldindb" => (LDINDB << 8) + toInt(tokens(1))
+        case "ldindh" => (LDINDH << 8) + toInt(tokens(1))
         case "stind" => (STIND << 8) + toInt(tokens(1))
         case "stindb" => (STINDB << 8) + toInt(tokens(1))
+        case "stindh" => (STINDH << 8) + toInt(tokens(1))
         case "br" => (BR << 8) + brOff
         case "brz" => (BRZ << 8) + brOff
         case "brnz" => (BRNZ << 8) + brOff

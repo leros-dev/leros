@@ -62,7 +62,7 @@ class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extend
   // printf("%x %x %x %x\n", effAddr, effAddrWord, effAddrOff, decout.off)
 
   // Data memory, including the register memory
-  // read in feDec, write in exe
+  // read in fetch, write in execute
   val dataMem = Module(new DataMem((memAddrWidth)))
 
   val memAddr = Mux(decout.isDataAccess, effAddrWord, instr(7, 0))
@@ -79,8 +79,8 @@ class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extend
   alu.io.op := decReg.op
   alu.io.enaMask := 0.U
   alu.io.enaByte := decReg.isLoadIndB
+  alu.io.enaHalf := decReg.isLoadIndH
   alu.io.off := effAddrOffReg
-  // this should be a single signal from decode (what did I mean with this?)
   alu.io.din := Mux(decReg.useDecOpd, decReg.operand, dataRead)
 
   // connection to the external world (test)
@@ -96,18 +96,20 @@ class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extend
     is (execute) {
       pcReg := pcNext
       alu.io.enaMask := decReg.enaMask
-      when (decReg.isLoadAddr) {
+      when(decReg.isLoadAddr) {
         addrReg := accu
         alu.io.enaMask := 0.U
       }
-      when (decReg.isLoadInd) {
+      when(decReg.isLoadInd) {
         // nothing to be done here
       }
       when(decReg.isLoadIndB) {
         // nothing to be done here
-        // probably sign extend then
       }
-      when (decReg.isStore) {
+      when(decReg.isLoadIndH) {
+        // nothing to be done here
+      }
+      when(decReg.isStore) {
         dataMem.io.wr := true.B
         alu.io.enaMask := 0.U
       }
@@ -122,8 +124,15 @@ class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extend
         vecAccu(effAddrOffReg) := accu(7, 0)
         dataMem.io.wrData := vecAccu(3) ## vecAccu(2) ## vecAccu(1) ## vecAccu(0)
       }
+      when(decReg.isStoreIndH) {
+        dataMem.io.wr := true.B
+        dataMem.io.wrMask := "b0011".U << effAddrOffReg
+        alu.io.enaMask := 0.U
+        vecAccu(effAddrOffReg) := accu(7, 0)
+        vecAccu(effAddrOffReg | 1.U) := accu(15, 8)
+        dataMem.io.wrData := vecAccu(3) ## vecAccu(2) ## vecAccu(1) ## vecAccu(0)
+      }
     }
-
   }
 
   exit := RegNext(decReg.exit)

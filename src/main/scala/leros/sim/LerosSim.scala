@@ -48,13 +48,12 @@ class LerosSim(prog: String) {
     var doBranch = false
     var doJal = false
 
-    def sext(v: Int) = {
-      (v << 24) >> 24
-    }
+    def sext(v: Int) = (v << 24) >> 24
 
-    def sext12(v: Int) = {
-      (v << 20) >> 20
-    }
+    def sext12(v: Int) = (v << 20) >> 20
+
+    def sext16(v: Int) = (v << 16) >> 16
+
 
     // mask out 4 bits on a branch for matching the opcode
     val opcodeMask = opcode & 0xf0 match {
@@ -105,7 +104,10 @@ class LerosSim(prog: String) {
         accu = sext((mem(addr / 4) >> ((addr & 0x03) * 8)) & 0xff)
         // dumpMem()
       }
-      case LDINDH => ???
+      case LDINDH => {
+        val addr = ar + (sext(opd) << 1)
+        accu = sext16((mem(addr / 4) >> ((addr & 0x03) * 8)) & 0xffff)
+      }
       case STIND => {
         mem(ar / 4 + sext(opd)) = accu
         // dumpMem()
@@ -120,7 +122,15 @@ class LerosSim(prog: String) {
         mem(addr / 4 ) = v
         // dumpMem()
       }
-      case STINDH => ???
+      case STINDH => {
+        val addr = ar + (sext(opd) << 1)
+        var v = mem(addr / 4)
+        val boff = addr & 0x03
+        val mask = ~(0xffff << boff * 8)
+        v = v & mask
+        v = v | ((accu & 0xffff) << boff * 8)
+        mem(addr / 4) = v
+      }
       case SCALL => if (opd == 0) run = false
     }
 

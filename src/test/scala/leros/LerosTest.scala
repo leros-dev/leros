@@ -33,7 +33,7 @@ class LerosTest extends AnyFlatSpec with ChiselScalatestTester {
       val res = dut.io.dbg.acc.expect(0.U, "Accu shall be zero at the end of a test case.\n")
     }
 
-    "LerosTwoStates HW " should s"pass $program" in {
+    "Leros HW " should s"pass $program" in {
       test(new Leros(32, 10, program, false))
         .withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
         testFun(dut)
