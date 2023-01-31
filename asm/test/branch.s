@@ -1,6 +1,12 @@
 //
 // test of branch conditions - should never branch to error
 //
+
+    nop
+    br testbr
+    loadi 1
+    scall 0
+testbr:
 	loadi 1
 	loadi 0
 	loadi 7 // branch condition

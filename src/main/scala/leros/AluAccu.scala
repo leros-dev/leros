@@ -55,7 +55,6 @@ class AluAccu(size: Int) extends Module {
     }
   }
 
-  // TODO: halfword, sign extend
   val byte = WireDefault(res(7, 0))
   val half = WireDefault(res(15, 0))
   when(io.off === 1.U) {

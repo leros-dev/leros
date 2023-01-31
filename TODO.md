@@ -1,7 +1,9 @@
 # TODO
 
-* Assemler test for each instruction
+ * Assemler test for each instruction
    * Get an overview of what is implemented (and add to TODO)
+ * Fix cosimulation issues
+ * Get rid oc code duplication in Decode
  * Memory: read in first state, write in second. Is this how we want to do it?
  * Take a note on: semantic changed to have opd in words, halfword, or bytes, but address in bytes
  * Looks like Morten's simulator/compiler sign extends ldindb/h, Check it
@@ -67,19 +69,6 @@
 |000001-?| in       |
 |01000---| jal      |
 |01001---| -        |
-|01010---| ldaddr   |
-|01100-00| ldind    |
-|01100-01| ldindb   |
-|01100-10| ldindh   |
-|01110-00| stind    |
-|01110-01| stindb   |
-|01110-10| stindh   |
-|1000nnnn| br       |
-|1001nnnn| brz      |
-|1010nnnn| brnz     |
-|1011nnnn| brp      |
-|1100nnnn| brn      |
-|11111111| scall    |
 +--------+----------+
 ```
 
@@ -94,6 +83,19 @@
 |00101010| loadh2i  |
 |00101011| loadh3i  |
 |00110---| store    |
+|01010---| ldaddr   |
+|01100-00| ldind    |
+|01100-01| ldindb   |
+|01100-10| ldindh   |
+|01110-00| stind    |
+|01110-01| stindb   |
+|01110-10| stindh   |
+|1000nnnn| br       |
+|1001nnnn| brz      |
+|1010nnnn| brnz     |
+|1011nnnn| brp      |
+|1100nnnn| brn      |
+|11111111| scall    |
 +--------+----------+
 ```
 ## Semantic Questions

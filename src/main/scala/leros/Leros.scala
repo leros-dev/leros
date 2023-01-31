@@ -3,6 +3,8 @@ package leros
 import chisel3._
 import chisel3.util._
 
+import leros.shared.Constants._
+
 /**
  * Leros top level.
  *
@@ -16,7 +18,6 @@ class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extend
   import State._
 
   val stateReg = RegInit(fetch)
-
   switch(stateReg) {
     is(fetch) {
       stateReg := execute
@@ -131,6 +132,19 @@ class Leros(size: Int, memAddrWidth: Int, prog: String, fmaxReg: Boolean) extend
         vecAccu(effAddrOffReg) := accu(7, 0)
         vecAccu(effAddrOffReg | 1.U) := accu(15, 8)
         dataMem.io.wrData := vecAccu(3) ## vecAccu(2) ## vecAccu(1) ## vecAccu(0)
+      }
+      when(decReg.isBranch) {
+        val doBranch = WireDefault(false.B)
+        switch(decReg.brType) {
+          is ((BR >> 4).U) { doBranch := true.B }
+          is ((BRZ >> 4).U) { doBranch := accu === 0.U }
+          is ((BRNZ >> 4).U) { doBranch := accu =/= 0.U }
+          is ((BRP >> 4).U) { doBranch := accu(31) === 0.U }
+          is ((BRN >> 4).U) { doBranch := accu(31) =/= 0.U }
+        }
+        when (doBranch) {
+          pcNext := (pcReg.asSInt + decReg.brOff).asUInt
+        }
       }
     }
   }

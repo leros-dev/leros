@@ -10,6 +10,7 @@ class DecodeOut extends Bundle {
   val enaMask = UInt(4.W)
   val op = UInt()
   val off = SInt(10.W)
+  val brOff = SInt(12.W)
   val isRegOpd = Bool()
   val useDecOpd = Bool()
   val isStore = Bool()
@@ -21,6 +22,8 @@ class DecodeOut extends Bundle {
   val isLoadIndH = Bool()
   val isDataAccess = Bool()
   val isLoadAddr = Bool()
+  val isBranch = Bool()
+  val brType = UInt(4.W)
   val exit = Bool()
 }
 
@@ -35,6 +38,7 @@ object DecodeOut {
     v.enaMask := MaskNone
     v.op := nop.U
     v.off := 0.S
+    v.brOff := 0.S
     v.isRegOpd := false.B
     v.useDecOpd := false.B
     v.isStore := false.B
@@ -46,6 +50,8 @@ object DecodeOut {
     v.isLoadIndH := false.B
     v.isDataAccess := false.B
     v.isLoadAddr := false.B
+    v.isBranch := false.B
+    v.brType := 0.U
     v.exit := false.B
     v
   }
@@ -62,7 +68,6 @@ class Decode() extends Module {
   val d = DecodeOut.default
 
   // Branch uses only 4 bits for decode
-  val isBranch = WireDefault(false.B)
   /* this is broken, why?
   switch (io.din >> 4.U) {
     is (BR.U >> 4.U) { isBranch := true.B }
@@ -75,13 +80,15 @@ class Decode() extends Module {
   def mask(i: Int) = ((i >> 4) & 0x0f).asUInt
 
   val field = io.din(15, 12)
-  when (field === mask(BR)) { isBranch := true.B }
-  when (field === mask(BRZ)) { isBranch := true.B }
-  when (field === mask(BRNZ)) { isBranch := true.B }
-  when (field === mask(BRP)) { isBranch := true.B }
-  when (field === mask(BRN)) { isBranch := true.B }
+  when (field === mask(BR)) { d.isBranch := true.B }
+  when (field === mask(BRZ)) { d.isBranch := true.B }
+  when (field === mask(BRNZ)) { d.isBranch := true.B }
+  when (field === mask(BRP)) { d.isBranch := true.B }
+  when (field === mask(BRN)) { d.isBranch := true.B }
 
-  val instr = Mux(isBranch, io.din & (BRANCH_MASK.U << 8), io.din)
+  val instr = io.din
+  d.brType := field
+  d.brOff := instr(11, 0).asSInt
 
   val noSext = WireDefault(false.B)
   val sigExt = Wire(SInt(32.W))
@@ -216,6 +223,7 @@ class Decode() extends Module {
     }
   }
 
+  // TODO: here is code duplication, should be merged with code above
   val instrSignExt = Wire(SInt(32.W))
   instrSignExt := instr(7, 0).asSInt
   val off = Wire(SInt(10.W))
