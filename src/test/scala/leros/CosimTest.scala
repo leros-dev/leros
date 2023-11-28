@@ -22,17 +22,17 @@ class CosimTest extends AnyFlatSpec with ChiselScalatestTester {
     val program = p + ".s"
     val lsim = new LerosSim(program)
 
-    def testFun(dut: LerosBase): Unit = {
+    def testFun(dut: LerosTestTop): Unit = {
       var run = true
       var maxCycles = 10000
       var hwAccu = 0
       var simAccu = 0
       while (run) {
-        while (hwAccu == dut.io.dbg.acc.peekInt().toInt && !dut.io.dbg.exit.peekBoolean()) {
+        while (hwAccu == dut.io.dbg.accu.peekInt().toInt && !dut.io.dbg.exit.peekBoolean()) {
           dut.clock.step(1)
           maxCycles -= 1
         }
-        hwAccu = dut.io.dbg.acc.peekInt().toInt
+        hwAccu = dut.io.dbg.accu.peekInt().toInt
         while (simAccu == lsim.accu && lsim.run) {
           lsim.step()
         }
@@ -46,7 +46,7 @@ class CosimTest extends AnyFlatSpec with ChiselScalatestTester {
     }
 
     "Cosimulation " should s"pass $program" in {
-      test(new Leros(32, 10, program, false)) { dut =>
+      test(new LerosTestTop(32, 10, program)) { dut =>
         testFun(dut)
       }
     }

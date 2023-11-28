@@ -42,12 +42,12 @@ class CompareTest extends AnyFlatSpec with ChiselScalatestTester {
       val swsim = removeDuplicates(0 :: resultSim.split("\n").toList
         .map(java.lang.Long.valueOf(_, 16).intValue()).toList)
 
-      def testFun(dut: LerosBase): Unit = {
+      def testFun(dut: LerosTestTop): Unit = {
         var run = true
         var maxCycles = 10000
         val l = ListBuffer(0)
         while (run) {
-          val accu = dut.io.dbg.acc.peekInt()
+          val accu = dut.io.dbg.accu.peekInt()
           l.append(accu.toInt)
           // Predef.printf("%08x\n", accu)
           dut.clock.step(1)
@@ -63,7 +63,7 @@ class CompareTest extends AnyFlatSpec with ChiselScalatestTester {
       }
 
       "Cosimulation with Morten's simulator" should s"pass $program" in {
-        test(new Leros(32, 10, program, false)) { dut =>
+        test(new LerosTestTop(32, 10, program)) { dut =>
           testFun(dut)
         }
       }
