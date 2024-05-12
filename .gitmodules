@@ -1,0 +1,3 @@
+[submodule "leros-sim"]
+	path = leros-sim
+	url = git@github.com:leros-dev/leros-sim.git
