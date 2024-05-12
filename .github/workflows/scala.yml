@@ -21,5 +21,7 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
+    - name: build simulator
+      run: make init
     - name: Run tests
       run: sbt test

@@ -17,7 +17,7 @@ import scala.collection.mutable.ListBuffer
 
 class CompareTest extends AnyFlatSpec with ChiselScalatestTester {
 
-  val simulator = "../leros-sim/build-leros-sim/leros-sim"
+  val simulator = "leros-sim/build-leros-sim/leros-sim"
   if ((new java.io.File(simulator)).isFile) {
 
     val progs = leros.shared.Util.getProgs()

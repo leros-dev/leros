@@ -4,6 +4,11 @@
 # including cosimulation and check against Morten's simulator
 # TODO: cleanup
 
+# init submodules and build leros-sim
+init:
+	git submodule update --init --recursive
+	cd leros-sim && ./build.sh
+
 # runs all tests
 test:
 	sbt test
