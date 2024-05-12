@@ -1,9 +1,20 @@
 # TODO
 
- * Assemler test for each instruction
-   * Get an overview of what is implemented (and add to TODO)
- * Fix cosimulation issues
- * Get rid oc code duplication in Decode
+ - [ ] Get an overview of what is implemented (and add to TODO)
+ - [ ] Fix cosimulation issues 
+ - [ ] Have leros simulator as submodule
+ - [ ] Use the simlator in GitHub actions
+ - [ ] Get GitHub CI green
+ - [ ] Decide on where the docu is:
+   * README here
+   * Handbook on Leros
+   * Leros web page
+
+
+ - [ ] Assemler test for each instruction
+   - [ ] bbb
+ * 
+ * Get rid of code duplication in Decode
  * Memory: read in first state, write in second. Is this how we want to do it?
  * Take a note on: semantic changed to have opd in words, halfword, or bytes, but address in bytes
  * Looks like Morten's simulator/compiler sign extends ldindb/h, Check it

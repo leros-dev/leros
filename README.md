@@ -14,6 +14,13 @@ The initial version is supported by a small Java runtime (muvium).
 The new version is pipeline agnostic and also has a slightly different ISA. The new
 version is supported by a C compiler (LLVM port.)
 
+Note that this project includes a submodule. Therefore, you need to update with:
+
+```
+git submodule init
+git submodule update
+```
+
 ## Questions
 
  * Is load immediate sign extending? Is the high form sign extending?
