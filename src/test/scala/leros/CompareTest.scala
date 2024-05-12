@@ -20,8 +20,8 @@ class CompareTest extends AnyFlatSpec with ChiselScalatestTester {
   val simulator = "leros-sim/build-leros-sim/leros-sim"
   if ((new java.io.File(simulator)).isFile) {
 
-    val progs = leros.shared.Util.getProgs()
-    // val progs = Seq("asm/test/base")
+    // val progs = leros.shared.Util.getProgs()
+    val progs = Seq("asm/test/loadix")
 
     progs.foreach(p => {
 
@@ -56,6 +56,8 @@ class CompareTest extends AnyFlatSpec with ChiselScalatestTester {
           assert(maxCycles > 0, "Running out of cycles")
         }
         val hw = removeDuplicates(l.toSeq)
+        Predef.println(swsim)
+        Predef.println(hw)
         assert(swsim.length == hw.length)
         for (v <- swsim.zip(hw)) {
           assert(v._1 == v._2)

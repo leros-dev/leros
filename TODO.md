@@ -1,37 +1,35 @@
 # TODO
 
- - [ ] Get an overview of what is implemented (and add to TODO)
- - [ ] Fix cosimulation issues 
- - [ ] Have leros simulator as submodule
- - [ ] Use the simlator in GitHub actions
+ - [ ] Get an overview of what is implemented (and add missing to TODO)
+ - [ ] Fix cosimulation issues, Morten does sra and not shr
+ - [x] Have the Leros simulator as a submodule
+ - [x] Use the simulator in GitHub actions
  - [ ] Get GitHub CI green
+ - [ ] Restructure with one state per instruction type (like in old CA books)
  - [ ] Decide on where the docu is:
    * README here
    * Handbook on Leros
    * Leros web page
-
-
  - [ ] Assemler test for each instruction
-   - [ ] bbb
- * 
- * Get rid of code duplication in Decode
- * Memory: read in first state, write in second. Is this how we want to do it?
- * Take a note on: semantic changed to have opd in words, halfword, or bytes, but address in bytes
- * Looks like Morten's simulator/compiler sign extends ldindb/h, Check it
+   - [ ] add
+ - [ ] Get rid of code duplication in Decode
+ - [ ] Memory: read in first state, write in second. Is this how we want to do it?
+ - [ ] Take a note on: semantic changed to have opd in words, halfword, or bytes, but address in bytes
+ - [ ] Looks like Morten's simulator/compiler sign extends ldindb/h, Check it
    * and document it
- * Explore Tjark's test generation (with cosimulation)
- * Use the C compiler
- * Run C compiler tests
- * Are half word load stores used in the compiler?
-   * Any instruction not used by theb compiler 
- * Accu byte enables
- * load/store byte indirect
- * Does subi sign extend? Do we need a subi? We could use addi with neg. values
- * Get a simple sequential version done
-   * Pipelined version follows
- * Run Morten's C test programs
- * gcc test suit as in Patmos
- * Shouldn't a cross-compiler have a prefix? Such as leros-clang?
+ - [ ] Explore Tjark's test generation (with cosimulation)
+ - [ ] Use the C compiler 
+ - [ ] Run C compiler tests 
+ - [ ] Are half word load stores used in the compiler? 
+ - [ ] Any instruction not used by the compiler 
+ - [ ] Accu byte enables 
+ - [ ] load/store byte indirect 
+ - [ ] Does subi sign extend? Do we need a subi? We could use addi with neg. values 
+ - [ ] Get a simple sequential version done 
+ - [ ] Pipelined version follows after sequential 
+ - [ ] Run Morten's C test programs 
+ - [ ] gcc test suit as in Patmos
+ - [ ] Shouldn't a cross-compiler have a prefix? Such as leros-clang?
 
 ## Documentation
 
