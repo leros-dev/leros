@@ -85,7 +85,7 @@ object Assembler {
         case "andi" => (ANDI << 8) + toInt(tokens(1))
         case "ori" => (ORI << 8) + toInt(tokens(1))
         case "xori" => (XORI << 8) + toInt(tokens(1))
-        case "shr" => (SHR << 8)
+        case "sra" => (SRA << 8)
         case "loadi" => (LDI << 8) + toInt(tokens(1))
         case "loadhi" => (LDHI << 8) + toInt(tokens(1))
         case "loadh2i" => (LDH2I << 8) + toInt(tokens(1))

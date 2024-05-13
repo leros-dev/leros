@@ -7,7 +7,7 @@ package leros.shared
 |000010-1| addi     |
 |000011-0| sub      |
 |000011-1| subi     |
-|00010---| shr      |
+|00010---| sra      |
 |00011---| -        |
 |00100000| load     |
 |00100001| loadi    |
@@ -51,7 +51,7 @@ object Constants {
   val ADDI = 0x09
   val SUB = 0x0c
   val SUBI = 0x0d
-  val SHR = 0x10
+  val SRA = 0x10
   val LD = 0x20
   val LDI = 0x21
   val AND = 0x22
@@ -91,5 +91,5 @@ object Constants {
   val or = 4
   val xor = 5
   val ld = 6
-  val shr = 7
+  val sra = 7
 }

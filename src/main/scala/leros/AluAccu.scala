@@ -47,8 +47,8 @@ class AluAccu(size: Int) extends Module {
     is(xor.U) {
       res := a ^ b
     }
-    is(shr.U) {
-      res := a >> 1
+    is(sra.U) {
+      res := a(31) ## a(31, 1)
     }
     is(ld.U) {
       res := b

@@ -1,23 +1,24 @@
-// test shr
+// test sra
+// TODO: test sign extension
     loadi 0
     store r2
 
     loadi 0x01
-    shr
+    sra
     add r2
     store r2
 
     loadi 0x02
-    shr
-    shr
+    sra
+    sra
     add r2
     store r2
 
     loadi 0x32
-    shr
-    shr
-    shr
-    shr
+    sra
+    sra
+    sra
+    sra
     subi 0x03
     add r2
     store r2

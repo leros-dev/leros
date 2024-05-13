@@ -21,7 +21,7 @@ class AluAccuTest extends AnyFlatSpec with ChiselScalatestTester {
           case 4 => a | b
           case 5 => a ^ b
           case 6 => b
-          case 7 => a >>> 1
+          case 7 => a >> 1
           case _ => -123 // This shall not happen
         }
       }

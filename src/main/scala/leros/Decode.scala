@@ -117,8 +117,8 @@ class Decode() extends Module {
       d.enaMask := MaskAll
       d.useDecOpd := true.B
     }
-    is(SHR.U) {
-      d.op := shr.U
+    is(SRA.U) {
+      d.op := sra.U
       d.enaMask := MaskAll
     }
     is(LD.U) {
