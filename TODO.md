@@ -2,17 +2,32 @@
 
  - [ ] Get an overview of what is implemented (and add missing to TODO)
  - [ ] Fix cosimulation issues, Morten does sra and not shr
- - [ ] Change to arithmetic shift
+ - [x] Change to arithmetic shift
  - [x] Have the Leros simulator as a submodule
- - [x] Use the simulator in GitHub actions
+ - [ ] Use the simulator in GitHub actions (does not compile)
  - [ ] Get GitHub CI green
  - [ ] Restructure with one state per instruction type (like in old CA books)
  - [ ] Decide on where the docu is:
    * README here
    * Handbook on Leros
    * Leros web page
- - [ ] Assemler test for each instruction
-   - [ ] add
+ - [ ] Implementation and assembler test for each instruction
+   - [ ] add (test)
+   - [ ] sub (test)
+   - [ ] and (test)
+   - [ ] or (test)
+   - [ ] xor (test)
+   - [ ] xori (test)
+   - [ ] loadi (test for sign extension, also high versions)
+   - [ ] out
+   - [ ] in
+   - [ ] jal
+   - [ ] ldind (offset broken now, as it counts for ldindb, test missing)
+   - [ ] ldindh
+   - [ ] stind (offset broken now, as it counts for ldindb, test missing)
+   - [ ] stindb
+   - [ ] stindh
+   - [ ] br (test)
  - [ ] Get rid of code duplication in Decode
  - [ ] Memory: read in first state, write in second. Is this how we want to do it?
  - [ ] Take a note on: semantic changed to have opd in words, halfword, or bytes, but address in bytes
@@ -53,11 +68,8 @@
 * stind (offset broken now, as it counts for ldindb, test missing)
 * stindb
 * stindh
-* br
-* brz
-* brnz
-* brp
-* brn
+* br (test)
+
 
 ## List of Instructions to be Tested
 
