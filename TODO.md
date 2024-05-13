@@ -4,8 +4,8 @@
  - [ ] Fix cosimulation issues, Morten does sra and not shr
  - [x] Change to arithmetic shift
  - [x] Have the Leros simulator as a submodule
- - [ ] Use the simulator in GitHub actions (does not compile)
- - [ ] Get GitHub CI green
+ - [x] Use the simulator in GitHub actions (does not compile)
+ - [x] Get GitHub CI green
  - [ ] Restructure with one state per instruction type (like in old CA books)
  - [ ] Decide on where the docu is:
    * README here
@@ -32,12 +32,12 @@
  - [ ] Memory: read in first state, write in second. Is this how we want to do it?
  - [ ] Take a note on: semantic changed to have opd in words, halfword, or bytes, but address in bytes
  - [ ] Looks like Morten's simulator/compiler sign extends ldindb/h, Check it
-   * and document it
+   - [ ] and document it
  - [ ] Explore Tjark's test generation (with cosimulation)
  - [ ] Use the C compiler 
  - [ ] Run C compiler tests 
- - [ ] Are half word load stores used in the compiler? 
- - [ ] Any instruction not used by the compiler 
+ - [ ] Are half word load and stores used in the compiler? 
+ - [ ] Any instruction not used by the compiler? 
  - [ ] Accu byte enables 
  - [ ] load/store byte indirect 
  - [ ] Does subi sign extend? Do we need a subi? We could use addi with neg. values 
@@ -50,26 +50,6 @@
 ## Documentation
 
  * Get text from paper into handbook, including the instruction figure
-
-## Missing Instructions (tests and/or implementation)
-
-* add (test)
-* sub (test)
-* and (test)
-* or (test)
-* xor (test)
-* xori (test)
-* loadi (test for sign extension, also high versions)
-* out
-* in
-* jal
-* ldind (offset broken now, as it counts for ldindb, test missing)
-* ldindh
-* stind (offset broken now, as it counts for ldindb, test missing)
-* stindb
-* stindh
-* br (test)
-
 
 ## List of Instructions to be Tested
 

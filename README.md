@@ -4,7 +4,7 @@
 # Leros, a Tiny Processor Core
 
 An FPGA optimized tiny processor core for embedded systems.
-See more documentation on the github.io website for [Leros](https://leros-dev.github.io/).
+See more documentation on the [website for Leros](https://leros-dev.github.io/).
 
 This repository contains two versions of Leros: the initial 16-bit version in VHDL and
 the redesign of 16/32/64-bit version in Chisel. The two versions are in the same spirit,
@@ -22,6 +22,8 @@ git submodule update
 ```
 
 ## Questions
+
+See also [TODO.md](TODO.md).
 
  * Is load immediate sign extending? Is the high form sign extending?
    * Yes, it is. Needs tests and documentation.
