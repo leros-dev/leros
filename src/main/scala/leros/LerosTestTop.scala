@@ -19,12 +19,12 @@ class Debug(size: Int, memAddrWidth:Int) extends Bundle {
 /**
   * Leros top level for testing.
   */
-class LerosTestTop(size: Int, memAddrWidth: Int, prog: String) extends Module {
+class LerosTestTop(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends Module {
   val io = IO(new Bundle {
     val dout = Output(UInt(32.W))
     val dbg = new Debug(size, memAddrWidth)
   })
-  val leros = Module(new Leros(size, memAddrWidth, prog))
+  val leros = Module(new Leros(prog))
   io.dout := leros.io.dout
 
   // Boring Utils for debugging

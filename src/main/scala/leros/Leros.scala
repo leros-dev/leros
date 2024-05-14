@@ -10,7 +10,7 @@ import leros.shared.Constants._
  *
  * Sequential implementation with two states.
  */
-class Leros(size: Int, memAddrWidth: Int, prog: String) extends LerosBase(size, memAddrWidth, prog) {
+class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBase(prog) {
 
   object State extends ChiselEnum {
     val fetch, execute = Value
@@ -38,9 +38,9 @@ class Leros(size: Int, memAddrWidth: Int, prog: String) extends LerosBase(size, 
   val pcNext = WireDefault(pcReg + 1.U)
 
   // Fetch from instruction memory with an address register that is reset to 0
-  val mem = Module(new InstrMem(memAddrWidth, prog))
-  mem.io.addr := pcNext
-  val instr = mem.io.instr
+  val instrMem = Module(new InstrMem(memAddrWidth, prog))
+  instrMem.io.addr := pcNext
+  val instr = instrMem.io.instr
 
   // Decode
   val dec = Module(new Decode())
@@ -154,5 +154,5 @@ class Leros(size: Int, memAddrWidth: Int, prog: String) extends LerosBase(size, 
 }
 
 object Leros extends App {
-  emitVerilog(new Leros(32, 10, args(0)), Array("--target-dir", "generated"))
+  emitVerilog(new Leros(args(0)), Array("--target-dir", "generated"))
 }

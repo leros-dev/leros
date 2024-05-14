@@ -12,11 +12,10 @@ import chisel3._
   * Leros top level as abstract class.
   * Basically empty. Maybe we can/shall share code between different implementations.
   */
-abstract class LerosBase(size: Int, memAddrWidth: Int, prog: String) extends Module {
+abstract class LerosBase(prog: String, size: Int =32, memAddrWidth: Int = 8) extends Module {
   val io = IO(new Bundle {
     val dout = Output(UInt(32.W))
   })
-
 }
 
 

@@ -46,7 +46,7 @@ class CosimTest extends AnyFlatSpec with ChiselScalatestTester {
     }
 
     "Cosimulation " should s"pass $program" in {
-      test(new LerosTestTop(32, 10, program)) { dut =>
+      test(new LerosTestTop(program)) { dut =>
         testFun(dut)
       }
     }

@@ -56,8 +56,8 @@ class CompareTest extends AnyFlatSpec with ChiselScalatestTester {
           assert(maxCycles > 0, "Running out of cycles")
         }
         val hw = removeDuplicates(l.toSeq)
-        println(s"Simulator: $swsim")
-        println(s"Hardware:  $hw")
+        // println(s"Simulator: $swsim")
+        // println(s"Hardware:  $hw")
         assert(swsim.length == hw.length)
         for (v <- swsim.zip(hw)) {
           assert(v._1 == v._2)
@@ -65,7 +65,7 @@ class CompareTest extends AnyFlatSpec with ChiselScalatestTester {
       }
 
       "Cosimulation with Morten's simulator" should s"pass $program" in {
-        test(new LerosTestTop(32, 10, program)) { dut =>
+        test(new LerosTestTop(program)) { dut =>
           testFun(dut)
         }
       }

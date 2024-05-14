@@ -1,7 +1,7 @@
 # TODO
 
  - [ ] Get an overview of what is implemented (and add missing to TODO)
- - [ ] Fix cosimulation issues, Morten does sra and not shr
+ - [ ] Fix cosimulation issues, still an issue with mem.s (now disabled)
  - [x] Change to arithmetic shift
  - [x] Have the Leros simulator as a submodule
  - [x] Use the simulator in GitHub actions (does not compile)

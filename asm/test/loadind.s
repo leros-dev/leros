@@ -1,4 +1,4 @@
-// test ign extension of loadind
+// test sign extension of loadind
 
     // r1 contains sum of individual tests (hopefully not cancelling each other out)
     loadi 0x00

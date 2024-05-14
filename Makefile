@@ -52,7 +52,7 @@ list-swsim:
 # the other simulator
 explore:
 	sbt "runMain leros.util.DumpProgram asm/test/base.s"
-	../leros-sim/build-leros-sim/leros-sim -d -f out.bin > dump.txt
+	leros-sim/build-leros-sim/leros-sim -d -f out.bin > dump.txt
 	cat dump.txt
 	sbt "testOnly leros.CompareTest"
 
