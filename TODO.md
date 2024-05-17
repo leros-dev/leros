@@ -11,6 +11,8 @@
    * README here
    * Handbook on Leros
    * Leros web page
+ - [ ] Clearify and decide on the implementation of `ldaddr`
+   * Morten loads form `Rn`, Martin from `A`
  - [ ] Implementation and assembler test for each instruction
    - [ ] add (test)
    - [ ] sub (test)

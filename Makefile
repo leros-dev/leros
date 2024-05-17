@@ -57,10 +57,10 @@ explore:
 	sbt "testOnly leros.CompareTest"
 
 cosim-morten:
-	sbt "testOnly leros.CompareTest"
+	sbt -Dprogram=$(APP) "testOnly leros.CompareTest"
 
 cosim:
-	sbt -Dprogram=mem2 "testOnly leros.CosimTest"
+	sbt -Dprogram=$(APP) "testOnly leros.CosimTest"
 
 # clean everything (including IntelliJ project settings)
 clean:
