@@ -32,6 +32,8 @@
    - [ ] stindh
    - [ ] br (test)
  - [ ] Get rid of code duplication in Decode
+ - [ ] Do memory mapped IO
+ - [ ] get a blinking LED running
  - [ ] Memory: read in first state, write in second. Is this how we want to do it?
  - [ ] Take a note on: semantic changed to have opd in words, halfword, or bytes, but address in bytes
  - [ ] Looks like Morten's simulator/compiler sign extends ldindb/h, Check it
@@ -41,7 +43,6 @@
  - [ ] Run C compiler tests 
  - [ ] Are half word load and stores used in the compiler? 
  - [ ] Any instruction not used by the compiler? 
- - [ ] Accu byte enables 
  - [ ] load/store byte indirect 
  - [ ] Does subi sign extend? Do we need a subi? We could use addi with neg. values 
  - [ ] Get a simple sequential version done 

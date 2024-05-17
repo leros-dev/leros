@@ -50,6 +50,7 @@
 	loadi 0x12
 	ldaddr
 
+    // Here starts the difference between HW and leros-sim
 	ldindb 0
 	subi 0x56
 	add r1

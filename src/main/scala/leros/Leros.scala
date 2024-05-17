@@ -87,6 +87,7 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
   // connection to the external world (test)
   val exit = RegInit(false.B)
   val outReg = RegInit(0.U(32.W))
+  outReg := accu
   io.dout := outReg
 
   switch(stateReg) {
