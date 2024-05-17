@@ -22,8 +22,8 @@
    - [ ] out
    - [ ] in
    - [ ] jal
-   - [ ] ldind (offset broken now, as it counts for ldindb, test missing)
-   - [ ] ldindh
+   - [x] ldind
+   - [x] ldindh
    - [x] ldindb/ldindh does sign extension
    - [ ] stind (offset broken now, as it counts for ldindb, test missing)
    - [ ] stindb
