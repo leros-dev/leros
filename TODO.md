@@ -8,11 +8,15 @@
  - [x] Get GitHub CI green
  - [ ] Restructure with one state per instruction type (like in old CA books)
  - [ ] Decide on where the docu is:
-   * README here
-   * Handbook on Leros
-   * Leros web page
- - [ ] Clearify and decide on the implementation of `ldaddr`
-   * Morten loads form `Rn`, Martin from `A`
+   - README here
+   - Handbook on Leros
+   - Leros web page
+ - [x] Clearify and decide on the implementation of `ldaddr`
+   - Morten loads form `Rn`, Martin from `A` - fixed now to `Rn`
+ - Morten's simulator uses a single memory for all (code and data), but a dedictated register file
+   - Loads .bin programs at address 0 
+    - [x] Rewrite the test code for this
+    - [ ] Write in the documentation about the different options
  - [ ] Implementation and assembler test for each instruction
    - [ ] add (test)
    - [ ] sub (test)
@@ -21,8 +25,8 @@
    - [ ] xor (test)
    - [ ] xori (test)
    - [ ] loadi (test for sign extension, also high versions)
-   - [ ] out
-   - [ ] in
+   - [ ] out - needed?
+   - [ ] in - needed?
    - [ ] jal
    - [x] ldind
    - [x] ldindh
@@ -31,6 +35,8 @@
    - [ ] stindb
    - [ ] stindh
    - [ ] br (test)
+ - [ ] Check if write in Chisel/Verilog is not through a register
+    * wondering on timing and layout in Quartus
  - [ ] Get rid of code duplication in Decode
  - [ ] Do memory mapped IO
  - [ ] get a blinking LED running

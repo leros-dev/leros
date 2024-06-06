@@ -5,8 +5,10 @@
     loadi 0x00
     store r1
 
-	loadi 0x10
-	ldaddr
+	loadi 0xa0
+	andi 0xff
+	store r2
+	ldaddr r2
 	loadi 0x12
 	loadhi 0x34
 	loadh2i 0x56

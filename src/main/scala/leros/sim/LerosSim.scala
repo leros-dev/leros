@@ -97,7 +97,7 @@ class LerosSim(prog: String) {
       case BRNZ => if (accu != 0) doBranch = true
       case BRP => if (accu >= 0) doBranch = true
       case BRN => if (accu < 0) doBranch = true
-      case LDADDR => ar = accu
+      case LDADDR => ar = regVal
       case LDIND => accu = mem(ar / 4 + sext(opd))
       case LDINDB => {
         val addr = ar + sext(opd)

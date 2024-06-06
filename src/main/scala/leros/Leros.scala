@@ -99,7 +99,7 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
       pcReg := pcNext
       alu.io.enaMask := decReg.enaMask
       when(decReg.isLoadAddr) {
-        addrReg := accu
+        addrReg := dataRead
         alu.io.enaMask := 0.U
       }
       when(decReg.isLoadInd) {

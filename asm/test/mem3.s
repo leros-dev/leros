@@ -1,7 +1,8 @@
 // signe extend test
 
-	loadi 0x10
-	ldaddr
+	loadi 0x70
+	store r2
+    ldaddr r2
 	loadi 0x40
 	addi 0x40
 	stind 0

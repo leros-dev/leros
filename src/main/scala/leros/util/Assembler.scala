@@ -91,7 +91,7 @@ object Assembler {
         case "loadh2i" => (LDH2I << 8) + toInt(tokens(1))
         case "loadh3i" => (LDH3I << 8) + toInt(tokens(1))
         case "store" => (ST << 8) + regNumber(tokens(1))
-        case "ldaddr" => (LDADDR << 8)
+        case "ldaddr" => (LDADDR << 8) + regNumber(tokens(1))
         case "ldind" => (LDIND << 8) + toInt(tokens(1))
         case "ldindb" => (LDINDB << 8) + toInt(tokens(1))
         case "ldindh" => (LDINDH << 8) + toInt(tokens(1))

@@ -3,8 +3,9 @@
     loadi 0x00
     store r1
 
-	loadi 0x10
-	ldaddr
+	loadi 0x70
+	store r2
+	ldaddr r2
 	loadi 0x12
 	loadhi 0x34
 	loadh2i 0x56

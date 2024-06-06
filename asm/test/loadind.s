@@ -4,8 +4,9 @@
     loadi 0x00
     store r1
 
-	loadi 0x10
-	ldaddr
+	loadi 0x70
+	store r2
+	ldaddr r2
 	loadi 0xf0
 	stind 0
 	loadi 0x01

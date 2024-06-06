@@ -8,6 +8,9 @@
 init:
 	git submodule update --init --recursive
 	cd leros-sim && ./build.sh
+	sbt "runMain leros.util.DumpProgram asm/test/mem.s"
+	leros-sim/build-leros-sim/leros-sim -d -f out.bin
+	od -x out.bin
 
 # runs all tests
 test:

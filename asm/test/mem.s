@@ -5,8 +5,10 @@
     loadi 0x00
     store r1
 
-	loadi 0x10
-	ldaddr
+	loadi 0xa0
+	andi 0xff
+	store r2
+	ldaddr r2
 	loadi 0x12
 	loadhi 0x34
 	loadh2i 0x56
@@ -47,10 +49,11 @@
 	add r1
 	store r1
 
-	loadi 0x12
-	ldaddr
+	loadi 0xa2
+	andi 0xff
+	store r2
+	ldaddr r2
 
-    // Here starts the difference between HW and leros-sim
 	ldindb 0
 	subi 0x56
 	add r1
