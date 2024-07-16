@@ -16,9 +16,9 @@ abstract class LerosBase(prog: String, size: Int =32, memAddrWidth: Int = 8) ext
   val io = IO(new Bundle {
     // val dout = Output(UInt(32.W))
     // val sw = Input(UInt(4.W))
-    val led = Output(UInt(4.W))
+    val led = Output(UInt(8.W))
   })
-  io.led := 5.U
+  // io.led := 5.U
 }
 
 
