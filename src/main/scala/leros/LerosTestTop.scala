@@ -23,9 +23,10 @@ class LerosTestTop(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends 
   val io = IO(new Bundle {
     // val dout = Output(UInt(32.W))
     val dbg = new Debug(size, memAddrWidth)
+    val led = Output(UInt(8.W))
   })
   val leros = Module(new Leros(prog))
-  // io.dout := leros.io.dout
+  io.led := leros.io.led
 
   // Boring Utils for debugging
   io.dbg.accu := DontCare

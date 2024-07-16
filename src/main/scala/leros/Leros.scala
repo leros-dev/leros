@@ -64,7 +64,7 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
 
   // Data memory, including the register memory
   // read in fetch, write in execute
-  val dataMem = Module(new DataMem((memAddrWidth)))
+  val dataMem = Module(new DataMem((memAddrWidth), false))
 
   val memAddr = Mux(decout.isDataAccess, effAddrWord, instr(7, 0))
   val memAddrReg = RegNext(memAddr)
