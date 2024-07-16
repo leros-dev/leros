@@ -24,7 +24,7 @@ object Assembler {
         if (true)
           getProgramFix()
         else {
-          // FERTL does not like large vectors
+          // FIRRTL does not like large vectors
           val code = new Array[Int](200)
           for (i <- 0 until code.length) {
             code(i) = ((i << 8) + i+1) & 0xffff

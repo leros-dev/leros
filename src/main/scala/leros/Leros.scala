@@ -87,7 +87,6 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
   // connection to the external world (test)
   val exit = RegInit(false.B)
   val outReg = RegInit(0.U(32.W))
-  outReg := accu
   io.led := outReg
 
   switch(stateReg) {
@@ -118,6 +117,8 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
       when(decReg.isStoreInd) {
         dataMem.io.wr := true.B
         alu.io.enaMask := 0.U
+        // TODO: this is a super quick hack to get the LED blinking
+        outReg := accu
       }
       when(decReg.isStoreIndB) {
         dataMem.io.wr := true.B
