@@ -60,8 +60,9 @@ synpath:
 synth:
 	./vivado_synth -t Leros -p xc7a100tcsg324-1 -x nexysA7.xdc -o build generated/Leros.v
 
-bit:
-	scp masca@chipdesign1.compute.dtu.dk:~/source/spi/build/Leros.bit build
+cp-bit:
+	-mkdir build
+	scp masca@chipdesign1.compute.dtu.dk:~/source/leros/build/Leros.bit build
 
 # Configure the Basys3 or NexysA7 board with open source tools
 
