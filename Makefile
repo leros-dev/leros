@@ -51,6 +51,24 @@ all-swsim:
 list-swsim:
 	sbt -Dtestpath=$(TESTPATH) -Dprogram=$(TESTS) "testOnly leros.sim.LerosSimTest"
 
+# Synthesize and copy targets
+
+# does not work from Makefile, C & P into shell
+synpath:
+	source /home/shared/Xilinx/Vivado/2017.4/settings64.sh
+
+synth:
+	./vivado_synth -t Leros -p xc7a100tcsg324-1 -x nexysA7.xdc -o build generated/Leros.v
+
+bit:
+	scp masca@chipdesign1.compute.dtu.dk:~/source/spi/build/Leros.bit build
+
+# Configure the Basys3 or NexysA7 board with open source tools
+
+config:
+	openocd -f 7series.txt
+
+
 # not so useful anymore, is run with cosim, but have a target to show how to run
 # the other simulator
 explore:

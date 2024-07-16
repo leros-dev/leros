@@ -88,7 +88,7 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
   val exit = RegInit(false.B)
   val outReg = RegInit(0.U(32.W))
   outReg := accu
-  io.dout := outReg
+  // io.dout := outReg
 
   switch(stateReg) {
     is (fetch) {

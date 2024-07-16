@@ -7,16 +7,19 @@
  - [x] Use the simulator in GitHub actions (does not compile)
  - [x] Get GitHub CI green
  - [ ] Restructure with one state per instruction type (like in old CA books)
- - [ ] Decide on where the docu is:
+ - [ ] Decide on where the documentation is:
    - README here
    - Handbook on Leros
    - Leros web page
- - [x] Clearify and decide on the implementation of `ldaddr`
+ - [x] Clarify and decide on the implementation of `ldaddr`
    - Morten loads form `Rn`, Martin from `A` - fixed now to `Rn`
- - Morten's simulator uses a single memory for all (code and data), but a dedictated register file
+ - Morten's simulator uses a single memory for all (code and data), but a dedicated register file
    - Loads .bin programs at address 0 
     - [x] Rewrite the test code for this
     - [ ] Write in the documentation about the different options
+ - [ ] Have a writable instruction memory (for Edu4Chip)
+   - [ ] Plus a small FSM to download via serial port and deassert reset
+     - Poor man's JTAG
  - [ ] Implementation and assembler test for each instruction
    - [ ] add (test)
    - [ ] sub (test)
@@ -39,6 +42,8 @@
     * wondering on timing and layout in Quartus
  - [ ] Get rid of code duplication in Decode
  - [ ] Do memory mapped IO
+ - [ ] Setup FPGA (Nexys A7)
+   - [ ] Use chipdesign1 for synthesis, OpenOCD for configuration
  - [ ] get a blinking LED running
  - [ ] Memory: read in first state, write in second. Is this how we want to do it?
  - [ ] Take a note on: semantic changed to have opd in words, halfword, or bytes, but address in bytes
@@ -60,6 +65,7 @@
 ## Documentation
 
  * Get text from paper into handbook, including the instruction figure
+ * Or in the web page
 
 ## List of Instructions to be Tested
 
