@@ -1,8 +1,8 @@
 //
 // test of branch conditions - should never branch to error
 //
+// TODO: missing test for backward branch (was an error in the assembler)
 
-    nop
     br testbr
     loadi 1
     scall 0

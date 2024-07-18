@@ -21,6 +21,7 @@
    - [ ] Plus a small FSM to download via serial port and deassert reset
      - Poor man's JTAG
  - [ ] Implementation and assembler test for each instruction
+   - [x] scall
    - [ ] add (test)
    - [ ] sub (test)
    - [ ] and (test)
@@ -37,7 +38,8 @@
    - [ ] stind (offset broken now, as it counts for ldindb, test missing)
    - [ ] stindb
    - [ ] stindh
-   - [ ] br (test)
+   - [x] br (test)
+   - [x] fix backward branch
  - [ ] Check if write in Chisel/Verilog is not through a register
     * wondering on timing and layout in Quartus
  - [ ] Get rid of code duplication in Decode

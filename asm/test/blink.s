@@ -2,13 +2,25 @@
 // branch does not yet work!!!
 
     loadi 0
+    scall 0
+    store r2
+loop:
+    loadi 127
+// loadhi ...
+l1:
+    subi 1
+    nop
+    brnz l1
+
+
+    loadi 0
     store r5
 start:
 	loadi 0
 //     loadhi 2
 	store r0
 ll1:
-    loadi 255
+    loadi 127
 // loadhi 255
 ll2:
     subi 1

@@ -65,7 +65,7 @@ object Assembler {
       // if (!pass2) println(line)
       val tokens = line.trim.split(" ")
 
-      def brOff= if (pass2) symbols(tokens(1))-pc else 0
+      def brOff= if (pass2) (symbols(tokens(1))-pc) & 0x0fff else 0
 
       // println(s"length: ${tokens.length}")
       // tokens.foreach(println)
@@ -120,6 +120,7 @@ object Assembler {
       }
     }
     val finalProg = program.reverse.toArray
+
     /*
     if (pass2) {
       println(s"The program:")
@@ -128,6 +129,8 @@ object Assembler {
     }
 
      */
+
+
     finalProg
   }
 }
