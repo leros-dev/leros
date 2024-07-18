@@ -47,8 +47,8 @@
  - [ ] Be able to simulate source in asm
  - [x] Setup FPGA (Nexys A7)
    - [x] Use chipdesign1 for synthesis, OpenOCD for configuration
- - [ ] get a blinking LED running
-   - [ ] move it out of test to avoid breaking CI
+ - [x] get a blinking LED running
+   - [x] move it out of test to avoid breaking CI
  - [ ] Memory: read in first state, write in second. Is this how we want to do it?
  - [ ] Take a note on: semantic changed to have opd in words, halfword, or bytes, but address in bytes
  - [ ] Looks like Morten's simulator/compiler sign extends ldindb/h, Check it
