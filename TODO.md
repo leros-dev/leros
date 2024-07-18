@@ -44,6 +44,7 @@
     * wondering on timing and layout in Quartus
  - [ ] Get rid of code duplication in Decode
  - [ ] Do memory mapped IO
+ - [ ] Be able to simulate source in asm
  - [x] Setup FPGA (Nexys A7)
    - [x] Use chipdesign1 for synthesis, OpenOCD for configuration
  - [ ] get a blinking LED running
