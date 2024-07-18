@@ -69,6 +69,27 @@ cp-bit:
 config:
 	openocd -f 7series.txt
 
+QPROJ=de2-115
+
+# Quartus synth
+qsynth:
+	echo $(QPROJ)
+	echo "building $(QPROJ)"
+	-rm -rf quartus/$(QPROJ)/db
+	-rm -f quartus/$(QPROJ)/leros.sof
+	-rm -f jbc/$(QPROJ).jbc
+	-rm -f rbf/$(QPROJ).rbf
+	quartus_map quartus/$(QPROJ)/leros
+	quartus_fit quartus/$(QPROJ)/leros
+	quartus_asm quartus/$(QPROJ)/leros
+	quartus_sta quartus/$(QPROJ)/leros
+
+convert:
+	cd quartus/$(QPROJ) && quartus_cpf -c -q 25MHz -g 3.3 --operation p output_files/leros.sof output_files/leros.svf
+
+cp-svf:
+	-mkdir build
+	scp masca@helena.compute.dtu.dk:~/quartus/de2-115/output_files/leros.svf build
 
 # not so useful anymore, is run with cosim, but have a target to show how to run
 # the other simulator
