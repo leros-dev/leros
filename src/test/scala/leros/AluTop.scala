@@ -26,5 +26,5 @@ class AluTop(size: Int) extends Module {
 }
 object AluTop extends App {
   throw new Exception("Adapt for new AluAccu")
-  (new chisel3.stage.ChiselStage).emitVerilog(new AluTop(32), Array("--target-dir", "generated"))
+  emitVerilog(new AluTop(32), Array("--target-dir", "generated"))
 }

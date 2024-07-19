@@ -1,4 +1,4 @@
-scalaVersion := "2.13.10"
+scalaVersion := "2.13.14"
 
 scalacOptions ++= Seq(
   "-deprecation",
@@ -12,9 +12,26 @@ scalacOptions ++= Seq(
 // These appear because chisel use a language feature that's not available in
 // all scala implementations.
 
-// Chisel 3.5
-addCompilerPlugin("edu.berkeley.cs" % "chisel3-plugin" % "3.5.6" cross CrossVersion.full)
-libraryDependencies += "edu.berkeley.cs" %% "chisel3" % "3.5.6"
-libraryDependencies += "edu.berkeley.cs" %% "chiseltest" % "0.5.6"
+// Chisel 3.5 tested
+/*
+val chiselVersion = "3.6.1"
+addCompilerPlugin("edu.berkeley.cs" % "chisel3-plugin" % chiselVersion cross CrossVersion.full)
+libraryDependencies += "edu.berkeley.cs" %% "chisel3" % chiselVersion
+libraryDependencies += "edu.berkeley.cs" %% "chiseltest" % "0.6.1"
+ */
 
-libraryDependencies += "io.github.chiselverify" % "chiselverify" % "0.4.0"
+val chiselVersion = "5.3.0"
+addCompilerPlugin("org.chipsalliance" % "chisel-plugin" % chiselVersion cross CrossVersion.full)
+libraryDependencies += "org.chipsalliance" %% "chisel" % chiselVersion
+libraryDependencies += "edu.berkeley.cs" %% "chiseltest" % "5.0.2"
+
+/*
+interesting warnings with Chisel 6
+
+val chiselVersion = "6.5.0"
+addCompilerPlugin("org.chipsalliance" % "chisel-plugin" % chiselVersion cross CrossVersion.full)
+libraryDependencies += "org.chipsalliance" %% "chisel" % chiselVersion
+libraryDependencies += "edu.berkeley.cs" %% "chiseltest" % "6.0.0"
+*/
+
+// libraryDependencies += "io.github.chiselverify" % "chiselverify" % "0.4.0"
