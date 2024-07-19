@@ -4,7 +4,7 @@ scalacOptions ++= Seq(
   "-deprecation",
   "-feature",
   "-unchecked",
-  "-Xfatal-warnings",
+  // "-Xfatal-warnings",
   "-language:reflectiveCalls",
 )
 
@@ -20,18 +20,31 @@ libraryDependencies += "edu.berkeley.cs" %% "chisel3" % chiselVersion
 libraryDependencies += "edu.berkeley.cs" %% "chiseltest" % "0.6.1"
  */
 
+/*
 val chiselVersion = "5.3.0"
 addCompilerPlugin("org.chipsalliance" % "chisel-plugin" % chiselVersion cross CrossVersion.full)
 libraryDependencies += "org.chipsalliance" %% "chisel" % chiselVersion
 libraryDependencies += "edu.berkeley.cs" %% "chiseltest" % "5.0.2"
 
+ */
+
+/*
+
+is broken
+val chiselVersion = "latest.release"
+addCompilerPlugin("org.chipsalliance" % "chisel-plugin" % chiselVersion cross CrossVersion.full)
+libraryDependencies += "org.chipsalliance" %% "chisel" % chiselVersion
+// libraryDependencies += "edu.berkeley.cs" %% "chiseltest" % "latest.release"
+
+ */
+
 /*
 interesting warnings with Chisel 6
-
+*/
 val chiselVersion = "6.5.0"
 addCompilerPlugin("org.chipsalliance" % "chisel-plugin" % chiselVersion cross CrossVersion.full)
 libraryDependencies += "org.chipsalliance" %% "chisel" % chiselVersion
 libraryDependencies += "edu.berkeley.cs" %% "chiseltest" % "6.0.0"
-*/
+
 
 // libraryDependencies += "io.github.chiselverify" % "chiselverify" % "0.4.0"
