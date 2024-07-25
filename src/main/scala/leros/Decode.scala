@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.util._
 
 import leros.shared.Constants._
+import leros.State._
 
 class DecodeOut extends Bundle {
   val operand = UInt(32.W)
@@ -13,6 +14,7 @@ class DecodeOut extends Bundle {
   val brOff = SInt(12.W)
   val isRegOpd = Bool()
   val useDecOpd = Bool()
+  val nextState = State()
   val isStore = Bool()
   val isStoreInd = Bool()
   val isStoreIndB = Bool()
@@ -41,6 +43,7 @@ object DecodeOut {
     v.brOff := 0.S
     v.isRegOpd := false.B
     v.useDecOpd := false.B
+    v.nextState := execute
     v.isStore := false.B
     v.isStoreInd := false.B
     v.isStoreIndB := false.B

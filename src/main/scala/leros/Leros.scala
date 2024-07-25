@@ -2,8 +2,8 @@ package leros
 
 import chisel3._
 import chisel3.util._
-
 import leros.shared.Constants._
+import leros.State._
 
 /**
  * Leros top level.
@@ -12,20 +12,7 @@ import leros.shared.Constants._
  */
 class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBase(prog) {
 
-  object State extends ChiselEnum {
-    val fetch, execute = Value
-  }
-  import State._
 
-  val stateReg = RegInit(fetch)
-  switch(stateReg) {
-    is(fetch) {
-      stateReg := execute
-    }
-    is(execute) {
-      stateReg := fetch
-    }
-  }
 
   val alu = Module(new AluAccu(size))
 
@@ -46,11 +33,9 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
   val dec = Module(new Decode())
   dec.io.din := instr
   val decout = dec.io.dout
-
   val decReg = RegInit(DecodeOut.default)
-  when (stateReg === fetch) {
-    decReg := decout
-  }
+
+
 
   val effAddr = (addrReg.asSInt + decout.off).asUInt
   val effAddrWord = (effAddr >> 2).asUInt
@@ -89,12 +74,16 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
   val outReg = RegInit(0.U(32.W))
   io.led := outReg
 
+  val stateReg = RegInit(fetch)
+
   switch(stateReg) {
     is (fetch) {
-      // nothing here
+      stateReg := decout.nextState
+      decReg := decout
     }
 
     is (execute) {
+      stateReg := fetch
       pcReg := pcNext
       alu.io.enaMask := decReg.enaMask
       when(decReg.isLoadAddr) {
