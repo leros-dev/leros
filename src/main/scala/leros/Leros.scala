@@ -76,20 +76,26 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
 
   val stateReg = RegInit(fetch)
 
+  when (stateReg =/= fetch) {
+    stateReg := fetch
+    pcReg := pcNext
+    alu.io.enaMask := decReg.enaMask
+  }
+
   switch(stateReg) {
     is (fetch) {
       stateReg := decout.nextState
       decReg := decout
     }
 
+    // where is the "normal" ALU operation?
+
+    is (loadAddr) {
+      addrReg := dataRead
+      alu.io.enaMask := 0.U
+    }
     is (execute) {
-      stateReg := fetch
-      pcReg := pcNext
-      alu.io.enaMask := decReg.enaMask
-      when(decReg.isLoadAddr) {
-        addrReg := dataRead
-        alu.io.enaMask := 0.U
-      }
+
       when(decReg.isLoadInd) {
         // nothing to be done here
       }
@@ -110,6 +116,7 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
         outReg := accu
       }
       when(decReg.isStoreIndB) {
+        // wr and wrMask could be set in decode and registered
         dataMem.io.wr := true.B
         dataMem.io.wrMask := "b0001".U << effAddrOffReg
         alu.io.enaMask := 0.U

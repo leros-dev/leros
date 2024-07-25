@@ -23,7 +23,6 @@ class DecodeOut extends Bundle {
   val isLoadIndB = Bool()
   val isLoadIndH = Bool()
   val isDataAccess = Bool()
-  val isLoadAddr = Bool()
   val isBranch = Bool()
   val brType = UInt(4.W)
   val exit = Bool()
@@ -52,7 +51,6 @@ object DecodeOut {
     v.isLoadIndB := false.B
     v.isLoadIndH := false.B
     v.isDataAccess := false.B
-    v.isLoadAddr := false.B
     v.isBranch := false.B
     v.brType := 0.U
     v.exit := false.B
@@ -189,7 +187,7 @@ class Decode() extends Module {
       d.isStore := true.B
     }
     is (LDADDR.U) {
-      d.isLoadAddr := true.B
+      d.nextState := loadAddr
     }
     is (LDIND.U) {
       d.isDataAccess := true.B
