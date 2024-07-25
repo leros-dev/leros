@@ -1,6 +1,7 @@
 package leros
 
 import chisel3._
+import chisel3.util._
 import leros.util.Assembler
 
 
@@ -21,5 +22,6 @@ class InstrMem(memAddrWidth: Int, prog: String) extends Module {
   val progMem = VecInit(code.toIndexedSeq.map(_.asUInt(16.W)))
   val memReg = RegInit(0.U(memAddrWidth.W))
   memReg := io.addr
-  io.instr := progMem(memReg)
+  val index = log2Ceil(code.length)
+  io.instr := progMem(memReg(index - 1, 0))
 }
