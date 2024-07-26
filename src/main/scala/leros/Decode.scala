@@ -17,13 +17,8 @@ class DecodeOut extends Bundle {
   val nextState = State()
   val enaByte = Bool()
   val enaHalf = Bool()
-  val isStoreInd = Bool()
-  val isStoreIndB = Bool()
-  val isStoreIndH = Bool()
   val isDataAccess = Bool()
-  val isBranch = Bool()
   val brType = UInt(4.W)
-  val exit = Bool()
 }
 
 object DecodeOut {
@@ -40,16 +35,11 @@ object DecodeOut {
     v.brOff := 0.S
     v.isRegOpd := false.B
     v.useDecOpd := false.B
-    v.nextState := execute
+    v.nextState := init
     v.enaByte := false.B
     v.enaHalf := false.B
-    v.isStoreInd := false.B
-    v.isStoreIndB := false.B
-    v.isStoreIndH := false.B
     v.isDataAccess := false.B
-    v.isBranch := false.B
     v.brType := 0.U
-    v.exit := false.B
     v
   }
 }
@@ -77,11 +67,10 @@ class Decode() extends Module {
   def mask(i: Int) = ((i >> 4) & 0x0f).asUInt
 
   val field = io.din(15, 12)
-  when (field === mask(BR)) { d.isBranch := true.B }
-  when (field === mask(BRZ)) { d.isBranch := true.B }
-  when (field === mask(BRNZ)) { d.isBranch := true.B }
-  when (field === mask(BRP)) { d.isBranch := true.B }
-  when (field === mask(BRN)) { d.isBranch := true.B }
+  when (field === mask(BR) || field === mask(BRZ) || field === mask(BRNZ) ||
+    field === mask(BRP) || field === mask(BRN)) {
+    d.nextState := branch
+  }
 
   val instr = io.din
   d.brType := field
@@ -214,21 +203,21 @@ class Decode() extends Module {
       off := instrSignExt << 1
     }
     is (STIND.U) {
+      d.nextState := storeInd
       d.isDataAccess := true.B
-      d.isStoreInd := true.B
     }
     is (STINDB.U) {
+      d.nextState := storeIndB
       d.isDataAccess := true.B
-      d.isStoreIndB := true.B
       off := instrSignExt
     }
     is(STINDH.U) {
+      d.nextState := storeIndH
       d.isDataAccess := true.B
-      d.isStoreIndH := true.B
       off := instrSignExt << 1
     }
     is(SCALL.U) {
-      d.exit := true.B
+      d.nextState := scall
     }
   }
 

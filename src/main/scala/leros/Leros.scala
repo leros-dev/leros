@@ -102,46 +102,51 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
       dataMem.io.wr := true.B
     }
 
-    is (execute) {
+    is (storeInd) {
+      dataMem.io.wr := true.B
+      // TODO: am I missing here something? See the other store indirect
+      // TODO: this is a super quick hack to get the LED blinking
+      outReg := accu
+    }
 
-      when(decReg.isStoreInd) {
-        dataMem.io.wr := true.B
-        // TODO: am I missing here something? See the other store indirect
-        // TODO: this is a super quick hack to get the LED blinking
-        outReg := accu
+    is (storeIndB) {
+      // wr and wrMask could be set in decode and registered
+      dataMem.io.wr := true.B
+      dataMem.io.wrMask := "b0001".U << effAddrOffReg
+      vecAccu(effAddrOffReg) := accu(7, 0)
+      dataMem.io.wrData := vecAccu(3) ## vecAccu(2) ## vecAccu(1) ## vecAccu(0)
+    }
+
+    is (storeIndH) {
+      dataMem.io.wr := true.B
+      dataMem.io.wrMask := "b0011".U << effAddrOffReg
+      vecAccu(effAddrOffReg) := accu(7, 0)
+      vecAccu(effAddrOffReg | 1.U) := accu(15, 8)
+      dataMem.io.wrData := vecAccu(3) ## vecAccu(2) ## vecAccu(1) ## vecAccu(0)
+    }
+
+    is (branch) {
+      val doBranch = WireDefault(false.B)
+      switch(decReg.brType) {
+        is ((BR >> 4).U) { doBranch := true.B }
+        is ((BRZ >> 4).U) { doBranch := accu === 0.U }
+        is ((BRNZ >> 4).U) { doBranch := accu =/= 0.U }
+        is ((BRP >> 4).U) { doBranch := accu(31) === 0.U }
+        is ((BRN >> 4).U) { doBranch := accu(31) =/= 0.U }
       }
-      when(decReg.isStoreIndB) {
-        // wr and wrMask could be set in decode and registered
-        dataMem.io.wr := true.B
-        dataMem.io.wrMask := "b0001".U << effAddrOffReg
-        vecAccu(effAddrOffReg) := accu(7, 0)
-        dataMem.io.wrData := vecAccu(3) ## vecAccu(2) ## vecAccu(1) ## vecAccu(0)
-      }
-      when(decReg.isStoreIndH) {
-        dataMem.io.wr := true.B
-        dataMem.io.wrMask := "b0011".U << effAddrOffReg
-        vecAccu(effAddrOffReg) := accu(7, 0)
-        vecAccu(effAddrOffReg | 1.U) := accu(15, 8)
-        dataMem.io.wrData := vecAccu(3) ## vecAccu(2) ## vecAccu(1) ## vecAccu(0)
-      }
-      when(decReg.isBranch) {
-        val doBranch = WireDefault(false.B)
-        switch(decReg.brType) {
-          is ((BR >> 4).U) { doBranch := true.B }
-          is ((BRZ >> 4).U) { doBranch := accu === 0.U }
-          is ((BRNZ >> 4).U) { doBranch := accu =/= 0.U }
-          is ((BRP >> 4).U) { doBranch := accu(31) === 0.U }
-          is ((BRN >> 4).U) { doBranch := accu(31) =/= 0.U }
-        }
-        when (doBranch) {
-          pcNext := (pcReg.asSInt + decReg.brOff).asUInt
-        }
+      when (doBranch) {
+        pcNext := (pcReg.asSInt + decReg.brOff).asUInt
       }
     }
+
+    is (jal) {
+      // TODO: write tests first
+    }
+
+    is (scall) {
+      exit := RegNext(true.B)
+    }
   }
-
-  exit := RegNext(decReg.exit)
-
 }
 
 object Leros extends App {

@@ -2,8 +2,8 @@ package leros
 
 import chisel3.ChiselEnum
 object State extends ChiselEnum {
-  val fetch, execute,
+  val init, fetch,
   loadAddr, loadInd,
-  store, storeInd, storeindB, storeIndH,
-  branch, jal = Value
+  store, storeInd, storeIndB, storeIndH,
+  branch, jal, scall = Value
 }
