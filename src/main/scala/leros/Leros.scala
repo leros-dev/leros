@@ -12,8 +12,6 @@ import leros.State._
  */
 class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBase(prog) {
 
-
-
   val alu = Module(new AluAccu(size))
 
   val accu = alu.io.accu
@@ -64,12 +62,14 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
   // ALU connection
   alu.io.op := decReg.op
   alu.io.enaMask := 0.U
-  alu.io.enaByte := decReg.isLoadIndB
-  alu.io.enaHalf := decReg.isLoadIndH
+  // TODO: Maybe this should be in the state machine, instead of decode?
+  // Maybe not.
+  alu.io.enaByte := decReg.enaByte
+  alu.io.enaHalf := decReg.enaHalf
   alu.io.off := effAddrOffReg
   alu.io.din := Mux(decReg.useDecOpd, decReg.operand, dataRead)
 
-  // connection to the external world (test)
+  // connection to the external world (for testing)
   val exit = RegInit(false.B)
   val outReg = RegInit(0.U(32.W))
   io.led := outReg
@@ -92,26 +92,19 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
 
     is (loadAddr) {
       addrReg := dataRead
-      alu.io.enaMask := 0.U
     }
+
+    is (loadInd) {
+      // nothing to be done here
+    }
+
     is (execute) {
 
-      when(decReg.isLoadInd) {
-        // nothing to be done here
-      }
-      when(decReg.isLoadIndB) {
-        // nothing to be done here
-      }
-      when(decReg.isLoadIndH) {
-        // nothing to be done here
-      }
       when(decReg.isStore) {
         dataMem.io.wr := true.B
-        alu.io.enaMask := 0.U
       }
       when(decReg.isStoreInd) {
         dataMem.io.wr := true.B
-        alu.io.enaMask := 0.U
         // TODO: this is a super quick hack to get the LED blinking
         outReg := accu
       }
@@ -119,14 +112,12 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
         // wr and wrMask could be set in decode and registered
         dataMem.io.wr := true.B
         dataMem.io.wrMask := "b0001".U << effAddrOffReg
-        alu.io.enaMask := 0.U
         vecAccu(effAddrOffReg) := accu(7, 0)
         dataMem.io.wrData := vecAccu(3) ## vecAccu(2) ## vecAccu(1) ## vecAccu(0)
       }
       when(decReg.isStoreIndH) {
         dataMem.io.wr := true.B
         dataMem.io.wrMask := "b0011".U << effAddrOffReg
-        alu.io.enaMask := 0.U
         vecAccu(effAddrOffReg) := accu(7, 0)
         vecAccu(effAddrOffReg | 1.U) := accu(15, 8)
         dataMem.io.wrData := vecAccu(3) ## vecAccu(2) ## vecAccu(1) ## vecAccu(0)

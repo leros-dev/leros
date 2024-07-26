@@ -15,13 +15,12 @@ class DecodeOut extends Bundle {
   val isRegOpd = Bool()
   val useDecOpd = Bool()
   val nextState = State()
+  val enaByte = Bool()
+  val enaHalf = Bool()
   val isStore = Bool()
   val isStoreInd = Bool()
   val isStoreIndB = Bool()
   val isStoreIndH = Bool()
-  val isLoadInd = Bool()
-  val isLoadIndB = Bool()
-  val isLoadIndH = Bool()
   val isDataAccess = Bool()
   val isBranch = Bool()
   val brType = UInt(4.W)
@@ -43,13 +42,12 @@ object DecodeOut {
     v.isRegOpd := false.B
     v.useDecOpd := false.B
     v.nextState := execute
+    v.enaByte := false.B
+    v.enaHalf := false.B
     v.isStore := false.B
     v.isStoreInd := false.B
     v.isStoreIndB := false.B
     v.isStoreIndH := false.B
-    v.isLoadInd := false.B
-    v.isLoadIndB := false.B
-    v.isLoadIndH := false.B
     v.isDataAccess := false.B
     v.isBranch := false.B
     v.brType := 0.U
@@ -96,6 +94,12 @@ class Decode() extends Module {
   sigExt := instr(7, 0).asSInt
   d.operand := sigExt.asUInt
   when (noSext) { d.operand := instr(7, 0) }
+
+  // TODO: here is code duplication, should be merged with code above
+  val instrSignExt = Wire(SInt(32.W))
+  instrSignExt := instr(7, 0).asSInt
+  val off = Wire(SInt(10.W))
+  off := instrSignExt << 2 // default word
 
   switch(instr(15, 8)) {
     is(ADD.U) {
@@ -190,22 +194,26 @@ class Decode() extends Module {
       d.nextState := loadAddr
     }
     is (LDIND.U) {
+      d.nextState := loadInd
       d.isDataAccess := true.B
-      d.isLoadInd := true.B
       d.op := ld.U
       d.enaMask := MaskAll
     }
     is (LDINDB.U) {
+      d.nextState := loadInd
+      d.enaByte := true.B
       d.isDataAccess := true.B
-      d.isLoadIndB := true.B
       d.op := ld.U
       d.enaMask := MaskAll
+      off := instrSignExt
     }
     is(LDINDH.U) {
+      d.nextState := loadInd
+      d.enaHalf := true.B
       d.isDataAccess := true.B
-      d.isLoadIndH := true.B
       d.op := ld.U
       d.enaMask := MaskAll
+      off := instrSignExt << 1
     }
     is (STIND.U) {
       d.isDataAccess := true.B
@@ -214,26 +222,19 @@ class Decode() extends Module {
     is (STINDB.U) {
       d.isDataAccess := true.B
       d.isStoreIndB := true.B
+      off := instrSignExt
     }
     is(STINDH.U) {
       d.isDataAccess := true.B
       d.isStoreIndH := true.B
+      off := instrSignExt << 1
     }
     is(SCALL.U) {
       d.exit := true.B
     }
   }
 
-  // TODO: here is code duplication, should be merged with code above
-  val instrSignExt = Wire(SInt(32.W))
-  instrSignExt := instr(7, 0).asSInt
-  val off = Wire(SInt(10.W))
-  off := instrSignExt << 2 // default word
-  when(d.isLoadIndH || d.isStoreIndH) {
-    off := instrSignExt << 1
-  }.elsewhen(d.isLoadIndB || d.isStoreIndB) {
-    off := instrSignExt
-  }
+
   d.off := off
 
   io.dout := d
