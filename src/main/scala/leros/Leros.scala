@@ -140,7 +140,9 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
     }
 
     is (jal) {
-      // TODO: write tests first
+      pcNext := accu
+      dataMem.io.wr := true.B
+      dataMem.io.wrData := pcReg + 1.U
     }
 
     is (scall) {

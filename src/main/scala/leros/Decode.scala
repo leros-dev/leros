@@ -216,6 +216,9 @@ class Decode() extends Module {
       d.isDataAccess := true.B
       off := instrSignExt << 1
     }
+    is(JAL.U) {
+      d.nextState := jal
+    }
     is(SCALL.U) {
       d.nextState := scall
     }

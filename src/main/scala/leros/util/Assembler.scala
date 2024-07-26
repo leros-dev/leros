@@ -49,8 +49,21 @@ object Assembler {
     var pc = 0
 
     def toInt(s: String): Int = {
+
+      def getSymb(s: String): Int = {
+        if (pass2) {
+          symbols(s.drop(1))
+        } else {
+          0
+        }
+      }
+
       if (s.startsWith("0x")) {
         Integer.parseInt(s.substring(2), 16) & 0xff
+      } else if (s.startsWith("<")) {
+        getSymb(s) & 0xff
+      } else if (s.startsWith(">")) {
+        getSymb(s) >> 8
       } else {
         Integer.parseInt(s) & 0xff
       }
@@ -103,6 +116,7 @@ object Assembler {
         case "brnz" => (BRNZ << 8) + brOff
         case "brp" => (BRP << 8) + brOff
         case "brn" => (BRN << 8) + brOff
+        case "jal" => (JAL << 8) + regNumber(tokens(1))
         case "in" => (IN << 8) + toInt(tokens(1))
         case "out" => (OUT << 8) + toInt(tokens(1))
         case "scall" => (SCALL << 8) + toInt(tokens(1))

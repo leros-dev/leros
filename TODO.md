@@ -31,7 +31,7 @@
    - [ ] loadi (test for sign extension, also high versions)
    - [ ] out - needed?
    - [ ] in - needed?
-   - [ ] jal
+   - [x] jal
    - [x] ldind
    - [x] ldindh
    - [x] ldindb/ldindh does sign extension
