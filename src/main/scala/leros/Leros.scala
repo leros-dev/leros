@@ -98,13 +98,15 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
       // nothing to be done here
     }
 
+    is (store) {
+      dataMem.io.wr := true.B
+    }
+
     is (execute) {
 
-      when(decReg.isStore) {
-        dataMem.io.wr := true.B
-      }
       when(decReg.isStoreInd) {
         dataMem.io.wr := true.B
+        // TODO: am I missing here something? See the other store indirect
         // TODO: this is a super quick hack to get the LED blinking
         outReg := accu
       }

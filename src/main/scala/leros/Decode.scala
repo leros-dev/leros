@@ -17,7 +17,6 @@ class DecodeOut extends Bundle {
   val nextState = State()
   val enaByte = Bool()
   val enaHalf = Bool()
-  val isStore = Bool()
   val isStoreInd = Bool()
   val isStoreIndB = Bool()
   val isStoreIndH = Bool()
@@ -44,7 +43,6 @@ object DecodeOut {
     v.nextState := execute
     v.enaByte := false.B
     v.enaHalf := false.B
-    v.isStore := false.B
     v.isStoreInd := false.B
     v.isStoreIndB := false.B
     v.isStoreIndH := false.B
@@ -188,7 +186,7 @@ class Decode() extends Module {
       d.useDecOpd := true.B
     }
     is (ST.U) {
-      d.isStore := true.B
+      d.nextState := store
     }
     is (LDADDR.U) {
       d.nextState := loadAddr
