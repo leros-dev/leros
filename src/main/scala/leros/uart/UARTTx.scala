@@ -75,7 +75,7 @@ class BufferedTx(frequency: Int, baudRate: Int) extends Module {
 /**
  * Send a string.
  */
-class Sender(frequency: Int, baudRate: Int, msg : String) extends Module {
+class Sender(frequency: Int, baudRate: Int, txFile : String) extends Module {
   val io = IO(new Bundle {
     val txd = Output(UInt(1.W))
   })
@@ -84,12 +84,13 @@ class Sender(frequency: Int, baudRate: Int, msg : String) extends Module {
 
   io.txd := tx.io.txd
 
-  val text = VecInit(msg.map(_.U))
-  val len = msg.length.U  
+  val txDataFile = Files.readAllBytes(Paths.get(txFile))
+  val txData = VecInit(txDataFile.map(_.S(8.W)))
+  val len = txData.length.U
 
   val cntReg = RegInit(0.U(8.W))
 
-  tx.io.channel.bits := text(cntReg)
+  tx.io.channel.bits := txData(cntReg).asUInt
   tx.io.channel.valid := cntReg =/= len
 
   when(tx.io.channel.ready && cntReg =/= len) {

@@ -13,29 +13,31 @@ class ProgFSM(memAddrWidth : Int) extends Module {
     val busy = Output(Bool())
   })
   
-  val PROGRAMMING_DONE = "h64".U(8.W)
+  val PROGRAMMING_DONE = "h2121".U(16.W)
 
-  val idle :: sampleA :: sampleB :: writeMem :: Nil = Enum(4)
+  val idle :: sampleA :: sampleB :: writeMem :: waitNext :: Nil = Enum(5)
   val state = RegInit(idle)
 
   val wrAddr = RegInit(0.U(memAddrWidth.W))
-  val increment = WireDefault(false.B)
-  
+  val rxData = RegNext(io.channel.bits)
+
   val wrDataA = RegInit(0.U(8.W))
   val wrDataB = RegInit(0.U(8.W))
+  val wrData = wrDataB ## wrDataA // little endian
 
-  io.channel.ready := false.B
   io.wrEna := false.B
+  io.channel.ready := false.B
   io.busy := false.B
+  io.wrData := wrData
+  io.wrAddr := wrAddr
 
   switch(state) {
     is(idle) {
         io.wrEna := false.B
-        io.channel.ready := false.B
-        increment := false.B
+        io.channel.ready := true.B
         io.busy := false.B
 
-        when(io.channel.valid) {
+        when(io.channel.valid) {                      
             state := sampleA
         }
     }
@@ -43,15 +45,11 @@ class ProgFSM(memAddrWidth : Int) extends Module {
     is(sampleA) {
       io.wrEna := false.B
       io.channel.ready := true.B
-      increment := false.B
-      io.busy := true.B
-        
-      wrDataA := io.channel.bits
-      
-      when(wrDataA === PROGRAMMING_DONE) {
-        state := idle
-      }
-      . elsewhen(io.channel.valid) {
+      io.busy := true.B    
+
+      wrDataA := rxData                
+
+      when(io.channel.valid) {    
         state := sampleB
       }
     }
@@ -59,35 +57,36 @@ class ProgFSM(memAddrWidth : Int) extends Module {
     is(sampleB) {
       io.wrEna := false.B
       io.channel.ready := true.B
-      increment := false.B
-      io.busy := true.B
-
-      wrDataB := io.channel.bits
+      io.busy := true.B      
     
-      when(wrDataB === PROGRAMMING_DONE) {
-        state := idle
-      }
-      . elsewhen(io.channel.valid) {
-        state := writeMem
-      }      
+      wrDataB := rxData
+
+      state := writeMem
     }
 
     is(writeMem) {
-      io.wrEna := true.B
-      io.channel.ready := false.B
-      increment := true.B
       io.busy := true.B
-
-      state := sampleA     
+      io.channel.ready := true.B
+      
+      when(wrData === PROGRAMMING_DONE) {
+        io.wrEna := false.B
+        state := idle
+      }
+      . otherwise {
+        io.wrEna := true.B
+        wrAddr := wrAddr + 1.U 
+        state := waitNext
+      }                 
     }
+    
+    is(waitNext) {
+        io.busy := true.B
+        io.channel.ready := true.B
+        io.wrEna := false.B
+        
+        when(io.channel.valid) {
+            state := sampleA
+        }
+      }
   }
-
-  when(increment) {
-    wrAddr := wrAddr + 1.U
-  }
-
-  // little endian
-  io.wrData := wrDataB ## wrDataA
-  io.wrAddr := wrAddr
-
 }

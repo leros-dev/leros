@@ -11,7 +11,7 @@ class WrInstrMemTest() extends AnyFlatSpec with ChiselScalatestTester {
     val clockFreq       = 100000000
     val uartBaudrate    = 10000000
     val memAddrWidth    = 8
-    val msg             = "Hello World"
+    val msg             = "bin_generator/file.bin"
 
     "Writeable Instruction Memory Test" should "pass" in {
         test(new LerosWrMemTest(clockFreq, uartBaudrate, msg)).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>            

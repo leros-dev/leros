@@ -7,12 +7,12 @@ import leros.uart.Sender
 import leros.uart.Sender
 
 
-class LerosWrMemTest(clockFreq : Int = 100000000, uartBaudrate : Int = 115200, msg : String) extends Module {
+class LerosWrMemTest(clockFreq : Int = 100000000, uartBaudrate : Int = 115200, txFile : String) extends Module {
   val io = IO(new Bundle {
     val instr = Output(UInt(16.W))
   })
 
-  val programmer = Module(new Sender(clockFreq, uartBaudrate, msg))
+  val programmer = Module(new Sender(clockFreq, uartBaudrate, txFile))
   val wrInstrMem = Module(new WrInstrMemory(8, clockFreq, uartBaudrate))
 
   val idle :: programming :: readout :: Nil = Enum(3)
