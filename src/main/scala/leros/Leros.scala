@@ -4,6 +4,7 @@ import chisel3._
 import chisel3.util._
 import leros.shared.Constants._
 import leros.State._
+import wrmem.WrInstrMem
 
 /**
  * Leros top level.
@@ -13,7 +14,7 @@ import leros.State._
 class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBase(prog) {
 
   val alu = Module(new AluAccu(size))
-
+    
   val accu = alu.io.accu
 
   // The main architectural state
@@ -21,19 +22,15 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
   val addrReg = RegInit(0.U(memAddrWidth.W))
 
   val pcNext = WireDefault(pcReg + 1.U)
-
-  // Fetch from instruction memory with an address register that is reset to 0
-  val instrMem = Module(new InstrMem(memAddrWidth, prog))
-  instrMem.io.addr := pcNext
-  val instr = instrMem.io.instr
+  
+  io.wrMemInterface.pc := pcNext
+  val instr = io.wrMemInterface.instr
 
   // Decode
   val dec = Module(new Decode())
   dec.io.din := instr
   val decout = dec.io.dout
   val decReg = RegInit(DecodeOut.default)
-
-
 
   val effAddr = (addrReg.asSInt + decout.off).asUInt
   val effAddrWord = (effAddr >> 2).asUInt
@@ -72,7 +69,9 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
   // connection to the external world (for testing)
   val exit = RegInit(false.B)
   val outReg = RegInit(0.U(32.W))
-  io.led := outReg
+  
+  // TODO: this is a super quick hack to get the LED blinking
+  io.led := accu(7, 0)
 
   val stateReg = RegInit(fetch)
 
@@ -104,9 +103,7 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
 
     is (storeInd) {
       dataMem.io.wr := true.B
-      // TODO: am I missing here something? See the other store indirect
-      // TODO: this is a super quick hack to get the LED blinking
-      outReg := accu
+      // TODO: am I missing here something? See the other store indirect      
     }
 
     is (storeIndB) {

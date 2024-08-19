@@ -7,6 +7,7 @@
 package leros
 
 import chisel3._
+import wrmem.WrInstrMemInterface
 
 /**
   * Leros top level as abstract class.
@@ -14,11 +15,9 @@ import chisel3._
   */
 abstract class LerosBase(prog: String, size: Int =32, memAddrWidth: Int = 8) extends Module {
   val io = IO(new Bundle {
-    // val dout = Output(UInt(32.W))
-    // val sw = Input(UInt(4.W))
     val led = Output(UInt(8.W))
+    val wrMemInterface = Flipped(new WrInstrMemInterface(memAddrWidth))
   })
-  // io.led := 5.U
 }
 
 
