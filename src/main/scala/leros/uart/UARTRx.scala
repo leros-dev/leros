@@ -21,7 +21,7 @@ class UartIO extends DecoupledIO(UInt(8.W)) {
  * The following code is inspired by Tommy's receive code at:
  * https://github.com/tommythorn/yarvi
  */
-class Rx(frequency: Int, baudRate: Int) extends Module {
+class Rx(frequency: Long, baudRate: Long) extends Module {
   val io = IO(new Bundle {
     val rxd = Input(UInt(1.W))
     val channel = new UartIO()
@@ -99,7 +99,7 @@ class Buffer extends Module {
 /*
  * Buffered uart receiver
  */
-class UARTRx(frequency: Int, baudRate: Int) extends Module {
+class UARTRx(frequency: Long, baudRate: Long) extends Module {
   val io = IO(new Bundle {
     val rxd = Input(UInt(1.W))
     val out = new UartIO()

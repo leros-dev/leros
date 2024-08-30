@@ -11,11 +11,21 @@ import wrmem.WrInstrMem
  *
  * Sequential implementation with two states.
  */
-class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBase(prog) {
-
+class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends Module {
+  val io = IO(new Bundle {
+    val led = Output(UInt(8.W))
+    val pc = Output(UInt(memAddrWidth.W))
+    val instr = Input(UInt(16.W))
+    val exit = Output(Bool())
+    val accu = Output(UInt(32.W))
+  })
+  
   val alu = Module(new AluAccu(size))
     
   val accu = alu.io.accu
+  io.accu := accu
+
+  io.led := accu
 
   // The main architectural state
   val pcReg = RegInit(0.U(memAddrWidth.W))
@@ -23,8 +33,8 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
 
   val pcNext = WireDefault(pcReg + 1.U)
   
-  io.wrMemInterface.pc := pcNext
-  val instr = io.wrMemInterface.instr
+  io.pc := pcNext
+  val instr = io.instr
 
   // Decode
   val dec = Module(new Decode())
@@ -68,11 +78,7 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
 
   // connection to the external world (for testing)
   val exit = RegInit(false.B)
-  val outReg = RegInit(0.U(32.W))
   
-  // TODO: this is a super quick hack to get the LED blinking
-  io.led := accu(7, 0)
-
   val stateReg = RegInit(fetch)
 
   when (stateReg =/= fetch) {
@@ -146,6 +152,11 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
       exit := RegNext(true.B)
     }
   }
+
+  when(exit) {
+    exit := false.B
+  }
+  io.exit := exit
 }
 
 object Leros extends App {

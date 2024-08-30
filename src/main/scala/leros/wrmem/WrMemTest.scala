@@ -19,7 +19,7 @@ class WrMemTest(clockFreq : Int = 100000000, uartBaudrate : Int = 115200, txFile
   val state = RegInit(idle)
 
   val pc = RegInit(0.U(8.W))
-  wrInstrMem.io.wrMemInterface.pc := pc
+  wrInstrMem.io.pc := pc
 
   wrInstrMem.io.uartRX := programmer.io.txd
 
@@ -33,11 +33,11 @@ class WrMemTest(clockFreq : Int = 100000000, uartBaudrate : Int = 115200, txFile
     }
 
     is(programming) {      
-      when(!wrInstrMem.io.coreReset) {
+      when(~wrInstrMem.io.coreReset) {
         pc := pc + 1.U
       }
     }
   }
 
-  io.instr := wrInstrMem.io.wrMemInterface.instr
+  io.instr := wrInstrMem.io.instr
 }

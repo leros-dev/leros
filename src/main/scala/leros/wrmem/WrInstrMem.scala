@@ -5,10 +5,11 @@ import chisel3.util._
 import leros.uart.UARTRx
 import leros.uart.UARTRx
 
-class WrInstrMem(memAddrWidth : Int, clockFreq : Int, uartBaudrate : Int) extends Module {
+class WrInstrMem(memAddrWidth : Int, clockFreq : Long, uartBaudrate : Long) extends Module {
     val io = IO(new Bundle {
     val uartRX = Input(UInt(1.W))    
-    val wrMemInterface = new WrInstrMemInterface(memAddrWidth)
+    val pc = Input(UInt(memAddrWidth.W))
+    val instr = Output(UInt(16.W))
     val coreReset = Output(Bool())
 })
   val progFSM = Module(new ProgFSM(memAddrWidth))
@@ -18,6 +19,8 @@ class WrInstrMem(memAddrWidth : Int, clockFreq : Int, uartBaudrate : Int) extend
   val wrData = WireDefault(0.U(16.W))
   val wrEna = WireDefault(false.B)
   val rdAddr = RegInit(0.U(memAddrWidth.W))
+  // active high reset
+  io.coreReset := Mux(reset.asBool, 1.U, progFSM.io.busy)
   
   uartRx.io.out <> progFSM.io.channel
   uartRx.io.rxd := io.uartRX
@@ -25,15 +28,12 @@ class WrInstrMem(memAddrWidth : Int, clockFreq : Int, uartBaudrate : Int) extend
   wrAddr := progFSM.io.wrAddr
   wrData := progFSM.io.wrData
   wrEna := progFSM.io.wrEna
-  rdAddr := Mux(progFSM.io.busy, 0.U, io.wrMemInterface.pc)
+  rdAddr := Mux(progFSM.io.busy, 0.U, io.pc)
   
   val mem = SyncReadMem(scala.math.pow(2, memAddrWidth).toInt, UInt(16.W))
   
-  io.wrMemInterface.instr := mem.read(rdAddr)
+  io.instr := mem.read(rdAddr)
   when(wrEna) {
     mem.write(wrAddr , wrData)
   }
-
-  io.coreReset := progFSM.io.busy
-
 }
