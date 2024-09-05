@@ -20,7 +20,7 @@ test:
 sw-simulation:
 	sbt "runMain leros.sim.LerosSim asm/test/base.s"
 
-APP=base
+APP=blink
 TESTS="base lhi lhi2 lognosign reg imm mem"
 TESTPATH=asm/test
 
