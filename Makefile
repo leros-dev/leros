@@ -54,11 +54,12 @@ list-swsim:
 # Synthesize and copy targets
 
 # does not work from Makefile, C & P into shell
+# Path for chipdesign1 (not helena)
 synpath:
 	source /home/shared/Xilinx/Vivado/2017.4/settings64.sh
 
 synth:
-	./vivado_synth -t Leros -p xc7a100tcsg324-1 -x nexysA7.xdc -o build generated/Leros.v
+	./vivado_synth -t Leros -p xc7a100tcsg324-1 -x nexysA7.xdc -o build generated/Leros.sv
 
 cp-bit:
 	-mkdir build
