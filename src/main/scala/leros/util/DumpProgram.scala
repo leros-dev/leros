@@ -1,20 +1,19 @@
 package leros.util
 
 import java.io._
+import leros.shared.Constants._
 
 object DumpProgram extends App {
 
   def dump(program: Array[Int]): Unit = {
-    val outFolder = args(1)
-    val out = new FileOutputStream(outFolder + "/out.bin")
-    val eof = 0x21
+    val out = new FileOutputStream(args(1))
 
     for (inst <- program) {
       out.write(inst)
       out.write(inst >> 8)
     }
-    out.write(eof)
-    out.write(eof)
+    out.write(SCALL)
+    out.write(SCALL_PROGRAM)
     out.close()
   }
 

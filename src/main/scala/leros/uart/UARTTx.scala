@@ -12,7 +12,7 @@ package leros.uart
 import chisel3._
 import chisel3.util._
 import java.nio.file._
-import leros.LerosConfig.PROGRAMMING_DONE
+import leros.shared.Constants._
 
 /**
  * Transmit part of the UART.
@@ -73,48 +73,3 @@ class BufferedTx(frequency: Long, baudRate: Long) extends Module {
   io.txd <> tx.io.txd
 }
 
-/**
- * Send a string.
- */
-class Sender(frequency: Long, baudRate: Long, txFile : String) extends Module {
-  val io = IO(new Bundle {
-    val txd = Output(UInt(1.W))
-    val lerosExit = Input(Bool())
-  })
-
-  val tx = Module(new BufferedTx(frequency, baudRate))
-
-  io.txd := tx.io.txd
-
-  val txDataFile = Files.readAllBytes(Paths.get(txFile))
-  val txData = VecInit(txDataFile.map(_.S(8.W)))
-  val len = txData.length
-  val cntReg = RegInit(0.U(log2Ceil(len).W))
-
-  val instr = txData(cntReg).asUInt ## txData(cntReg-1.U).asUInt
-  val enable = RegInit(true.B)
-
-  when(instr === PROGRAMMING_DONE.U) {
-    when(tx.io.channel.ready) {
-        enable := false.B
-    }
-  }
-  
-  when(enable) {
-    tx.io.channel.bits := txData(cntReg).asUInt
-    tx.io.channel.valid := cntReg =/= len.U
-
-    when(tx.io.channel.ready && cntReg =/= len.U) {        
-      cntReg := cntReg + 1.U
-    }
-  }
-  . otherwise {
-    tx.io.channel.bits := 0.U
-    tx.io.channel.valid := false.B
-
-    when(io.lerosExit) {
-        enable := true.B
-    }
-  }
-
-}

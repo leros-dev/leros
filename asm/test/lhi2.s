@@ -3,3 +3,4 @@
 	loadhi 0x0
 	subi 0x12
 	scall 0
+    scall 0xFF

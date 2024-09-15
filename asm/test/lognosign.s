@@ -5,3 +5,4 @@
 	andi 0xff
     subi 0x73
 	scall 0
+    scall 0xFF

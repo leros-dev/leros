@@ -1,11 +1,3 @@
-/*
- * Author: Martin Schoeberl (martin@jopdesign.com)
- * 
- * Tester for Leros.
- * 
- */
-
-
 package leros
 
 import chisel3._
@@ -15,8 +7,7 @@ import leros.util.Assembler
 import wrmem._
 import java.io._
 
-class LerosTest extends AnyFlatSpec with ChiselScalatestTester {
-
+class LerosTest extends AnyFlatSpec with ChiselScalatestTester {  
   val progs = leros.shared.Util.getProgs()
   var binaries = List[List[Int]]()
   val outFile = "binaries/allProgs.bin"
@@ -34,13 +25,13 @@ class LerosTest extends AnyFlatSpec with ChiselScalatestTester {
       out.write(instr >> 8)
       }
     }
-
+    
   "Leros with writeable instruction memory" should "pass" in {
     test(new LerosTestTop(outFile)).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>         
         dut.clock.setTimeout(0)
         
-        val N_PROGRAMS = 18
-        val MAC_CYCLES = 10000
+        val N_PROGRAMS = progs.length
+        val MAC_CYCLES = 1000
 
         var run = true
         var cycles = MAC_CYCLES
@@ -54,7 +45,9 @@ class LerosTest extends AnyFlatSpec with ChiselScalatestTester {
             }
 
             dut.clock.step(1)
-            cycles -= 1
+            if(!dut.io.lerosReset.peekBoolean()) {
+                cycles -= 1
+            }
 
             val exit = dut.io.lerosExit.peekBoolean()        
 
@@ -63,6 +56,7 @@ class LerosTest extends AnyFlatSpec with ChiselScalatestTester {
                 dut.io.accu.expect(0.U, "Accu shall be zero at the end of a test program.\n")
                 
                 println(s"Successfully finished test program " + progs(n))
+                println("");
                 n += 1
                 run = n < N_PROGRAMS
                 newProg = true                

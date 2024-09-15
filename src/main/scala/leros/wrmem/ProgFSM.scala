@@ -2,7 +2,7 @@ package leros.wrmem
 
 import chisel3._
 import chisel3.util._
-import leros.LerosConfig.PROGRAMMING_DONE
+import leros.shared.Constants._
 
 class ProgFSM(memAddrWidth : Int) extends Module {
   val io = IO(new Bundle {
@@ -45,6 +45,7 @@ class ProgFSM(memAddrWidth : Int) extends Module {
         }
     }
 
+
     is(sampleA) {
       io.wrEna := false.B
       io.channel.ready := true.B
@@ -73,7 +74,7 @@ class ProgFSM(memAddrWidth : Int) extends Module {
       
       wrAddr := wrAddr + 1.U 
       
-      when(wrData === PROGRAMMING_DONE.U(16.W)) {
+      when(wrData === (SCALL.U ## SCALL_PROGRAM.U)) {
         wrDataA := 0.U
         wrDataB := 0.U
         
@@ -85,6 +86,16 @@ class ProgFSM(memAddrWidth : Int) extends Module {
         io.wrEna := true.B        
         state := waitNext
       }                 
+    }
+
+    is(waitNext) {
+        io.busy := true.B
+        io.channel.ready := true.B
+        io.wrEna := false.B
+        
+        when(io.channel.valid) {
+            state := sampleA
+        }
     }
 
     is(clearMem) {
@@ -108,15 +119,5 @@ class ProgFSM(memAddrWidth : Int) extends Module {
             }
         }
     }
-    
-    is(waitNext) {
-        io.busy := true.B
-        io.channel.ready := true.B
-        io.wrEna := false.B
-        
-        when(io.channel.valid) {
-            state := sampleA
-        }
-      }
   }
 }

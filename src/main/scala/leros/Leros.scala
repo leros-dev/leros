@@ -13,19 +13,14 @@ import wrmem.WrInstrMem
  */
 class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends Module {
   val io = IO(new Bundle {
-    val led = Output(UInt(8.W))
+    val led = Output(UInt(16.W))
     val pc = Output(UInt(memAddrWidth.W))
     val instr = Input(UInt(16.W))
-    val exit = Output(Bool())
-    val accu = Output(UInt(32.W))
   })
   
   val alu = Module(new AluAccu(size))
     
   val accu = alu.io.accu
-  io.accu := accu
-
-  io.led := accu
 
   // The main architectural state
   val pcReg = RegInit(0.U(memAddrWidth.W))
@@ -78,6 +73,8 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends Module 
 
   // connection to the external world (for testing)
   val exit = RegInit(false.B)
+  val ledReg = RegInit(0.U(16.W))
+  io.led := ledReg
   
   val stateReg = RegInit(fetch)
 
@@ -149,14 +146,18 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends Module 
     }
 
     is (scall) {
-      exit := RegNext(true.B)
+      switch(decReg.scallArg) {
+        is(SCALL_EXIT.U) {
+            exit := true.B
+            ledReg := accu
+        }
+      }
     }
   }
 
   when(exit) {
     exit := false.B
   }
-  io.exit := exit
 }
 
 object Leros extends App {

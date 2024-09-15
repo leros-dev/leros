@@ -18,9 +18,10 @@ class WrInstrMem(memAddrWidth : Int, clockFreq : Long, uartBaudrate : Long) exte
   val wrAddr = WireDefault(0.U(memAddrWidth.W))
   val wrData = WireDefault(0.U(16.W))
   val wrEna = WireDefault(false.B)
-  val rdAddr = RegInit(0.U(memAddrWidth.W))
+  val rdAddr = WireDefault(0.U(memAddrWidth.W))
+  
   // active high reset
-  io.coreReset := Mux(reset.asBool, 1.U, progFSM.io.busy)
+  io.coreReset := reset.asBool | progFSM.io.busy
   
   uartRx.io.out <> progFSM.io.channel
   uartRx.io.rxd := io.uartRX

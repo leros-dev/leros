@@ -91,3 +91,4 @@
 
 	load r1
 	scall 0
+    scall 0xFF

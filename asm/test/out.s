@@ -13,3 +13,4 @@
 
 	scall 0
 
+    scall 0xFF

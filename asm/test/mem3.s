@@ -20,3 +20,4 @@
 	sra
 	subi 0x7f
 	scall 0
+    scall 0xFF
