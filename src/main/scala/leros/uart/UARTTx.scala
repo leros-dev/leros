@@ -12,13 +12,14 @@ package leros.uart
 import chisel3._
 import chisel3.util._
 import java.nio.file._
+import leros.shared.Constants._
 
 /**
  * Transmit part of the UART.
  * A minimal version without any additional buffering.
  * Use a ready/valid handshaking.
  */
-class Tx(frequency: Int, baudRate: Int) extends Module {
+class Tx(frequency: Long, baudRate: Long) extends Module {
   val io = IO(new Bundle {
     val txd = Output(UInt(1.W))
     val channel = Flipped(new UartIO())
@@ -59,7 +60,7 @@ class Tx(frequency: Int, baudRate: Int) extends Module {
 /**
  * A transmitter with a single buffer.
  */
-class BufferedTx(frequency: Int, baudRate: Int) extends Module {
+class BufferedTx(frequency: Long, baudRate: Long) extends Module {
   val io = IO(new Bundle {
     val txd = Output(UInt(1.W))
     val channel = Flipped(new UartIO())
@@ -72,27 +73,3 @@ class BufferedTx(frequency: Int, baudRate: Int) extends Module {
   io.txd <> tx.io.txd
 }
 
-/**
- * Send a string.
- */
-class Sender(frequency: Int, baudRate: Int, msg : String) extends Module {
-  val io = IO(new Bundle {
-    val txd = Output(UInt(1.W))
-  })
-
-  val tx = Module(new BufferedTx(frequency, baudRate))
-
-  io.txd := tx.io.txd
-
-  val text = VecInit(msg.map(_.U))
-  val len = msg.length.U  
-
-  val cntReg = RegInit(0.U(8.W))
-
-  tx.io.channel.bits := text(cntReg)
-  tx.io.channel.valid := cntReg =/= len
-
-  when(tx.io.channel.ready && cntReg =/= len) {
-    cntReg := cntReg + 1.U
-  }
-}

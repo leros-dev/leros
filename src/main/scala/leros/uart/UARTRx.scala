@@ -21,7 +21,7 @@ class UartIO extends DecoupledIO(UInt(8.W)) {
  * The following code is inspired by Tommy's receive code at:
  * https://github.com/tommythorn/yarvi
  */
-class Rx(frequency: Int, baudRate: Int) extends Module {
+class Rx(frequency: Long, baudRate: Long) extends Module {
   val io = IO(new Bundle {
     val rxd = Input(UInt(1.W))
     val channel = new UartIO()
@@ -61,45 +61,12 @@ class Rx(frequency: Int, baudRate: Int) extends Module {
   io.channel.bits := shiftReg
   io.channel.valid := validReg
 }
-//- end
 
-/**
- * A single byte buffer with a ready/valid interface
- */
-class Buffer extends Module {
-  val io = IO(new Bundle {
-    val in = Flipped(new UartIO())
-    val out = new UartIO()
-  })
-
-  object State extends ChiselEnum {
-    val empty, full = Value
-  }
-  import State._
-
-  val stateReg = RegInit(empty)
-  val dataReg = RegInit(0.U(8.W))
-
-  io.in.ready := stateReg === empty
-  io.out.valid := stateReg === full
-
-  when(stateReg === empty) {
-    when(io.in.valid) {
-      dataReg := io.in.bits
-      stateReg := full
-    }
-  } .otherwise { // full
-    when(io.out.ready) {
-      stateReg := empty
-    }
-  }
-  io.out.bits := dataReg
-}
 
 /*
  * Buffered uart receiver
  */
-class UARTRx(frequency: Int, baudRate: Int) extends Module {
+class UARTRx(frequency: Long, baudRate: Long) extends Module {
   val io = IO(new Bundle {
     val rxd = Input(UInt(1.W))
     val out = new UartIO()

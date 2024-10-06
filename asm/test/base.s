@@ -10,4 +10,4 @@
 	subi 0xac
 
 	scall 0
-
+    scall 0xFF

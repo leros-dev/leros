@@ -11,3 +11,4 @@
 	sra
 	subi 0x23
 	scall 0
+    scall 0xFF

@@ -19,6 +19,7 @@ class DecodeOut extends Bundle {
   val enaHalf = Bool()
   val isDataAccess = Bool()
   val brType = UInt(4.W)
+  val scallArg = UInt(8.W)
 }
 
 object DecodeOut {
@@ -40,6 +41,7 @@ object DecodeOut {
     v.enaHalf := false.B
     v.isDataAccess := false.B
     v.brType := 0.U
+    v.scallArg := 0.U
     v
   }
 }
@@ -221,6 +223,7 @@ class Decode() extends Module {
     }
     is(SCALL.U) {
       d.nextState := scall
+      d.scallArg := instr(7,0)
     }
   }
 

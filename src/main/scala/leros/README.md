@@ -1,0 +1,33 @@
+# Leros source files
+- `shared/`
+    - `Constants.scala` : Instruction encoding
+    - `Util.scala` : Utility functions used in test environment
+- `sim/LerosSim.scala` : Software simulator of Leros
+- `uart/` : UART transmitter and receiver
+- `util/`
+    - `Assembler.scala` : Leros assembler
+    - `DumpProgram.scala` : Assembles a source file and dumps the result to a flat binary file
+- `wrmem/`
+    - `ProgFSM.scala` : Writes incoming data on UART to writeable instruction memory
+    - `WrInstrMem.scala` : Writable instruction memory module for Leros
+    - `Programmer.scala`: A programmer for Leros, used for testing
+- `AluAccu.scala` : Implementation of ALU with accumulator register connected at the output
+- `DataMem.scala` : Dual port memory used as data memory
+- `Decode.scala` : Instruction decode unit
+- `InstrMem.scala` : Read only instruction memory, results in combinational lookup table
+- `LerosConfig.scala` : Configuration of the Leros processor (clock frequency, uart baudrate etc.)
+- `LerosTestTop.scala` : Top module for testing purpose, used in conjunction with `LerosTest.scala` 
+- `State.scala` : Enum definition for state signals
+- `LerosTop.scala` : Top module for Leros intended for synthesis to FPGA or ASIC
+
+# Leros testbenches
+- `AluAccuTest.scala`: Testbench for Leros' Arithemetic Logic Unit
+- `AluTop.scala`: Dummy top level for testing fmax of ALU
+- `CompareTest.scala`: Cosimulation with leros software simulator, checks for equality between software simulator and hardware simulator
+    - [link to software simulator](https://github.com/leros-dev/leros-sim)
+- `sim/LerosSimTest.scala`: Only software simulator, checks accumulator is 0 at end of every program
+- `CosimTest.scala`: Cosimulation with scala software simulator, checks for equality between software simulator and hardware simulator
+    - Note this is a different software simulator compared to previous 
+    - This test uses a scala software simulator (`src/main/scala/leros/sim/LerosSim.scala`)
+- `LerosTest.scala`: Only hardware simulation, checks that accumulator is 0 at end of program execution
+- `WrLerosTest.scala`: Similar to `LerosTest.scala`, with writeable instruction memory

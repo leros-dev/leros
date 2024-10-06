@@ -1,42 +1,40 @@
-/*
- * Leros, a Tiny Microprocessor
- *
- * Author: Martin Schoeberl (martin@jopdesign.com)
- */
-
 package leros
 
 import chisel3._
+import chisel3.util._
 import chisel3.util.experimental.BoringUtils
+import leros.LerosConfig._
+import leros.wrmem._
 
-class Debug(size: Int, memAddrWidth:Int) extends Bundle {
-  val accu = Output(UInt(size.W))
-  val pc = Output(UInt(memAddrWidth.W))
-  val instr = Output(UInt(16.W))
-  val exit = Output(Bool())
-}
+/*
+ * Top level Leros intended for testing with WrLerosTest.scala
+ * Includes Leros with writeable instruction memory and a programmer
+ * programs: Path to binary file with all test programs 
+    * (can be 1 or several test programs contained within single binary file) 
+    * Each test program must end with the instruction scall 0xFF (0xFFFF in binary)
+ * Each test is programmed, after which leros is released from reset allowing execution
+ * Program execution continues until exit flag is raised (caused by instruction scall 0x00)
+ * After exit flag is raised next test is programmed
+*/
 
-/**
-  * Leros top level for testing.
-  */
-class LerosTestTop(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends Module {
+class LerosTestTop(programs : String) extends Module {
   val io = IO(new Bundle {
-    // val dout = Output(UInt(32.W))
-    val dbg = new Debug(size, memAddrWidth)
     val led = Output(UInt(8.W))
+
+    val lerosExit = Output(Bool())
+    val accu = Output(UInt(32.W))
+    val lerosReset = Output(Bool())
   })
-  val leros = Module(new Leros(prog))
-  io.led := leros.io.led
 
-  // Boring Utils for debugging
-  io.dbg.accu := DontCare
-  io.dbg.pc := DontCare
-  io.dbg.instr := DontCare
-  io.dbg.exit := DontCare
-  BoringUtils.bore(leros.accu, Seq(io.dbg.accu))
-  BoringUtils.bore(leros.pcReg, Seq(io.dbg.pc))
-  BoringUtils.bore(leros.instr, Seq(io.dbg.instr))
-  BoringUtils.bore(leros.exit, Seq(io.dbg.exit))
+  val programmer = Module(new Programmer(CLOCK_FREQ_HZ, UART_BAUDRATE, programs))
+  val leros = Module(new LerosTop(" "))
+  
+  leros.io.rx := programmer.io.txd
+
+  programmer.io.lerosExit := BoringUtils.bore(leros.lerosCore.exit)
+  
+  io.led := leros.io.led  
+  io.accu := BoringUtils.bore(leros.lerosCore.accu)
+  io.lerosExit := BoringUtils.bore(leros.lerosCore.exit)
+  io.lerosReset := BoringUtils.bore(leros.lerosCore.reset)
 }
-
-

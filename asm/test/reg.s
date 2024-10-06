@@ -11,3 +11,4 @@
 	and r2
 	subi 0x34
 	scall 0
+    scall 0xFF

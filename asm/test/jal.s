@@ -12,3 +12,4 @@ function:
     store r1
     load r3
     jal r3
+    scall 0xFF

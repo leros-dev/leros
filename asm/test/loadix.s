@@ -127,3 +127,4 @@
     loadi 1
     load r2
     scall 0
+    scall 0xFF

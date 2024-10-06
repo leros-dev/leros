@@ -6,6 +6,9 @@
     br testbr
     loadi 1
     scall 0
+error:
+    loadi 1
+    scall 0
 testbr:
 	loadi 1
 	loadi 0
@@ -33,7 +36,5 @@ brpok:
 brok:
     loadi 0
     scall 0
-error:
-    loadi 1
-    scall 0
 
+    scall 0xFF

@@ -4,16 +4,22 @@ import chisel3._
 import chisel3.util._
 import leros.shared.Constants._
 import leros.State._
+import wrmem.WrInstrMem
 
 /**
  * Leros top level.
  *
  * Sequential implementation with two states.
  */
-class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBase(prog) {
-
+class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends Module {
+  val io = IO(new Bundle {
+    val led = Output(UInt(16.W))
+    val pc = Output(UInt(memAddrWidth.W))
+    val instr = Input(UInt(16.W))
+  })
+  
   val alu = Module(new AluAccu(size))
-
+    
   val accu = alu.io.accu
 
   // The main architectural state
@@ -21,19 +27,15 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
   val addrReg = RegInit(0.U(memAddrWidth.W))
 
   val pcNext = WireDefault(pcReg + 1.U)
-
-  // Fetch from instruction memory with an address register that is reset to 0
-  val instrMem = Module(new InstrMem(memAddrWidth, prog))
-  instrMem.io.addr := pcNext
-  val instr = instrMem.io.instr
+  
+  io.pc := pcNext
+  val instr = io.instr
 
   // Decode
   val dec = Module(new Decode())
   dec.io.din := instr
   val decout = dec.io.dout
   val decReg = RegInit(DecodeOut.default)
-
-
 
   val effAddr = (addrReg.asSInt + decout.off).asUInt
   val effAddrWord = (effAddr >> 2).asUInt
@@ -47,7 +49,7 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
 
   // Data memory, including the register memory
   // read in fetch, write in execute
-  val dataMem = Module(new DataMem((memAddrWidth), false))
+  val dataMem = Module(new SramSim(size, math.pow(2, memAddrWidth.toDouble).toInt))
 
   val memAddr = Mux(decout.isDataAccess, effAddrWord, instr(7, 0))
   val memAddrReg = RegNext(memAddr)
@@ -56,8 +58,9 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
   val dataRead = dataMem.io.rdData
   dataMem.io.wrAddr := memAddrReg
   dataMem.io.wrData := accu
-  dataMem.io.wr := false.B
+  dataMem.io.we := false.B
   dataMem.io.wrMask := "b1111".U
+  dataMem.io.req := true.B
 
   // ALU connection
   alu.io.op := decReg.op
@@ -71,9 +74,9 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
 
   // connection to the external world (for testing)
   val exit = RegInit(false.B)
-  val outReg = RegInit(0.U(32.W))
-  io.led := outReg
-
+  val ledReg = RegInit(0.U(16.W))
+  io.led := ledReg
+  
   val stateReg = RegInit(fetch)
 
   when (stateReg =/= fetch) {
@@ -99,26 +102,24 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
     }
 
     is (store) {
-      dataMem.io.wr := true.B
+      dataMem.io.we := true.B
     }
 
     is (storeInd) {
-      dataMem.io.wr := true.B
-      // TODO: am I missing here something? See the other store indirect
-      // TODO: this is a super quick hack to get the LED blinking
-      outReg := accu
+      dataMem.io.we := true.B
+      // TODO: am I missing here something? See the other store indirect      
     }
 
     is (storeIndB) {
       // wr and wrMask could be set in decode and registered
-      dataMem.io.wr := true.B
+      dataMem.io.we := true.B
       dataMem.io.wrMask := "b0001".U << effAddrOffReg
       vecAccu(effAddrOffReg) := accu(7, 0)
       dataMem.io.wrData := vecAccu(3) ## vecAccu(2) ## vecAccu(1) ## vecAccu(0)
     }
 
     is (storeIndH) {
-      dataMem.io.wr := true.B
+      dataMem.io.we := true.B
       dataMem.io.wrMask := "b0011".U << effAddrOffReg
       vecAccu(effAddrOffReg) := accu(7, 0)
       vecAccu(effAddrOffReg | 1.U) := accu(15, 8)
@@ -141,13 +142,22 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBa
 
     is (jal) {
       pcNext := accu
-      dataMem.io.wr := true.B
+      dataMem.io.we := true.B
       dataMem.io.wrData := pcReg + 1.U
     }
 
     is (scall) {
-      exit := RegNext(true.B)
+      switch(decReg.scallArg) {
+        is(SCALL_EXIT.U) {
+            exit := true.B
+            ledReg := accu
+        }
+      }
     }
+  }
+
+  when(exit) {
+    exit := false.B
   }
 }
 
