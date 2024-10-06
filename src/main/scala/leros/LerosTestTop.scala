@@ -37,5 +37,4 @@ class LerosTestTop(programs : String) extends Module {
   io.accu := BoringUtils.bore(leros.lerosCore.accu)
   io.lerosExit := BoringUtils.bore(leros.lerosCore.exit)
   io.lerosReset := BoringUtils.bore(leros.lerosCore.reset)
-
 }

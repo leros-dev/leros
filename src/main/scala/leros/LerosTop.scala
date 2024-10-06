@@ -11,9 +11,9 @@ class LerosTop(prog : String) extends Module {
     val rx = Input(UInt(1.W))
   })
 
-  val lerosCore = Module(new Leros(prog, DATA_WIDTH, MEM_ADDR_WIDTH))
   val wrInstrMem = Module(new WrInstrMem(MEM_ADDR_WIDTH, CLOCK_FREQ_HZ, UART_BAUDRATE))
-
+  val lerosCore = Module(new Leros(prog, DATA_WIDTH, MEM_ADDR_WIDTH))
+  
   wrInstrMem.io.pc := lerosCore.io.pc
   lerosCore.io.instr := wrInstrMem.io.instr
   lerosCore.reset := wrInstrMem.io.coreReset //hold reset for some time?
