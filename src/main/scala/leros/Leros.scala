@@ -10,7 +10,13 @@ import leros.State._
  *
  * Sequential implementation with two states.
  */
-class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends LerosBase(prog) {
+class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends Module {
+
+  val io = IO(new Bundle {
+    // val dout = Output(UInt(32.W))
+    // val sw = Input(UInt(4.W))
+    val led = Output(UInt(8.W))
+  })
 
   val alu = Module(new AluAccu(size))
 
