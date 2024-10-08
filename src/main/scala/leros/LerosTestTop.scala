@@ -25,18 +25,18 @@ class LerosTestTop(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends 
     val dbg = new Debug(size, memAddrWidth)
     val led = Output(UInt(8.W))
   })
-  val leros = Module(new Leros(prog))
-  io.led := leros.io.led
+  val lerosTop = Module(new LerosTop(prog))
+  io.led := lerosTop.io.led
 
   // Boring Utils for debugging
   io.dbg.accu := DontCare
   io.dbg.pc := DontCare
   io.dbg.instr := DontCare
   io.dbg.exit := DontCare
-  BoringUtils.bore(leros.accu, Seq(io.dbg.accu))
-  BoringUtils.bore(leros.pcReg, Seq(io.dbg.pc))
-  BoringUtils.bore(leros.instr, Seq(io.dbg.instr))
-  BoringUtils.bore(leros.exit, Seq(io.dbg.exit))
+  BoringUtils.bore(lerosTop.leros.accu, Seq(io.dbg.accu))
+  BoringUtils.bore(lerosTop.leros.pcReg, Seq(io.dbg.pc))
+  BoringUtils.bore(lerosTop.leros.instr, Seq(io.dbg.instr))
+  BoringUtils.bore(lerosTop.leros.exit, Seq(io.dbg.exit))
 }
 
 

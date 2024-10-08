@@ -32,7 +32,7 @@ swsim:
 	sbt -Dprogram=$(APP) "testOnly leros.sim.LerosSimTest"
 
 hw:
-	sbt "runMain leros.Leros asm/$(APP).s"
+	sbt "runMain leros.LerosTop asm/$(APP).s"
 
 test-alu:
 	sbt "test:runMain leros.AluTester"
@@ -59,7 +59,7 @@ synpath:
 	source /home/shared/Xilinx/Vivado/2017.4/settings64.sh
 
 synth:
-	./vivado_synth -t Leros -p xc7a100tcsg324-1 -x nexysA7.xdc -o build generated/Leros.sv
+	./vivado_synth -t LerosTop -p xc7a100tcsg324-1 -x nexysA7.xdc -o build generated/LerosTop.sv
 
 cp-bit:
 	-mkdir build

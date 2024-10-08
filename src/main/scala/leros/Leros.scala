@@ -12,6 +12,12 @@ import leros.State._
  */
 class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends Module {
 
+  val imemIO = IO(new Bundle {
+    val addr = Output(UInt(memAddrWidth.W))
+    val instr = Input(UInt(16.W))
+  })
+  val dmemIO = IO(Flipped(new DataMemIO(memAddrWidth)))
+
   val io = IO(new Bundle {
     // val dout = Output(UInt(32.W))
     // val sw = Input(UInt(4.W))
@@ -29,9 +35,8 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends Module 
   val pcNext = WireDefault(pcReg + 1.U)
 
   // Fetch from instruction memory with an address register that is reset to 0
-  val instrMem = Module(new InstrMem(memAddrWidth, prog))
-  instrMem.io.addr := pcNext
-  val instr = instrMem.io.instr
+  imemIO.addr := pcNext
+  val instr = imemIO.instr
 
   // Decode
   val dec = Module(new Decode())
@@ -53,17 +58,16 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends Module 
 
   // Data memory, including the register memory
   // read in fetch, write in execute
-  val dataMem = Module(new DataMem((memAddrWidth), false))
 
   val memAddr = Mux(decout.isDataAccess, effAddrWord, instr(7, 0))
   val memAddrReg = RegNext(memAddr)
   val effAddrOffReg = RegNext(effAddrOff)
-  dataMem.io.rdAddr := memAddr
-  val dataRead = dataMem.io.rdData
-  dataMem.io.wrAddr := memAddrReg
-  dataMem.io.wrData := accu
-  dataMem.io.wr := false.B
-  dataMem.io.wrMask := "b1111".U
+  dmemIO.rdAddr := memAddr
+  val dataRead = dmemIO.rdData
+  dmemIO.wrAddr := memAddrReg
+  dmemIO.wrData := accu
+  dmemIO.wr := false.B
+  dmemIO.wrMask := "b1111".U
 
   // ALU connection
   alu.io.op := decReg.op
@@ -105,11 +109,11 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends Module 
     }
 
     is (store) {
-      dataMem.io.wr := true.B
+      dmemIO.wr := true.B
     }
 
     is (storeInd) {
-      dataMem.io.wr := true.B
+      dmemIO.wr := true.B
       // TODO: am I missing here something? See the other store indirect
       // TODO: this is a super quick hack to get the LED blinking
       outReg := accu
@@ -117,18 +121,18 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends Module 
 
     is (storeIndB) {
       // wr and wrMask could be set in decode and registered
-      dataMem.io.wr := true.B
-      dataMem.io.wrMask := "b0001".U << effAddrOffReg
+      dmemIO.wr := true.B
+      dmemIO.wrMask := "b0001".U << effAddrOffReg
       vecAccu(effAddrOffReg) := accu(7, 0)
-      dataMem.io.wrData := vecAccu(3) ## vecAccu(2) ## vecAccu(1) ## vecAccu(0)
+      dmemIO.wrData := vecAccu(3) ## vecAccu(2) ## vecAccu(1) ## vecAccu(0)
     }
 
     is (storeIndH) {
-      dataMem.io.wr := true.B
-      dataMem.io.wrMask := "b0011".U << effAddrOffReg
+      dmemIO.wr := true.B
+      dmemIO.wrMask := "b0011".U << effAddrOffReg
       vecAccu(effAddrOffReg) := accu(7, 0)
       vecAccu(effAddrOffReg | 1.U) := accu(15, 8)
-      dataMem.io.wrData := vecAccu(3) ## vecAccu(2) ## vecAccu(1) ## vecAccu(0)
+      dmemIO.wrData := vecAccu(3) ## vecAccu(2) ## vecAccu(1) ## vecAccu(0)
     }
 
     is (branch) {
@@ -147,8 +151,8 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends Module 
 
     is (jal) {
       pcNext := accu
-      dataMem.io.wr := true.B
-      dataMem.io.wrData := pcReg + 1.U
+      dmemIO.wr := true.B
+      dmemIO.wrData := pcReg + 1.U
     }
 
     is (scall) {
