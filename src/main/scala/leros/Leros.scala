@@ -16,13 +16,7 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends Module 
     val addr = Output(UInt(memAddrWidth.W))
     val instr = Input(UInt(16.W))
   })
-  val dmemIO = IO(Flipped(new DataMemIO(memAddrWidth)))
-
-  val io = IO(new Bundle {
-    // val dout = Output(UInt(32.W))
-    // val sw = Input(UInt(4.W))
-    val led = Output(UInt(8.W))
-  })
+  val dmemIO = IO(Flipped(new DataMemIO(16)))
 
   val alu = Module(new AluAccu(size))
 
@@ -30,7 +24,7 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends Module 
 
   // The main architectural state
   val pcReg = RegInit(0.U(memAddrWidth.W))
-  val addrReg = RegInit(0.U(memAddrWidth.W))
+  val addrReg = RegInit(0.U(16.W))
 
   val pcNext = WireDefault(pcReg + 1.U)
 
@@ -54,7 +48,7 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends Module 
   for (i <- 0 until 4) {
     vecAccu(i) := accu(i*8 + 7, i*8)
   }
-  // printf("%x %x %x %x\n", effAddr, effAddrWord, effAddrOff, decout.off)
+  // printf("%x %x %x %x %x\n", addrReg, effAddr, effAddrWord, effAddrOff, decout.off)
 
   // Data memory, including the register memory
   // read in fetch, write in execute
@@ -81,8 +75,6 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends Module 
 
   // connection to the external world (for testing)
   val exit = RegInit(false.B)
-  val outReg = RegInit(0.U(32.W))
-  io.led := outReg
 
   val stateReg = RegInit(fetch)
 
@@ -114,9 +106,6 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends Module 
 
     is (storeInd) {
       dmemIO.wr := true.B
-      // TODO: am I missing here something? See the other store indirect
-      // TODO: this is a super quick hack to get the LED blinking
-      outReg := accu
     }
 
     is (storeIndB) {

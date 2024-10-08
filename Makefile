@@ -27,6 +27,8 @@ TESTPATH=asm/test
 hwsim:
 	sbt -Dprogram=$(APP) "testOnly leros.LerosTest"
 
+sim-blink:
+	sbt -Dprogram=blink -Dtestpath=asm "testOnly leros.LerosTest"
 
 swsim:
 	sbt -Dprogram=$(APP) "testOnly leros.sim.LerosSimTest"

@@ -43,7 +43,7 @@
  - [ ] Check if write in Chisel/Verilog is not through a register
     * wondering on timing and layout in Quartus
  - [ ] Get rid of code duplication in Decode
- - [ ] Do memory mapped IO
+ - [x] Do memory mapped IO
  - [ ] Be able to simulate source in asm
  - [x] Setup FPGA (Nexys A7)
    - [x] Use chipdesign1 for synthesis, OpenOCD for configuration
@@ -60,7 +60,7 @@
  - [ ] Any instruction not used by the compiler? 
  - [ ] load/store byte indirect 
  - [ ] Does subi sign extend? Do we need a subi? We could use addi with neg. values 
- - [ ] Get a simple sequential version done 
+ - [x] Get a simple sequential version done 
  - [ ] Pipelined version follows after sequential 
  - [ ] Run Morten's C test programs 
  - [ ] gcc test suit as in Patmos

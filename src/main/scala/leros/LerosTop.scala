@@ -29,7 +29,13 @@ class LerosTop(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends Modu
   dataMem.io <> leros.dmemIO
 
   // TODO: LED and decoding for it
-  io.led := leros.io.led
+  val ledReg = RegInit(0.U(8.W))
+  io.led := ledReg
+  // IO is now mapped to 0x0f00, but wrAddr counts in 32-bit words
+  when((leros.dmemIO.wrAddr === 0x03c0.U) &&  leros.dmemIO.wr) {
+    ledReg := leros.dmemIO.wrData(7, 0)
+    dataMem.io.wr := false.B
+  }
 }
 
 object LerosTop extends App {

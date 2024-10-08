@@ -19,7 +19,7 @@ class LerosTest extends AnyFlatSpec with ChiselScalatestTester {
 
     def testFun(dut: LerosTestTop): Unit = {
       var run = true
-      var maxCycles = 10000
+      var maxCycles = 1000
       while (run) {
         val pc = dut.io.dbg.pc.peekInt()
         val accu = dut.io.dbg.accu.peekInt()
