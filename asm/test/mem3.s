@@ -19,4 +19,5 @@
 	andi 0xff
 	sra
 	subi 0x7f
+	addi 1
 	scall 0

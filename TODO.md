@@ -1,6 +1,7 @@
 # TODO
 
  - [ ] Get an overview of what is implemented (and add missing to TODO)
+ - [x] Change tests to end with a 1 as OK
  - [ ] Fix cosimulation issues, still an issue with mem.s (now disabled)
  - [x] Change to arithmetic shift
  - [x] Have the Leros simulator as a submodule

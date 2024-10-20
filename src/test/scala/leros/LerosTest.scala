@@ -30,7 +30,7 @@ class LerosTest extends AnyFlatSpec with ChiselScalatestTester {
         run = dut.io.dbg.exit.peekInt() == 0 && maxCycles > 0
         assert(maxCycles > 0, "Running out of cycles")
       }
-      val res = dut.io.dbg.accu.expect(0.U, "Accu shall be zero at the end of a test case.\n")
+      val res = dut.io.dbg.accu.expect(1.U, "Accu shall be one at the end of a test case.\n")
     }
 
     "Leros HW " should s"pass $program" in {

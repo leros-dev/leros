@@ -21,6 +21,24 @@ git submodule init
 git submodule update
 ```
 
+## Testing
+
+The tests are in the `asm/test` directory. The tests are written in ScalaTest and
+run with the SBT build tool. To run the tests, use:
+
+```  
+sbt test
+```
+
+or use `make`
+
+```
+make test
+```
+
+The assembler tests are written to exit with 1 in the accumulator if they pass.
+
+
 ## Questions
 
 See also [TODO.md](TODO.md).

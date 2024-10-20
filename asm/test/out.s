@@ -9,7 +9,7 @@
 	loadi 0
 	out 0
 
-    loadi 0
+    loadi 1
 
 	scall 0
 

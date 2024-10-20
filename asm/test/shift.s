@@ -28,4 +28,5 @@
     // final result
     loadi 1
     load r2
+    addi 1
     scall 0

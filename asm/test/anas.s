@@ -8,5 +8,5 @@ start:
 
 
 A:
-    loadi 0     // 0x2100
+    loadi 1     // 0x2100
     scall 0     // 0xFF00

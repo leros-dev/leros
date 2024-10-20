@@ -31,9 +31,9 @@ brpok:
 	br brok
 	br error
 brok:
-    loadi 0
+    loadi 1
     scall 0
 error:
-    loadi 1
+    loadi 2
     scall 0
 

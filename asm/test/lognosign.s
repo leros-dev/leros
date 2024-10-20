@@ -4,4 +4,5 @@
 	loadi 0x73
 	andi 0xff
     subi 0x73
+    addi 1
 	scall 0

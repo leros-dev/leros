@@ -10,4 +10,5 @@
 	sra
 	sra
 	subi 0x23
+	addi 1
 	scall 0

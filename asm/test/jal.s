@@ -5,6 +5,7 @@
     jal r3
     load r1
     subi 5
+    addi 1
     scall 0
 
 function:

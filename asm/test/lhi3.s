@@ -76,4 +76,5 @@
 
 
 	load r1
+	addi 1
 	scall 0

@@ -10,4 +10,5 @@
 	load r3
 	and r2
 	subi 0x34
+	addi 1
 	scall 0
