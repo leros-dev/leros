@@ -4,7 +4,7 @@ import chisel3._
 import leros.util.Assembler
 
 
-class DataMemIO(memAddrWidth: Int) extends Bundle {
+class DataMemIO(val memAddrWidth: Int) extends Bundle {
   val rdAddr = Input(UInt(memAddrWidth.W))
   val rdData = Output(UInt(32.W))
   val wrAddr = Input(UInt(memAddrWidth.W))
