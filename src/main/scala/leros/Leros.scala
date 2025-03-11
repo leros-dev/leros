@@ -10,12 +10,9 @@ import leros.State._
  *
  * Sequential implementation with two states.
  */
-class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends Module {
+class Leros(size: Int = 32, memAddrWidth: Int = 8) extends Module {
 
-  val imemIO = IO(new Bundle {
-    val addr = Output(UInt(memAddrWidth.W))
-    val instr = Input(UInt(16.W))
-  })
+  val imemIO = IO(Flipped(new InstrMemIO(memAddrWidth)))
   val dmemIO = IO(Flipped(new DataMemIO(16)))
 
   val alu = Module(new AluAccu(size))
@@ -151,5 +148,5 @@ class Leros(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends Module 
 }
 
 object Leros extends App {
-  emitVerilog(new Leros(args(0)), Array("--target-dir", "generated"))
+  emitVerilog(new Leros, Array("--target-dir", "generated"))
 }

@@ -18,7 +18,7 @@ class LerosTop(prog: String, size: Int = 32, memAddrWidth: Int = 8) extends Modu
     val led = Output(UInt(8.W))
   })
 
-  val leros = Module(new Leros(prog))
+  val leros = Module(new Leros)
   // Fetch from instruction memory with an address register that is reset to 0
   val instrMem = Module(new InstrMem(memAddrWidth, prog))
   // Data memory, including the register memory
