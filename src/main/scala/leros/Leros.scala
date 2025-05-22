@@ -23,11 +23,15 @@ class Leros(size: Int = 32, memAddrWidth: Int = 8) extends Module {
   val pcReg = RegInit(-1.S(memAddrWidth.W).asUInt)
   val addrReg = RegInit(0.U(16.W))
 
+  val firstClockReg = RegInit(true.B)
+  firstClockReg := false.B
+
   val pcNext = WireDefault(pcReg + 1.U)
 
-  // Fetch from instruction memory with an address register that is reset to 0
+  // Ignore first instruction read from instruction memory
   imemIO.addr := pcNext
-  val instr = imemIO.instr
+  val instr = Mux(firstClockReg, 0.U, imemIO.instr)
+
 
   // Decode
   val dec = Module(new Decode())
