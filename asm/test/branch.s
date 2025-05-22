@@ -3,6 +3,7 @@
 //
 // TODO: missing test for backward branch (was an error in the assembler)
 
+    nop // as first instruction is executed twice
     br testbr
     loadi 1
     scall 0

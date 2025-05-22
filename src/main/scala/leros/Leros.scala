@@ -20,7 +20,7 @@ class Leros(size: Int = 32, memAddrWidth: Int = 8) extends Module {
   val accu = alu.io.accu
 
   // The main architectural state
-  val pcReg = RegInit(0.U(memAddrWidth.W))
+  val pcReg = RegInit(-1.S(memAddrWidth.W).asUInt)
   val addrReg = RegInit(0.U(16.W))
 
   val pcNext = WireDefault(pcReg + 1.U)
