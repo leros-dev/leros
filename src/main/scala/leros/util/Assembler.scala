@@ -76,7 +76,7 @@ object Assembler {
 
     for (line <- source.getLines()) {
       // if (!pass2) println(line)
-      val tokens = line.trim.split(" ")
+      val tokens = line.trim.split("\\s+")
 
       def brOff= if (pass2) (symbols(tokens(1))-pc) & 0x0fff else 0
 
